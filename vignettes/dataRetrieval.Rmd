@@ -413,14 +413,7 @@ surfaceData <- read_waterdata_field_measurements(monitoring_location_id = "USGS-
 
 ## Water Use Data
 
-Retrieves water use data from USGS Water Use Data for the Nation.  See <https://water.usgs.gov/nwaa-data> for more information.  
-
-```{r eval=FALSE}
-allegheny <- read_waterdata_use_data(location = "countyCd:42003",
-                                     model = "wu-public-supply-wd",
-                                     variable = c("pswdtot", "pswdgw", "pswdsw"))
-
-```
+Legacy water use data services have been retired. Check back in for developments on replacement functions.
 
 ## Statistics Data
 Retrieves site statistics from the USGS Statistics Web Service beta.  

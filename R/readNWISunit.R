@@ -718,56 +718,12 @@ readNWISuse <- function(stateCd,
                         convertType = TRUE,
                         transform = FALSE) {
 
-  .Deprecated(new = "read_waterdata_use.",
+  .Deprecated(new = "read_waterdata_use_data in development",
               package = "dataRetrieval", 
-              msg = "NWIS servers are slated for decommission. Please migrate to read_waterdata_use.")
-  
-  
-  countyID <- NULL
-  countyCd <- countyCd[countyCd != ""]
+              msg = "NWIS servers for water use have been decommission. New functions are being developed.")
+  return(NULL)
 
-  if (exists("countyCd") && !is.null(countyCd)) {
-    if (!any(toupper(countyCd) == "ALL")) {
-      for (c in countyCd) {
-        code <- countyCdLookup(state = stateCd, county = c, outputType = "id")
-        countyID <- c(countyID, code)
-      }
-    } else {
-      countyID <- toupper(countyID)
-    }
-  }
 
-  years <- .capitalALL(years)
-  categories <- .capitalALL(categories)
-
-  url <- constructUseURL(
-    years = years,
-    stateCd = stateCd,
-    countyCd = countyID,
-    categories = categories
-  )
-  returned_data <- importRDB1(
-    obs_url = url,
-    convertType = convertType
-  )
-
-  # for total country data arriving in named rows
-  if (transform) {
-    cmmnt <- comment(returned_data)
-    returned_data <- t(returned_data)
-    colnames(returned_data) <- returned_data[1, ]
-    returned_data <- as.data.frame(returned_data[-1, ], stringsAsFactors = FALSE)
-    returned_data <- cbind(
-      Year = as.integer(substr(rownames(returned_data), 2, 5)),
-      returned_data
-    )
-    rownames(returned_data) <- NULL
-    comment(returned_data) <- cmmnt
-    if (!all(is.null(stateCd)) && all(nchar(stateCd) != 0)) {
-      warning("transform = TRUE is only intended for national data")
-    }
-  }
-  return(returned_data)
 }
 
 .capitalALL <- function(input) {
