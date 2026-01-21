@@ -15,7 +15,6 @@ walk_pages <- function(req){
     df1 <- get_resp_data(resp)
     return_list <- rbind(return_list, df1)
   }
-    
   
   return(return_list)
 }
@@ -106,7 +105,7 @@ get_csv <- function(req, limit){
   
   if(httr2::resp_has_body(resp)){
     return_list <- httr2::resp_body_string(resp) 
-    df <- suppressMessages(readr::read_csv(file = return_list))
+    df <- suppressMessages(data.table::fread(text = return_list, data.table = FALSE))
     if(skip_geo){
       df <- df[, names(df)[!names(df) %in% c("x", "y")]]
     } else {

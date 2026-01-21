@@ -114,7 +114,7 @@ There are many types of data available from `dataRetrieval`. To understand how t
 |stat|`readNWISstat`| Site statistics | None yet |
 |rating|`readNWISrating`| Rating curves| None yet |
 |peak|`readNWISpeak`|Peak flow| None yet |
-|use|`readNWISuse`|Water Use| None yet |
+|use|`readNWISuse`|Water Use| `read_waterdata_use_data` |
 |meas|`readNWISmeas`|Discrete surface water| `read_waterdata_field_measurements`|
 | | `readNWISdata` | General data import | `read_waterdata` |
 

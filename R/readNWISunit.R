@@ -711,36 +711,18 @@ readNWISstat <- function(siteNumbers, parameterCd, startDate = "", endDate = "",
 #' County and state fields will be included as appropriate.
 #'
 #' @export
-#' @examplesIf is_dataRetrieval_user()
-#' \donttest{
-#' # All data for a county
-#' allegheny <- readNWISuse(stateCd = "Pennsylvania", countyCd = "Allegheny")
-#'
-#' # Data for an entire state for certain years
-#' ohio <- readNWISuse(years = c(2000, 2005, 2010), stateCd = "OH", countyCd = NULL)
-#'
-#' # Data for an entire state, county by county
-#' pr <- readNWISuse(years = c(2000, 2005, 2010), stateCd = "PR", countyCd = "ALL")
-#'
-#' # All national-scale data, transforming data frame to named columns from named rows
-#' national <- readNWISuse(stateCd = NULL, countyCd = NULL, transform = TRUE)
-#'
-#' # Washington, DC data
-#' dc <- readNWISuse(stateCd = "DC", countyCd = NULL)
-#'
-#' # data for multiple counties, with different input formatting
-#' paData <- readNWISuse(stateCd = "42", countyCd = c("Allegheny County", "BUTLER", 1, "031"))
-#'
-#' # retrieving two specific categories for an entire state
-#' ks <- readNWISuse(stateCd = "KS", countyCd = NULL, categories = c("IT", "LI"))
-#' }
 readNWISuse <- function(stateCd,
                         countyCd,
                         years = "ALL",
                         categories = "ALL",
                         convertType = TRUE,
                         transform = FALSE) {
-  message(new_nwis_message())
+
+  .Deprecated(new = "read_waterdata_use.",
+              package = "dataRetrieval", 
+              msg = "NWIS servers are slated for decommission. Please migrate to read_waterdata_use.")
+  
+  
   countyID <- NULL
   countyCd <- countyCd[countyCd != ""]
 
