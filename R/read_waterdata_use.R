@@ -72,7 +72,8 @@ read_waterdata_use_data <- function(model = NA_character_,
   
   args <- mget(names(formals()))
   args <- Filter(Negate(anyNA), args)
-  format <- "json"
+  
+  format <- "csv"
   
   baseURL <-   httr2::request("https://api.water.usgs.gov/") |> 
     httr2::req_url_path_append("nwaa-data") |> 
@@ -86,29 +87,16 @@ read_waterdata_use_data <- function(model = NA_character_,
   baseURL <- explode_query(baseURL, POST = FALSE, args, multi = "comma")
   
   message("Requesting:\n", baseURL$url)
-  if(format == "csv"){
-    resp <- httr2::req_perform(baseURL)
-    body <- httr2::resp_body_string(resp)
-    df <- suppressMessages(data.table::fread(file = body, data.table = FALSE) )
 
-  } else {
-    resps <- httr2::req_perform_iterative(baseURL, 
-                                          next_req = next_req_url_wu, 
-                                          max_reqs = Inf, on_error = "stop")
+  resps <- httr2::req_perform_iterative(baseURL, 
+                                        next_req = next_req_url_wu_csv, 
+                                        max_reqs = Inf, on_error = "stop")
 
-    df <- data.frame()
-
-    for(resp in resps){
-      body <- httr2::resp_body_json(resp)[["data"]][[1]]
-      for(i in 1:length(body)){
-
-        df_i <- suppressWarnings(data.table::rbindlist(body[[i]], fill = TRUE)) |>
-                                   data.table::setDF()
-        df_i$location <- names(body[i])
-        df <- rbind(df, df_i)
-      }
-    }
-  }
+  df <- resps |>
+    httr2::resps_successes() |>
+    httr2::resps_data(\(resp) data.table::fread(text = httr2::resp_body_string(resp),
+                                                data.table = FALSE,
+                                                colClasses = list(character = "huc12_id")))
 
   attr(df, "request") <- baseURL
   attr(df, "queryTime") <- Sys.time()
@@ -116,23 +104,23 @@ read_waterdata_use_data <- function(model = NA_character_,
   
 }
 
-next_req_url_wu <- function(resp, req){
+next_req_url_wu_csv <- function(resp, req){
 
-  body <- httr2::resp_body_json(resp)
-
-  links <- body$metadata$links
-  if(any(sapply(links, function(x) x$rel) == "next")){
-    next_index <- which(sapply(links, function(x) x$rel) == "next")
-    
-    next_url <- links[[next_index]][["href"]]
-    next_url <- gsub(pattern = "https://water.usgs.gov", 
-                     replacement = "https://api.water.usgs.gov", 
-                     x = next_url)
-    return(httr2::req_url(req = req, url = next_url))
-  } else {
-    return(NULL)
+  headers <- httr2::resp_headers(resp)
+  if("link" %in% names(headers)){
+    if(grepl(pattern = '\"next\"', headers$link)){
+      next_url <- gsub(pattern = ".*<(.*)>.*", 
+                       replacement =  "\\1",
+                       x =  headers$link)
+      next_url <- gsub(pattern = "https://water.usgs.gov", 
+                       replacement = "https://api.water.usgs.gov", 
+                       x = next_url)
+      return(httr2::req_url(req = req, url = next_url))
+    }
   }
-  
+  return(NULL)
 }
+
+
 
 
