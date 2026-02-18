@@ -40,6 +40,8 @@ navbar:
       href: articles/read_waterdata_functions.html
     - text: Samples Data
       href: articles/samples_data.html
+    - text: Daily Statistics
+      href: articles/daily_data_statistics.html
     - text: Changes to QW
       href: articles/qwdata_changes.html
     - text: Background
@@ -68,6 +70,7 @@ reference:
     desc: Functions to retrieve USGS Water Data.
     contents:
       - read_waterdata_samples
+      - read_waterdata_stats_por
       - read_waterdata_daily
       - read_waterdata_continuous
       - read_waterdata_ts_meta
@@ -148,7 +151,6 @@ reference:
     desc: Functions to create web queries
     contents:
       - constructNWISURL
-      - constructUseURL
       - constructWQPURL
       - getQuerySummary
       - getWebServiceData

@@ -1,3 +1,19 @@
+dataRetrieval 2.7.22.9000
+===================
+* Added data.table to Imports
+* Added read_waterdata_stats_por and read_waterdata_stats_daterange to access USGS daily data statistics.
+* Updated vignettes, examples, and README to reflect new stats functions.
+* Added tests for read_waterdata_stats functions
+* Updated next_req_url to allow paging through /statistics API output
+* Added deprecation message to readNWISstat function
+* Specify "UTC" attribute for returned time
+* Added options("dataRetrieval.attach_request" = TRUE) as default to attach the 
+request object as an attribute to the returned data frames. Setting 
+options("dataRetrieval.attach_request" = FALSE) will return a data frame without
+the request attribute
+* Improved time documentation
+
+
 dataRetrieval 2.7.22
 ===================
 * Added read_waterdata_latest_daily to access latest daily USGS water data.
@@ -13,6 +29,7 @@ recommended because it will silently cut off data after 50,000 rows.
 of no_paging and limit.
 * Increase the flexibility of read_waterdata_metadata to match other OGC functions.
 * NLDI to use agency code prefixes and should no longer be stripping the "USGS-" off the site ides.
+* Add deprecate message to readNWISuse function as data services have been retired.
 
 dataRetrieval 2.7.21
 ===================

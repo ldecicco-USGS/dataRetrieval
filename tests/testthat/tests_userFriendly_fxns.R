@@ -392,14 +392,7 @@ test_that("Construct USGS urls", {
 
   url_works_ml <- dataRetrieval:::walk_pages(url_ml)
   expect_true(nrow(url_works_ml) > 0)
-  
-  url_use <- constructUseURL(
-    years = c(1990, 1995),
-    stateCd = "Ohio",
-    countyCd = c(1, 3),
-    categories = "ALL"
-  )
-  expect_equal(url_use$url, "https://waterdata.usgs.gov/OH/nwis/water_use?format=rdb&rdb_compression=value&wu_area=county&wu_county=1%2C3&wu_year=1990%2C1995&wu_category=ALL")
+
   # nolint end
 })
 
@@ -467,6 +460,10 @@ test_that("pCode Stuff", {
   testthat::skip_on_cran()
 
   paramINFO <- read_waterdata_parameter_codes(parameter_code = c("00060", "01075", "00931"))
+  expect_equal(nrow(paramINFO), 3)
+  expect_true(all(paramINFO$parameter_code %in% c("00060", "01075", "00931")))
+  
+  paramINFO <- read_waterdata_parameter_codes(parameter_code = c("00060", "01075", "00931", NA))
   expect_equal(nrow(paramINFO), 3)
   expect_true(all(paramINFO$parameter_code %in% c("00060", "01075", "00931")))
   
