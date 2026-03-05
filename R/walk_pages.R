@@ -50,6 +50,10 @@ get_resp_data <- function(resp) {
                              FUN.VALUE =  c(NA_character_)))
   }
   
+  if("altitude_accuracy" %in% names(return_df)){
+    return_df$altitude_accuracy <- as.character(return_df$altitude_accuracy)
+  }
+  
   if(!use_sf){
     return_df <- sf::st_drop_geometry(return_df)
     if("AsGeoJSON(geometry)" %in% names(return_df)){

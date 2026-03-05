@@ -175,6 +175,7 @@ check_limits <- function(args){
 #' Setup the request for the OGC API requests
 #' 
 #' @noRd
+#' @param base Character OGC or NGWMN
 #' @return httr2 request
 #' @examplesIf is_dataRetrieval_user()
 #' 
@@ -182,10 +183,18 @@ check_limits <- function(args){
 #' request <- dataRetrieval:::base_url()
 #' request
 #' }
-base_url <- function(){
+base_url <- function(base = "OGC"){
   
-  httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |> 
-    httr2::req_url_path_append(getOption("dataRetrieval.api_version")) 
+  match.arg(base, c("OGC", "NGWMN"))
+  
+  if(base == "OGC"){
+    baseURL <-   httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |> 
+      httr2::req_url_path_append(getOption("dataRetrieval.api_version")) 
+  } else {
+    baseURL <- httr2::request("https://ngwmn-qa.wma.chs.usgs.gov/apps/ngwmn/ogcapi/") 
+  }
+  
+
 }
 
 #' Setup the request for a particular endpoint collection
@@ -198,9 +207,9 @@ base_url <- function(){
 #' request <- dataRetrieval:::setup_api("daily")
 #' request
 #' }
-setup_api <- function(service, format = "json"){
+setup_api <- function(service, format = "json", base = "OGC"){
   
-  baseURL <- base_url() |> 
+  baseURL <- base_url(base) |> 
     httr2::req_url_path_append("collections") |> 
     httr2::req_url_path_append(service, "items") |> 
     basic_request(format = format) 

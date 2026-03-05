@@ -4,12 +4,14 @@
 \alias{check_OGC_requests}
 \title{Check OGC requests}
 \usage{
-check_OGC_requests(endpoint = "daily", type = "queryables")
+check_OGC_requests(endpoint = "daily", type = "queryables", base = "OGC")
 }
 \arguments{
 \item{endpoint}{Character, can be any existing collection}
 
 \item{type}{Character, can be "queryables", "schema"}
+
+\item{base}{Character, can be "OGC" or "NGWMN"}
 }
 \value{
 list
@@ -30,6 +32,10 @@ ts_meta_queryables <- check_OGC_requests(endpoint = "time-series-metadata",
                                 type = "queryables")
 ts_meta_schema <- check_OGC_requests(endpoint = "time-series-metadata",
                                 type = "schema")
+                                
+ngwml <- check_OGC_requests(endpoint = "waterLevelObs",
+                            type = "schema",
+                            base = "NGWMN")
 }
 \dontshow{\}) # examplesIf}
 }

@@ -26,6 +26,7 @@ pkg.env <- new.env()
                           "national_aquifer_code", "reliability_code", "site_types", "statistic_code",
                           "topographic_code", "time_zone_code")
 
+  num_cols <- c()
   pkg.env$api_endpoints <- services
   pkg.env$metadata <- collections
 }

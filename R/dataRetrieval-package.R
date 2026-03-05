@@ -214,7 +214,8 @@ NULL
 # }
 # 
 # num_cols <- c("value", "contributing_drainage_area", "drainage_area",
-#               "altitude_accuracy", "well_construction_depth",
+#               #"altitude_accuracy", 
+#               "well_construction_depth",
 #               "hole_construction_depth", "channel_flow", "channel_width",
 #               "channel_area", "channel_velocity", "channel_location_distance")
 # 
