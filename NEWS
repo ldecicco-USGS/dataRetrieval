@@ -1,3 +1,18 @@
+dataRetrieval 2.7.25
+===================
+* Increase flexibility of chunking by monitoring_location_id by 
+including it as an argument in each relevant function.
+* Clean up deprecated code.
+* Updated retry strategy to include retry_on_failure = TRUE.
+
+
+dataRetrieval 2.7.24
+===================
+* Let dataRetrieval take care of chunking up requests by monitoring_location_id.
+* Fixed bug causing some character columns in importWQP to be numeric
+* Fixed bug causing open ended date requests in waterdata funcitons to 
+return full period of record.
+
 dataRetrieval 2.7.23
 ===================
 

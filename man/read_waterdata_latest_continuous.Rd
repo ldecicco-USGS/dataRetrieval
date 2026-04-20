@@ -17,9 +17,12 @@ read_waterdata_latest_continuous(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  limit = NA,
-  convertType = TRUE,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_meta"),
+  limit = getOption("dataRetrieval.limit"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -62,9 +65,9 @@ Only features that have a \code{last_modified} that intersects the value of date
 
 See also Details below for more information.}
 
-\item{skipGeometry}{This option can be used to skip response geometries for
+\item{skipGeometry}{This parameter can be used to skip response geometries for
 each feature. The returning object will be a data frame with no spatial
-information.}
+information. The default \code{NA} will not specify the argument in the request.}
 
 \item{time}{The date an observation represents. You can query this field using date-times or intervals, adhering to RFC 3339, or using ISO 8601 duration objects. Intervals may be bounded or half-bounded (double-dots at start or end).
 Examples:
@@ -86,19 +89,35 @@ depth). Coordinates are assumed to be in crs 4326. The expected format is a nume
 vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
-selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
-connection is spotty. The default (\code{NA}) will set the limit to the maximum
-allowable limit for the service.}
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
 
-\item{convertType}{logical, defaults to \code{TRUE}. If \code{TRUE}, the function
-will convert the data to dates and qualifier to string vector.}
+\item{convertType}{logical, defaults to TRUE.
+If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
+vector and reorder the returned data frame.}
 
-\item{no_paging}{logical, defaults to \code{FALSE}. If \code{TRUE}, the data will
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
 be requested from a native csv format. This can be dangerous because the
 data will cut off at 50,000 rows without indication that more data
 is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
+selected features that should be returned in each page. The maximum allowable
+limit is 50,000. It may be beneficial to set this number lower if your internet
+connection is spotty. The default (\code{NA}) will set the limit to the maximum
+allowable limit for the service.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
 This endpoint provides the most recent observation for each time series of continuous data. Continuous data are collected via automated sensors installed at a monitoring location. They are collected at a high frequency and often at a fixed 15-minute interval. Depending on the specific monitoring location, the data may be transmitted automatically via telemetry and be available on WDFN within minutes of collection, while other times the delivery of data may be delayed if the monitoring location does not have the capacity to automatically transmit data. Continuous data are described by parameter name and parameter code. These data might also be referred to as "instantaneous values" or "IV"
@@ -129,7 +148,7 @@ uv_data_sf <- read_waterdata_latest_continuous(monitoring_location_id = site,
                               parameter_code = pcode)
 
 uv_data_trim <- read_waterdata_latest_continuous(monitoring_location_id = site,
-                          parameter_code = pcode, 
+                          parameter_code = pcode,
                           properties = c("monitoring_location_id",
                                          "value",
                                          "time"))
@@ -137,7 +156,7 @@ uv_data_trim <- read_waterdata_latest_continuous(monitoring_location_id = site,
 uv_data <- read_waterdata_latest_continuous(monitoring_location_id = site,
                            parameter_code = pcode,
                            skipGeometry = TRUE)
-                        
+
 uv_data_period <- read_waterdata_latest_continuous(monitoring_location_id = site,
                                   parameter_code = pcode,
                                   time = "P7D")
@@ -147,7 +166,7 @@ multi_site <- read_waterdata_latest_continuous(monitoring_location_id =  c("USGS
                               parameter_code = c("00060", "72019"),
                               skipGeometry = TRUE)
 
-# Only return data that has been modified in last 7 days         
+# Only return data that has been modified in last 7 days
 multi_site2 <- read_waterdata_latest_continuous(monitoring_location_id =  c("USGS-451605097071701",
                                                                            "USGS-14181500"),
                                                parameter_code = c("00060", "72019"),

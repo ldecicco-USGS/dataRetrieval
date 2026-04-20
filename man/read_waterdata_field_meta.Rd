@@ -16,8 +16,11 @@ read_waterdata_field_meta(
   skipGeometry = NA,
   bbox = NA,
   limit = NA,
-  convertType = TRUE,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_meta"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -83,9 +86,9 @@ Available options are:
 geometry, field_measurement_id, monitoring_location_id, parameter_code, parameter_name, parameter_description, begin, end, last_modified.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{skipGeometry}{This option can be used to skip response geometries for
+\item{skipGeometry}{This parameter can be used to skip response geometries for
 each feature. The returning object will be a data frame with no spatial
-information.}
+information. The default \code{NA} will not specify the argument in the request.}
 
 \item{bbox}{Only features that have a geometry that intersects the bounding
 box are selected.The bounding box is provided as four or six numbers, depending
@@ -94,19 +97,35 @@ depth). Coordinates are assumed to be in crs 4326. The expected format is a nume
 vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
 selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
+limit is 50,000. It may be beneficial to set this number lower if your internet
 connection is spotty. The default (\code{NA}) will set the limit to the maximum
 allowable limit for the service.}
 
-\item{convertType}{logical, defaults to \code{TRUE}. If \code{TRUE}, the function
-will convert the data to dates and qualifier to string vector.}
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
 
-\item{no_paging}{logical, defaults to \code{FALSE}. If \code{TRUE}, the data will
+\item{convertType}{logical, defaults to TRUE.
+If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
+vector and reorder the returned data frame.}
+
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
 be requested from a native csv format. This can be dangerous because the
 data will cut off at 50,000 rows without indication that more data
 is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
 This endpoint provides metadata about field measurement collections, including when the earliest and most recent observations for a parameter occurred at a monitoring location and its units.
@@ -142,7 +161,7 @@ gwl_data <- read_waterdata_field_meta(monitoring_location_id = "USGS-02238500",
                                                "2025-08-27 12:00:00"),
                                              tz = "America/Chicago"),
                            skipGeometry = TRUE)
-                        
+
 gwl_data_period <- read_waterdata_field_meta(
                                   monitoring_location_id = "USGS-375907091432201",
                                   parameter_code = "72019",
@@ -153,7 +172,7 @@ multi_site <- read_waterdata_field_meta(
                                                           "USGS-263819081585801"),
                               parameter_code = c("62611", "72019"))
 
-                                              
+
 surface_water <- read_waterdata_field_meta(
                          monitoring_location_id = c("USGS-07069000",
                                                     "USGS-07064000",

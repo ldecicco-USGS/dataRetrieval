@@ -1,14 +1,18 @@
 #' Walk through the pages
-#' 
+#'
 #' @param req httr2 initial request
-#' 
+#'
 #' @noRd
 #' @return data.frame with attributes
-walk_pages <- function(req){
+walk_pages <- function(req) {
+  resps <- httr2::req_perform_iterative(
+    req,
+    next_req = next_req_url,
+    max_reqs = Inf,
+    on_error = "stop"
+  )
 
-  resps <- httr2::req_perform_iterative(req, 
-                                        next_req = next_req_url, 
-                                        max_reqs = Inf, on_error = "stop")
+  failures <- resps |> httr2::resps_failures()
 
   return_list <- resps |>
     httr2::resps_successes() |>
@@ -18,51 +22,50 @@ walk_pages <- function(req){
 }
 
 #' Get single response data frame
-#' 
+#'
 #' Depending on skipGeometry to decide to use sf or not.
-#' 
+#'
 #' @noRd
-#' 
+#'
 #' @param resp httr2 response from last request
-#' 
+#'
 #' @return data.frame
-#' 
+#'
 get_resp_data <- function(resp) {
-  
   body <- httr2::resp_body_json(resp)
-  
-  if(isTRUE(body[["numberReturned"]] == 0)){
+  use_sf <- !grepl("skipGeometry=true", resp$url, ignore.case = TRUE)
+
+  if (isTRUE(body[["numberReturned"]] == 0)) {
     return(data.frame())
   }
-  
-  use_sf <- !grepl("skipGeometry=true", resp$url, ignore.case = TRUE)
+
   return_df <- sf::read_sf(httr2::resp_body_string(resp))
-  
-  included_num_cols <- names(return_df)[names(return_df) %in% num_cols]
 
-  if(!all(sapply(sf::st_drop_geometry(return_df[,included_num_cols]), is.numeric))){
-    return_df[, included_num_cols] <- lapply(sf::st_drop_geometry(return_df[, included_num_cols]), as.numeric)
+  return_df <- coerce_num_cols(return_df, is_sf = TRUE)
+
+  if ("qualifier" %in% names(return_df)) {
+    return_df$qualifier <- as.character(vapply(
+      X = return_df$qualifier,
+      FUN = function(x) {
+        x[is.na(x)] <- ""
+        paste(x, collapse = ", ")
+      },
+      FUN.VALUE = c(NA_character_)
+    ))
   }
 
-  if("qualifier" %in% names(return_df)){
-    return_df$qualifier <- as.character(vapply(X = return_df$qualifier,
-                             FUN = function(x) paste(x, collapse = ", "),
-                             FUN.VALUE =  c(NA_character_)))
-  }
-  
-  if("altitude_accuracy" %in% names(return_df)){
+  if ("altitude_accuracy" %in% names(return_df)) {
     return_df$altitude_accuracy <- as.character(return_df$altitude_accuracy)
   }
-  
-  if(!use_sf){
+
+  if (!use_sf) {
     return_df <- sf::st_drop_geometry(return_df)
-    if("AsGeoJSON(geometry)" %in% names(return_df)){
+    if ("AsGeoJSON(geometry)" %in% names(return_df)) {
       return_df <- return_df[, !names(return_df) %in% "AsGeoJSON(geometry)"]
     }
-  } 
+  }
 
   return(return_df)
-  
 }
 
 #' Next request URL
@@ -77,25 +80,21 @@ get_resp_data <- function(resp) {
 #' @return the url for the next request
 #'
 next_req_url <- function(resp, req) {
-  
   body <- httr2::resp_body_json(resp)
-  
-  if(isTRUE(body[["code"]] == "InvalidQuery")){
+
+  if (isTRUE(body[["code"]] == "InvalidQuery")) {
     message(body[["description"]])
     return(NULL)
   }
-  
-  if(isTRUE(body[["numberReturned"]] == 0)){
+
+  if (isTRUE(body[["numberReturned"]] == 0)) {
     return(NULL)
   }
 
-  header_info <- httr2::resp_headers(resp)
-  if(Sys.getenv("API_USGS_PAT") != ""){
-    message("Remaining requests this hour:", header_info$`x-ratelimit-remaining`, " ")
-  }
+  log_rate_limit(resp)
   if ("links" %in% names(body)) {
     links <- body$links
-  if(any(sapply(links, function(x) x$rel) == "next")){
+    if (any(sapply(links, function(x) x$rel) == "next")) {
       next_index <- which(sapply(links, function(x) x$rel) == "next")
 
       next_url <- links[[next_index]][["href"]]
@@ -110,42 +109,69 @@ next_req_url <- function(resp, req) {
 }
 
 
-get_csv <- function(req, limit){
-
+get_csv <- function(req, limit) {
   skip_geo <- grepl("skipGeometry=true", req$url, ignore.case = TRUE)
   resp <- httr2::req_perform(req)
 
-  header_info <- httr2::resp_headers(resp)
-  if(Sys.getenv("API_USGS_PAT") != ""){
-    message("Remaining requests this hour:", header_info$`x-ratelimit-remaining`, " ")
-  }
-  
-  if(httr2::resp_has_body(resp)){
-    return_list <- httr2::resp_body_string(resp) 
-    df <- data.table::fread(input = return_list, 
-                            data.table = FALSE)
-    
-    included_num_cols <- names(df)[names(df) %in% num_cols]
-    
-    if(!all(sapply(df[,included_num_cols], is.numeric))){
-      df[, included_num_cols] <- lapply(df[, included_num_cols], as.numeric)
-    }
-    
-    if(skip_geo){
+  log_rate_limit(resp)
+
+  if (httr2::resp_has_body(resp)) {
+    return_list <- httr2::resp_body_string(resp)
+    df <- data.table::fread(
+      input = return_list,
+      data.table = FALSE,
+      colClasses = "character"
+    )
+
+    df <- coerce_num_cols(df)
+
+    if (skip_geo) {
       df <- df[, names(df)[!names(df) %in% c("x", "y")]]
     } else {
-      df <- sf::st_as_sf(df, coords = c("x","y"))
-      sf::st_crs(df) <- 4269
+      if (all(c("x", "y") %in% names(df))) {
+        df <- sf::st_as_sf(df, coords = c("x", "y"))
+        sf::st_crs(df) <- 4269
+      }
     }
-    
-    if(nrow(df) == limit){
-      warning("Missing data is probable. Use no_paging = FALSE to 
-ensure all requested data is returned.")
-    }    
+
+    if (nrow(df) == limit) {
+      warning(
+        "Missing data is probable. Use no_paging = FALSE to 
+ensure all requested data is returned."
+      )
+    }
   } else {
     df <- data.frame()
   }
-  
+
   return(df)
 }
 
+coerce_num_cols <- function(df, is_sf = FALSE) {
+  included_num_cols <- names(df)[names(df) %in% num_cols]
+  if (length(included_num_cols) == 0) {
+    return(df)
+  }
+
+  check_df <- if (is_sf) {
+    sf::st_drop_geometry(df[, included_num_cols, drop = FALSE])
+  } else {
+    df[, included_num_cols, drop = FALSE]
+  }
+
+  if (!all(vapply(check_df, is.numeric, logical(1)))) {
+    df[, included_num_cols] <- lapply(check_df, as.numeric)
+  }
+  df
+}
+
+log_rate_limit <- function(resp) {
+  if (Sys.getenv("API_USGS_PAT") != "") {
+    header_info <- httr2::resp_headers(resp)
+    message(
+      "Remaining requests this hour:",
+      header_info$`x-ratelimit-remaining`,
+      " "
+    )
+  }
+}

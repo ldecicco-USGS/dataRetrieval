@@ -47,8 +47,12 @@ read_waterdata_monitoring_location(
   depth_source_code = NA_character_,
   properties = NA_character_,
   bbox = NA,
-  limit = NA,
-  skipGeometry = NA
+  skipGeometry = NA,
+  ...,
+  limit = getOption("dataRetrieval.limit"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_meta"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -126,7 +130,7 @@ Multiple monitoring_location_ids can be requested as a character vector.}
 
 \item{national_aquifer_code}{National aquifers are the principal aquifers or aquifer systems in the United States, defined as regionally extensive aquifers or aquifer systems that have the potential to be used as a source of potable water. Not all groundwater monitoring locations can be associated with a National Aquifer. Such monitoring locations will not be retrieved using this search criteria. A list of National aquifer codes and names is available at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/national-aquifer-codes/items}.}
 
-\item{aquifer_type_code}{Describes the confinement status of an aquifer at the monitoring location.  A confined aquifer is an aquifer below the land surface that is saturated with water.  A water table--or unconfined--aquifer is an aquifer whose upper water surface (water table) is at atmospheric pressure, and thus is able to rise and fall.}
+\item{aquifer_type_code}{Describes the confinement status of an aquifer at the monitoring location. A confined aquifer is an aquifer below the land surface that is saturated with water. A water table--or unconfined--aquifer is an aquifer whose upper water surface (water table) is at atmospheric pressure, and thus is able to rise and fall.}
 
 \item{well_constructed_depth}{The depth of the finished well, in feet below land surface datum. Note: Not all groundwater monitoring locations have information on Well Depth. Such monitoring locations will not be retrieved using this search criteria.}
 
@@ -136,7 +140,7 @@ Multiple monitoring_location_ids can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, monitoring_location_id, agency_code, agency_name, monitoring_location_number, monitoring_location_name, district_code, country_code, country_name, state_code, state_name, county_code, county_name, minor_civil_division_code, site_type_code, site_type, hydrologic_unit_code, basin_code, altitude, altitude_accuracy, altitude_method_code, altitude_method_name, vertical_datum, vertical_datum_name, horizontal_positional_accuracy_code, horizontal_positional_accuracy, horizontal_position_method_code, horizontal_position_method_name, original_horizontal_datum, original_horizontal_datum_name, drainage_area, contributing_drainage_area, time_zone_abbreviation, uses_daylight_savings, construction_date, aquifer_code, national_aquifer_code, aquifer_type_code, well_constructed_depth, hole_constructed_depth, depth_source_code.
+geometry, monitoring_location_id, agency_code, agency_name, monitoring_location_number, monitoring_location_name, district_code, country_code, country_name, state_code, state_name, county_code, county_name, minor_civil_division_code, site_type_code, site_type, hydrologic_unit_code, basin_code, altitude, altitude_accuracy, altitude_method_code, altitude_method_name, vertical_datum, vertical_datum_name, horizontal_positional_accuracy_code, horizontal_positional_accuracy, horizontal_position_method_code, horizontal_position_method_name, original_horizontal_datum, original_horizontal_datum_name, drainage_area, contributing_drainage_area, time_zone_abbreviation, uses_daylight_savings, construction_date, aquifer_code, national_aquifer_code, aquifer_type_code, well_constructed_depth, hole_constructed_depth, depth_source_code, revision_note, revision_created, revision_modified.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{bbox}{Only features that have a geometry that intersects the bounding
@@ -146,15 +150,35 @@ depth). Coordinates are assumed to be in crs 4326. The expected format is a nume
 vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
+\item{skipGeometry}{This parameter can be used to skip response geometries for
+each feature. The returning object will be a data frame with no spatial
+information. The default \code{NA} will not specify the argument in the request.}
+
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
+
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
 selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
+limit is 50,000. It may be beneficial to set this number lower if your internet
 connection is spotty. The default (\code{NA}) will set the limit to the maximum
 allowable limit for the service.}
 
-\item{skipGeometry}{This option can be used to skip response geometries for
-each feature. The returning object will be a data frame with no spatial
-information.}
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
+be requested from a native csv format. This can be dangerous because the
+data will cut off at 50,000 rows without indication that more data
+is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
 Location information is basic information about the monitoring location including the name, identifier, agency responsible for data collection, and the date the location was established. It also includes information about the type of location, such as stream, lake, or groundwater, and geographic information about the location, such as state, county, latitude and longitude, and hydrologic unit code (HUC).
@@ -173,19 +197,24 @@ site_slim <- read_waterdata_monitoring_location(
                                             "state_name",
                                             "county_name",
                                             "country_name"))
-                                            
+
 site_slim_no_sf_slim <- read_waterdata_monitoring_location(state_name = "Wisconsin",
                                            properties = c("monitoring_location_id",
                                                           "state_name",
                                                           "county_name",
-                                                          "country_name"), 
+                                                          "country_name",
+                                                          "site_type"),
+                                           site_type = "Well",
                                            skipGeometry = TRUE)
 
-site_info_no_sf <- read_waterdata_monitoring_location(monitoring_location_id = site,
-                                   skipGeometry = TRUE)
+site_info_no_sf <- read_waterdata_monitoring_location(
+     monitoring_location_id = site_slim_no_sf_slim$monitoring_location_id[1:1000],
+     skipGeometry = TRUE)
 
 bbox_vals = c(-94.00, 35.0, -93.5, 35.5)
 multi_site <- read_waterdata_monitoring_location(bbox = bbox_vals)
+
+
 }
 \dontshow{\}) # examplesIf}
 }
