@@ -34,6 +34,9 @@ library(ggplot2)
 library(dplyr)
 library(reticulate)
 py_require("dataretrieval")
+py_require("panda")
+py_require("matplotlib")
+
 options(dplyr.summarise.inform = FALSE)
 
 evaluate_python <- params$run_python
@@ -248,7 +251,7 @@ dv_data_sf <- read_waterdata_daily(
 
 ```{python}
 #| eval: false
-df, md = dataretrieval.waterdata.get_daily(
+df, md = waterdata.get_daily(
 
     monitoring_location_id="USGS-02238500",
     parameter_code="00060",
@@ -441,7 +444,7 @@ We're going walk through 3 retrievals:
 
 ## Workflow 1: Daily data for known site {.smaller}
 
-Let's pull daily mean discharge data for site "USGS-0940550", getting all the data from October 10, 2024 onward.
+Let's pull daily mean discharge data for site "USGS-0940550", getting all the data from October 10, 2025 onward.
 
 ::: {.panel-tabset}
 
@@ -453,7 +456,7 @@ library(dataRetrieval)
 site <- "USGS-09405500"
 pcode <- "00060" # Discharge
 stat_cd <- "00003" # Mean
-range <- c("2024-10-01", NA)
+range <- c("2025-10-01", NA)
 
 df <- read_waterdata_daily(
   monitoring_location_id = site,
@@ -479,7 +482,7 @@ df, md = waterdata.get_daily(
     monitoring_location_id=site,
     parameter_code=pcode,
     statistic_id=stat_cd,
-    time="2024-10-01/..",
+    time="2025-10-01/..",
 )
 
 df.shape[0]
@@ -511,6 +514,10 @@ dt_me(
 
 ## Workflow 1: Plot Daily Data 
 
+::: {.panel-tabset}
+
+### R
+
 Let's use `ggplot2` to visualize the data. 
 
 ```{r}
@@ -521,6 +528,24 @@ library(ggplot2)
 ggplot(data = df) +
   geom_point(aes(x = time, y = value, color = approval_status))
 ```
+
+### Python
+
+Let's use `matplotlib` to visualize the data.
+
+```{python}
+#| echo: true
+#| output-location: column
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df["approval_status"] = pd.Categorical(df["approval_status"]).codes
+
+plt.scatter(x=df.time, y=df.value, c=df.approval_status)
+```
+
+
+:::
 
 ## Water Data API Notes: Argument input 
 
