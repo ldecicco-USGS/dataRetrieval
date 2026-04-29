@@ -190,6 +190,10 @@ from dataretrieval import waterdata
 
 ## Documentation within R: function help pages {.smaller}
 
+::: {.panel-tabset}
+
+### R
+
 Within R, you can call help files for any `dataRetrieval` function:
 
 ```{r}
@@ -197,6 +201,17 @@ Within R, you can call help files for any `dataRetrieval` function:
 #| eval: false
 ?read_waterdata_daily
 ```
+
+### Python
+
+Within Python, you can call help for any `dataRetrieval` function:
+
+```{python}
+#| eval: !expr evaluate_python
+help(waterdata.get_daily)
+```
+
+:::
 
 :::: {.columns}
 
@@ -215,6 +230,10 @@ Scroll down to the "Examples" to see how each function can be run.
 
 Examples
 
+::: {.panel-tabset}
+
+### R
+
 ```{r}
 #| eval: false
 site <- "USGS-02238500"
@@ -224,6 +243,20 @@ dv_data_sf <- read_waterdata_daily(
   time = c("2021-01-01", "2022-01-01")
 )
 ```
+
+### Python
+
+```{python}
+#| eval: false
+df, md = dataretrieval.waterdata.get_daily(
+
+    monitoring_location_id="USGS-02238500",
+    parameter_code="00060",
+    time="2021-01-01T00:00:00Z/2022-01-01T00:00:00Z",
+)
+```
+
+:::
 
 :::
 
@@ -442,14 +475,14 @@ site = "USGS-09405500"
 pcode = "00060"  # Discharge
 stat_cd = "00003"  # Mean
 
-df = waterdata.get_daily(
+df, md = waterdata.get_daily(
     monitoring_location_id=site,
     parameter_code=pcode,
     statistic_id=stat_cd,
     time="2024-10-01/..",
 )
 
-df[0].shape[0]
+df.shape[0]
 ```
 
 
@@ -604,20 +637,22 @@ qw_data <- read_waterdata_samples(
 ncol(qw_data)
 ```
 
+R generates a few POSIXct columns to combine date, time, timezone information.
+
 ### Python
 ```{python}
 #| eval: !expr evaluate_python
 site = "USGS-01631000"
 pcode = "00660"
 
-qw_data = waterdata.get_samples(
-    monitoringLocationIdentifier=site,
-    usgsPCode=pcode,
-    service="results",
-    profile="basicphyschem",
+qw_data, md_qw = waterdata.get_samples(
+    monitoringLocationIdentifier = site,
+    usgsPCode = pcode,
+    service = "results",
+    profile = "basicphyschem",
 )
 
-qw_data[0].shape[1]
+qw_data.shape[1]
 ```
 
 :::
@@ -676,11 +711,15 @@ dt_me(df, escape = FALSE, paging = FALSE)
 
 * We'll look at Suisun Bay a Van Sickle Island NR Pittsburg CA ("USGS-11455508"), with parameter code "99133" which is Nitrate plus Nitrite.
 
-## Workflow 3: Continuous data for known site
+## Workflow 3: Continuous data for known site {.smaller}
 
 :::: {.columns}
 
 ::: {.column width="65%"}
+
+::: {.panel-tabset}
+
+### R
 
 ```{r}
 #| results: markup
@@ -694,7 +733,27 @@ continuous_data <- read_waterdata_continuous(
   parameter_code = p_code_rt,
   time = c(start_date, end_date)
 )
+nrow(continuous_data)
 ```
+
+### Python
+
+```{python}
+#| eval: !expr evaluate_python
+site_id = "USGS-11455508"
+p_code_rt = "99133"
+date_range = "2024-01-01/2024-06-01"
+
+continuous_data, md_cont = waterdata.get_continuous(
+  monitoring_location_id = site_id,
+  parameter_code = p_code_rt,
+  time = date_range
+)
+continuous_data.shape[0]
+
+```
+
+:::
 
 :::
 
