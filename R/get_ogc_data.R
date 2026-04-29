@@ -93,8 +93,18 @@ get_ogc_data <- function(args, output_id, service, base = "OGC") {
     }
   }
 
-  if (!isTRUE(args[["skipGeometry"]]) & "geometry" %in% names(return_list)) {
-    return_list <- sf::st_as_sf(return_list)
+  if (
+    !isTRUE(args[["skipGeometry"]]) &
+      "geometry" %in% names(return_list)
+  ) {
+    if (
+      all(sf::st_is_empty(return_list[["geometry"]])) &
+        !"geometry" %in% args[["properties"]]
+    ) {
+      return_list <- sf::st_drop_geometry(return_list)
+    } else {
+      return_list <- sf::st_as_sf(return_list)
+    }
   }
 
   attr(return_list, "queryTime") <- Sys.time()
@@ -252,14 +262,15 @@ check_arguments_non_api <- function(
 #' box are selected.The bounding box is provided as four or six numbers, depending
 #' on whether the coordinate reference system includes a vertical axis (height or
 #' depth). Coordinates are assumed to be in crs 4326. The expected format is a numeric
-#' vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
+#' vector structured: c(xmin,ymin,xmax,ymax).
+#' Another way to think of it is c(Western-most longitude,
 #' Southern-most latitude, Eastern-most longitude, Northern-most longitude).
 #' @param skipGeometry This parameter can be used to skip response geometries for
 #' each feature. The returning object will be a data frame with no spatial
 #' information. The default `NA` will not specify the argument in the request.
 #'
 #' @keywords internal
-check_arguments_api <- function(bbox, skipGeometry, ...) {
+check_arguments_api <- function(bbox, skipGeometry) {
   if (!is.null(skipGeometry)) {
     if (!is.na(skipGeometry) & !is.logical(skipGeometry)) {
       stop("skipGeometry should be a logical TRUE/FALSE")

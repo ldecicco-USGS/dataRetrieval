@@ -115,7 +115,8 @@ construct_api_requests <- function(
     "statistic_id",
     "time_series_id",
     "computation_period_identifier",
-    "computation_identifier"
+    "computation_identifier",
+    "data_type"
   )
 
   if (

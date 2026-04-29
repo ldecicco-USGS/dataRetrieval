@@ -56,7 +56,7 @@ read_waterdata_monitoring_location(
 )
 }
 \arguments{
-\item{monitoring_location_id}{A unique identifier representing a single monitoring location. This corresponds to the \code{id} field in the \code{monitoring-locations} endpoint. Monitoring location IDs are created by combining the agency code of the agency responsible for the monitoring location (e.g. USGS) with the ID number of the monitoring location (e.g. 02238500), separated by a hyphen (e.g. USGS-02238500).
+\item{monitoring_location_id}{A unique identifier representing a single monitoring location. This corresponds to the \code{monitoring_location_id} field in other endpoints. Monitoring location IDs are created by combining the agency code of the agency responsible for the monitoring location (e.g. USGS) with the ID number of the monitoring location (e.g. 02238500), separated by a hyphen (e.g. USGS-02238500).
 
 Multiple monitoring_location_ids can be requested as a character vector.}
 
@@ -147,7 +147,8 @@ The default (\code{NA}) will return all columns of the data.}
 box are selected.The bounding box is provided as four or six numbers, depending
 on whether the coordinate reference system includes a vertical axis (height or
 depth). Coordinates are assumed to be in crs 4326. The expected format is a numeric
-vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
+vector structured: c(xmin,ymin,xmax,ymax).
+Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
 \item{skipGeometry}{This parameter can be used to skip response geometries for
