@@ -69,3 +69,5 @@ vignettes/continuous_pr.Rmd
 vignettes/quick_slides.Rmd
 ^[.]?air[.]toml$
 ^\.vscode$
+^\.positai$
+^\.claude$

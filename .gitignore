@@ -19,3 +19,4 @@ vignettes/*.R
 /.quarto/
 
 **/*.quarto_ipynb
+.positai
