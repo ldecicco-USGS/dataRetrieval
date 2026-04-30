@@ -58,25 +58,10 @@
 #' endDate <- "2014-10-10"
 #' \donttest{
 #'
-#' rawData <- readNWISuv(site_id, parameterCd, startDate, endDate)
+#' #rawData <- readNWISuv(site_id, parameterCd, startDate, endDate)
 #'
-#' rawData_today <- readNWISuv(site_id, parameterCd, Sys.Date(), Sys.Date())
+#' #rawData_today <- readNWISuv(site_id, parameterCd, Sys.Date(), Sys.Date())
 #'
-#' timeZoneChange <- readNWISuv(
-#'   c("04024430", "04024000"), parameterCd,
-#'   "2013-11-03", "2013-11-03"
-#' )
-#'
-#' centralTime <- readNWISuv(site_id, parameterCd,
-#'   "2014-10-10T12:00", "2014-10-10T23:59",
-#'   tz = "America/Chicago"
-#' )
-#'
-#' # Adding 'Z' to the time indicates to the web service to call the data with UTC time:
-#' GMTdata <- readNWISuv(
-#'   site_id, parameterCd,
-#'   "2014-10-10T00:00Z", "2014-10-10T23:59Z"
-#' )
 #' }
 readNWISuv <- function(
   siteNumbers,
@@ -352,28 +337,28 @@ readNWISrating <- function(siteNumber, type = "base", convertType = TRUE) {
 #' @export
 #' @examplesIf is_dataRetrieval_user()
 #' \donttest{
-#' x1 <- readNWISstat(
-#'   siteNumbers = c("02319394"),
-#'   parameterCd = c("00060"),
-#'   statReportType = "annual"
-#' )
+#' # x1 <- readNWISstat(
+#' #   siteNumbers = c("02319394"),
+#' #   parameterCd = c("00060"),
+#' #   statReportType = "annual"
+#' # )
 #'
 #' # all the annual mean discharge data for two sites
-#' x2 <- readNWISstat(
-#'   siteNumbers = c("02319394", "02171500"),
-#'   parameterCd = c("00010", "00060"),
-#'   statReportType = "annual"
-#' )
+#' #x2 <- readNWISstat(
+#' #   siteNumbers = c("02319394", "02171500"),
+#' #   parameterCd = c("00010", "00060"),
+#' #   statReportType = "annual"
+#' # )
 #'
 #' # Request p25, p75, and mean values for temperature and discharge for the 2000s
 #' # Note that p25 and p75 were not available for temperature, and return NAs
-#' x <- readNWISstat(
-#'   siteNumbers = c("02171500"),
-#'   parameterCd = c("00010", "00060"),
-#'   statReportType = "daily",
-#'   statType = c("mean", "median"),
-#'   startDate = "2000", endDate = "2010"
-#' )
+#' #x <- readNWISstat(
+#' #   siteNumbers = c("02171500"),
+#' #   parameterCd = c("00010", "00060"),
+#' #   statReportType = "daily",
+#' #   statType = c("mean", "median"),
+#' #   startDate = "2000", endDate = "2010"
+#' # )
 #' }
 readNWISstat <- function(
   siteNumbers,

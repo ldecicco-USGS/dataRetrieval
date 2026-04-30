@@ -41,7 +41,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, field_measurement_id, field_visit_id, parameter_code, monitoring_location_id, observing_procedure_code, observing_procedure, value, unit_of_measure, time, qualifier, vertical_datum, approval_status, measuring_agency, last_modified, control_condition, measurement_rated.
+geometry, field_measurement_id, field_measurements_series_id, field_visit_id, parameter_code, monitoring_location_id, observing_procedure_code, observing_procedure, value, unit_of_measure, time, qualifier, vertical_datum, approval_status, measuring_agency, last_modified, control_condition, measurement_rated.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{field_visit_id}{A universally unique identifier (UUID) for the field visit. Multiple measurements may be made during a single field visit.}
@@ -74,9 +74,13 @@ See also Details below for more information.}
 
 \item{measuring_agency}{The agency performing the measurement.}
 
-\item{control_condition}{What and where the control of flow is for the gage pool.}
+\item{control_condition}{The state of the control feature at the time of observation.
 
-\item{measurement_rated}{Rated measurement based on the hydrologic/hydraulic conditions in which the measurement was made
+What and where the control of flow is for the gage pool.}
+
+\item{measurement_rated}{A qualitative estimate of the quality of a measurement.
+
+Rated measurement based on the hydrologic/hydraulic conditions in which the measurement was made
 (excellent (2 percent), good (5 percent), fair (8 percent), or poor (more than 8 percent).                                                        percent)}
 
 \item{skipGeometry}{This option can be used to skip response geometries for
