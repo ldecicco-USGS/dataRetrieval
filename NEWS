@@ -2,8 +2,10 @@ dataRetrieval 2.7.25
 ===================
 * Added read_waterdata_ratings to access USGS rating curves with
 new modern endpoint.
+* Added read_waterdata_peaks to access USGS peak data with
+new modern endpoint.
 * Increase flexibility of chunking by monitoring_location_id by 
-including it as an argument in each relevant function.
+including it as an argument in each relevant waterdata OGC function.
 * Clean up deprecated code.
 * Updated retry strategy to include retry_on_failure = TRUE.
 * Added countries, methods, method-categories, method-citations, and
