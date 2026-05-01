@@ -113,11 +113,11 @@ context("Peak, rating, meas, site")
 test_that("peak, rating curves, surface-water measurements", {
   testthat::skip_on_cran()
   testthat::skip_on_ci()
-  siteNumbers <- c("01594440", "040851325")
-  data <- readNWISpeak(siteNumbers)
-  expect_is(data$agency_cd, "character")
+  siteNumbers <- c("USGS-01594440", "USGS-040851325")
+  data <- read_waterdata_peaks(monitoring_location_id = siteNumbers)
+  expect_true(ncol(data) > 10)
 
-  # Rating curvs:
+  # Rating curves:
   siteNumber <- "USGS-01594440"
   data <- read_waterdata_ratings(
     monitoring_location_id = siteNumber,

@@ -42,7 +42,7 @@
 #'
 #'
 #' dv_data_sf <- read_waterdata_peaks(
-#'                monitoring_location_id = site,
+#'                monitoring_location_id = wi_peaks$monitoring_location_id[1],
 #'                parameter_code = "00060")
 #'
 #' }
