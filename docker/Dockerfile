@@ -10,39 +10,45 @@ RUN apt-get update \
   wget \
   && rm -rf /var/lib/apt/lists/*
   
+ENV CONDA_DIR="/root/conda"
+ENV PATH=$CONDA_DIR/bin:$PATH
+
 RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" &&  \
     bash Miniforge3.sh -b -p "${HOME}/conda" && \
     rm Miniforge3.sh
-ENV CONDA_DIR="/root/conda"
-ENV PATH=$CONDA_DIR/bin:$PATH
-COPY environment.yml /
-RUN conda env create -n ${CONDA_ENVIRONMENT_NAME} -f /environment.yml && conda clean -a -y
 
 # Necessary R libraries
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     r-cran-rcmdcheck \
     r-cran-testthat \
-    r-cran-pkgdown \
-    r-cran-rmarkdown \
-    r-cran-knitr \
-    r-cran-dt \
-    r-cran-data.table \
-    r-cran-dplyr \
-    r-cran-purrr \
+    r-cran-covr \
+    r-cran-reticulate \
+    r-cran-curl \
     r-cran-lubridate \
-    r-cran-tidyr \
-    r-cran-jsonlite \
-    r-cran-readr \
     r-cran-xml2 \
     r-cran-httr2 \
-    r-cran-covr \
+    r-cran-whisker \
+    r-cran-dplyr \
     r-cran-sf \
-    r-cran-patchwork \
+    r-cran-data.table \
+    r-cran-jsonlite \
+    r-cran-readr \
+    r-cran-knitr \
+    r-cran-rmarkdown \
+    r-cran-dt \
     r-cran-leaflet \
     r-cran-readxl \
-    r-cran-whisker \
+    r-cran-pkgdown \
     r-cran-ggplot2 \
-    r-cran-reticulate \
+    r-cran-tidyr \
+    r-cran-purrr \
     && rm -rf /var/lib/apt/lists/* 
 
 ENV RETICULATE_PYTHON=/root/conda/envs/${CONDA_ENVIRONMENT_NAME}/bin/python
+
+COPY *.tar.gz /tmp/pkg.tar.gz
+
+RUN set -eux; \
+    R CMD INSTALL /tmp/pkg.tar.gz && \
+    Rscript -e "library(dataRetrieval)" && \
+    rm -f /tmp/*.tar.gz
