@@ -27,6 +27,14 @@
 #' `r dataRetrieval:::get_properties_for_docs("peaks", "peak_id")`.
 #' The default (`NA`) will return all columns of the data.
 #'
+#' @param allow_incomplete_dates Specifically in the peaks data, exact peak dates
+#' are not always known. Sometimes peaks are known just for the year, sometimes
+#' they are known to the year and month, and and sometimes to the exact date.
+#' This argument determines if incomplete dates + uncertain month/day values are
+#' allowed in the "time" column so that it can be a complete Date object (`TRUE`),
+#' or whether to set those dates to `NA` (`FALSE`). Peaks with uncertain days
+#' are stored on the first of the month, and those with uncertain
+#' month stored on January 1. Default is `FALSE`.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #'
@@ -44,6 +52,16 @@
 #' dv_data_sf <- read_waterdata_peaks(
 #'                monitoring_location_id = wi_peaks$monitoring_location_id[1],
 #'                parameter_code = "00060")
+#'
+#' incomplete_dates_not_allowed <- read_waterdata_peaks(
+#'                monitoring_location_id = "USGS-06334330",
+#'                parameter_code = "00060")
+#' incomplete_dates_not_allowed$time
+#' incomplete_dates_allowed <- read_waterdata_peaks(
+#'                monitoring_location_id = "USGS-06334330",
+#'                parameter_code = "00060",
+#'                allow_incomplete_dates = TRUE)
+#' incomplete_dates_allowed$time
 #'
 #' }
 read_waterdata_peaks <- function(
@@ -64,6 +82,7 @@ read_waterdata_peaks <- function(
   time = NA_character_,
   bbox = NA,
   ...,
+  allow_incomplete_dates = FALSE,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
   chunk_size = getOption("dataRetrieval.site_chunk_size_meta"),
@@ -75,7 +94,17 @@ read_waterdata_peaks <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+  args[["allow_incomplete_dates"]] <- NULL
   return_list <- get_ogc_data(args, output_id, service)
+
+  if (anyNA(return_list[, c("year", "month", "day")])) {
+    if (allow_incomplete_dates) {
+      warning("Incomplete dates are included in time column.")
+    } else {
+      return_list$time[is.na(return_list$month)] <- NA
+      return_list$time[is.na(return_list$day)] <- NA
+    }
+  }
 
   return(return_list)
 }
