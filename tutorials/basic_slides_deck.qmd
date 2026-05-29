@@ -88,92 +88,6 @@ The goal of these slides are to:
 
 - Introduce additional topics that often come up
   
-## USGS Water Data Concepts {.smaller}
-
-:::: {.columns}
-
-::: {.column width="50%"}
-**USGS Water Data APIs**
-
-- Continuous (e.g. 15-minute sensor data)
-  
-- Daily (e.g. mean from continuous)
-    
-- Monitoring Location Information
-
-- Time Series Information
-
-- Latest Daily/Continuous
-
-- Field Measurements
-
-:::
-
-::: {.column width="50%"}
-**USGS Water Data APIs**
-   
-- Peak Flows
-
-- Rating Curves
-
-- Discrete Water-Quality
-
-**Water Quality Portal (WQP) Data**
-  
-- Discrete water-quality data (USGS & others)
-
-:::
-
-::::
-
-::: {.callout-important}
-## Each of these is has a different:
-
-* API endpoint
-* `dataRetrieval` function
-* Output format
-:::
-
-
-::: footer
-
-:::
-
-## USGS Basic Retrievals {.smaller}
-
-The USGS uses various codes for basic retrievals. These codes can have leading zeros, therefore they need to be a character surrounded in quotes ("00060").
-
-* Site ID (often 8 or 15-digits)
-* Parameter Code (5 digits)
-    + Full list: `read_waterdata_parameter_codes()`
-* Statistic Code (for daily values)
-    + Full list: `read_metadata("statistic-codes")`
-
-## USGS Basic Retrievals Parameter and Statistic Codes
-
-Here are some examples of a few common codes:
-
-
-```{r echo=FALSE, eval=TRUE}
-library(knitr)
-
-df <- data.frame(
-  pCode = c("00060", "00065", "00010", "00400"),
-  shName = c("Discharge", "Gage Height", "Temperature", "pH")
-)
-
-names(df) <- c("Parameter Code", "Short Name")
-
-df2 <- data.frame(
-  pCode = c("00001", "00002", "00003", "00008"),
-  shName = c("Maximum", "Minimum", "Mean", "Median")
-)
-
-names(df2) <- c("Statistic Code", "Short Name")
-
-knitr::kable(list(df, df2))
-```
-
 ## Software Installation
 
 ::: {.panel-tabset}
@@ -296,7 +210,145 @@ help(waterdata.get_daily)
 
 :::
 
-## Exercise 1: Orientation {.smaller}
+## USGS Water Data Concepts {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**USGS Water Data APIs**
+
+- Continuous (e.g. 15-minute sensor data)
+  
+- Daily (e.g. mean from continuous)
+    
+- Monitoring Location Information
+
+- Time Series Information
+
+- Latest Daily/Continuous
+
+- Field Measurements
+
+:::
+
+::: {.column width="50%"}
+**USGS Water Data APIs**
+   
+- Peak Flows
+
+- Rating Curves
+
+- Discrete Water-Quality
+
+**Water Quality Portal (WQP) Data**
+  
+- Discrete water-quality data (USGS & others)
+
+:::
+
+::::
+
+::: {.callout-important}
+## Each of these is has a different:
+
+* API endpoint
+* `dataRetrieval` function
+* Output format
+:::
+
+
+::: footer
+
+:::
+
+## USGS Basic Retrievals {.smaller}
+
+The USGS uses various codes for basic retrievals. These codes can have leading zeros, therefore they need to be a character surrounded in quotes ("00060").
+
+* Site ID (often 8 or 15-digits)
+* Parameter Code (5 digits)
+    + Full list: `read_metadata("parameter-codes")`
+* Statistic Code (for daily values)
+    + Full list: `read_metadata("statistic-codes")`
+
+## USGS Basic Retrievals Parameter and Statistic Codes
+
+Here are some examples of a few common codes:
+
+
+```{r echo=FALSE, eval=TRUE}
+library(knitr)
+
+df <- data.frame(
+  pCode = c("00060", "00065", "00010", "00400"),
+  shName = c("Discharge", "Gage Height", "Temperature", "pH")
+)
+
+names(df) <- c("Parameter Code", "Short Name")
+
+df2 <- data.frame(
+  pCode = c("00001", "00002", "00003", "00008"),
+  shName = c("Maximum", "Minimum", "Mean", "Median")
+)
+
+names(df2) <- c("Statistic Code", "Short Name")
+
+knitr::kable(list(df, df2))
+```
+
+## `dataRetrieval` can help!
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+#| eval: false
+agency_codes <- read_waterdata_metadata("agency-codes")
+aquifer_codes <- read_waterdata_metadata("aquifer-codes")
+aquifer_types <- read_waterdata_metadata("aquifer-types")
+coordinate_datum_codes <- read_waterdata_metadata("coordinate-datum-codes")
+huc_codes <- read_waterdata_metadata("hydrologic-unit-codes")
+national_aquifer_codes <- read_waterdata_metadata("national-aquifer-codes")
+parameter_codes <- read_waterdata_metadata("parameter-codes")
+reliability_codes <- read_waterdata_metadata("reliability-codes")
+site_types <- read_waterdata_metadata("site-types")
+statistic_codes <- read_waterdata_metadata("statistic-codes")
+topographic_codes <- read_waterdata_metadata("topographic-codes")
+time_zone_codes <- read_waterdata_metadata("time-zone-codes")
+counties <- read_waterdata_metadata("counties")
+states <- read_waterdata_metadata("states")
+```
+
+### Python
+
+```{python}
+#| eval: false
+agency_codes, md = waterdata.get_reference_table("agency-codes")
+aquifer_codes, md = waterdata.get_reference_table("aquifer-codes")
+aquifer_types, md = waterdata.get_reference_table("aquifer-types")
+coordinate_datum_codes, md1 = waterdata.get_reference_table("coordinate-datum-codes")
+huc_codes, md1 = waterdata.get_reference_table("hydrologic-unit-codes")
+national_aquifer_codes, md1 = waterdata.get_reference_table("national-aquifer-codes")
+parameter_codes, md1 = waterdata.get_reference_table("parameter-codes")
+reliability_codes, md1 = waterdata.get_reference_table("reliability-codes")
+site_types, md1 = waterdata.get_reference_tablea("site-types")
+statistic_codes, md1 = waterdata.get_reference_table("statistic-codes")
+topographic_codes, md1 = waterdata.get_reference_table("topographic-codes")
+time_zone_codes, md1 = waterdata.get_reference_table("time-zone-codes")
+counties, md1 = waterdata.get_reference_table("counties")
+states, md1 = waterdata.get_reference_table("states")
+```
+
+:::
+
+::: footer
+
+:::
+
+
+
+## Exercise 1: Orientation
 
 ::: {.panel-tabset}
 
@@ -662,7 +714,7 @@ site_info_refined, md = waterdata.get_monitoring_locations(
 
 :::
 
-## Map It with geometry {.smaller}
+## Map with geometry {.smaller}
 
 ::: {.panel-tabset}
 
@@ -693,7 +745,7 @@ site_info_refined.plot()
 
 :::
 
-## Map It: leaflet
+## Interactive Leaflet Map
 
 ::: {.panel-tabset}
 
@@ -720,9 +772,10 @@ If you have `geopandas` installed, the function will return a GeoDataFrame with 
 
 ```{python}
 #| eval: false
-
 site_info_refined.set_crs(crs="WGS84").explore(
-    marker_kwds={"radius": 3}, tiles="CartoDB.Positron"
+    marker_kwds=dict(radius=3),
+    style_kwds=dict(opacity=1),
+    tiles="CartoDB.Positron",
 )
 ```
 
@@ -734,7 +787,152 @@ site_info_refined.set_crs(crs="WGS84").explore(
 
 ## Workflow 2: Find Available Data
 
-## Workflow 3: Get Latest Data
+Let's get all the time series in Dane County, WI with daily mean (statistic_id = "00003") discharge (parameter code = "00060) or temperature (parameter code = "00010). 
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+sites_available <- read_waterdata_combined_meta(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = c("00060", "00010"),
+  statistic_id = c("00003")
+)
+```
+
+### Python
+
+```{python}
+sites_available, md = waterdata.get_combined_metadata(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = ["00060", "00010"],
+  statistic_id = "00003"
+)
+
+```
+
+:::
+
+## waterdata.get_combined_metadata {.smaller .scrollable}
+
+```{r}
+#| echo: false
+dt_me(
+  sites_available |>
+    sf::st_drop_geometry() |>
+    filter(!is.na(begin)) |> # public, but "grade" set to unusable
+    select(monitoring_location_id, parameter_name, parameter_code, begin, end),
+  6,
+  "0.7em"
+)
+```
+
+## Workflow 3: Get Latest Data {.smaller}
+
+Let's get the daily discharge measurements in Dane County, WI (parameter code = "00060") that have measured data in the last 14 days. 
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+latest_sites <- read_waterdata_combined_meta(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = c("00060"),
+  last_modified = "P14D",
+  data_type = "Continuous values"
+)
+
+latest_discharge <- read_waterdata_latest_continuous(
+  monitoring_location_id = latest_sites$monitoring_location_id,
+  parameter_code = "00060"
+)
+```
+
+### Python
+
+```{python}
+latest_sites, md = waterdata.get_combined_metadata(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = "00060",
+  last_modified = "P14D",
+  data_type = "Continuous values"
+)
+
+latest_discharge, md = waterdata.get_latest_continuous(
+  monitoring_location_id = latest_sites.monitoring_location_id,
+  parameter_code = "00060"
+)
+```
+
+:::
+
+::: footer
+
+:::
+
+## Workflow 3: Get Latest Data {.smaller}
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+#| eval: false
+pal <- colorNumeric("viridis", latest_discharge$value)
+
+leaflet(
+  data = latest_discharge |>
+    sf::st_transform(crs = leaflet_crs)
+) |>
+  addProviderTiles("CartoDB.Positron") |>
+  addCircleMarkers(
+    popup = paste(
+      latest_discharge$monitoring_location_id,
+      "<br>",
+      latest_discharge$time,
+      "<br>",
+      latest_discharge$value,
+      latest_discharge$unit_of_measure
+    ),
+    color = ~ pal(value),
+    radius = 3,
+    opacity = 1
+  ) |>
+  addLegend(
+    pal = pal,
+    position = "bottomleft",
+    title = "Latest Discharge",
+    values = ~value
+  )
+```
+
+### Python
+
+```{python}
+#| eval: true
+#| output-location: slide
+
+latest_discharge.set_crs(crs="WGS84").explore(
+    marker_kwds=dict(radius=3),
+    style_kwds=dict(opacity=1),
+    tiles="CartoDB.Positron",
+    column="value",
+    cmap="viridis",
+)
+```
+
+:::
+
+::: footer
+
+:::
+
 
 ## Workflow 4: Get All Data
 
