@@ -18,7 +18,7 @@ RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/lat
     rm Miniforge3.sh
 
 COPY environment.yml /
-RUN conda env create -n ${CONDA_ENVIRONMENT_NAME} -f / environment.yml \
+RUN conda env create -n ${CONDA_ENVIRONMENT_NAME} -f /environment.yml \
   && conda clean -a -y \
   && rm environment.yml
 
