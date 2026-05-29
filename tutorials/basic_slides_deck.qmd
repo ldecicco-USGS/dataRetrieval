@@ -33,10 +33,16 @@ params:
 library(ggplot2)
 library(dplyr)
 library(reticulate)
+
 py_require("dataretrieval")
 py_require("panda")
 py_require("matplotlib")
+py_require("geopandas")
 options(dplyr.summarise.inform = FALSE)
+
+options(dplyr.summarise.inform = FALSE)
+theme_set(theme_bw(base_size = 20))
+update_geom_defaults("point", list(size = 3))
 
 evaluate_python <- params$run_python
 
@@ -74,64 +80,13 @@ dt_me <- function(
 
 ## Introduction {background-image="images/hex_logo.png" background-size="15%" background-position="90% 90%" }
 
-In this ~90 minute introduction, the goal is:
+The goal of these slides are to:
 
-- Introduce the modern `dataRetrieval` workflows. 
+- Introduce the modern USGS water data  
 
-- The intended audience is someone:
-
-  - New to `dataRetrieval` 
+- Introduce `dataretrieval` (R and Python)
   
-  - Has some R experience
-  
-::: footer
-
-:::
-
-
-## RStudio Orientation
-
-By default will look like:
-
-![](images/default_rstudio.png)
-
-## RStudio Appearances
-
-Go to Tools -> Global Options -> Appearances to change style.
-
-![](images/apperences.png)
-
-## RStudio Orientation {.smaller}
-
-:::: {.columns}
-
-::: {.column width="30%"}
-
-1. Create scripts.
-
-2. See code run.
-
-3. See what variables are loaded
-
-  - Click on a data frame to View
-
-4. Plots and more
-
-:::
-
-::: {.column width="70%"}
-
-![](images/dark_mode.png)
-:::
-
-::::
-
-::: footer 
-
-:::
-
-
-## dataRetrieval: R-package for US water data {.smaller}
+## dataRetrieval: R or Python software for US water data {.smaller}
 
 :::: {.columns}
 
@@ -218,27 +173,15 @@ from dataretrieval import waterdata
 :::
 
 
-## dataRetrieval: External Documentation
+## External Documentation
 
-![](images/documentation_1.png){width="1000" height="500"}
+- R package: <https://doi-usgs.github.io/dataRetrieval/>
 
-::: footer
-<https://doi-usgs.github.io/dataRetrieval>
-:::
+- Python package: <https://doi-usgs.github.io/dataretrieval-python/>
 
-## dataRetrieval: External Documentation
+- WDFN Blog: <https://waterdata.usgs.gov/blog/>
 
-![](images/documentation_2.png){width="1000" height="500"}
-
-::: footer
-<https://doi-usgs.github.io/dataRetrieval/reference/index.html>
-:::
-
-## dataRetrieval: External Documentation
-
-![](images/documentation_3.png){width="1000" height="500"}
-
-## Documentation within R: function help pages {.smaller}
+## Internal Documentation {.smaller}
 
 ::: {.panel-tabset}
 
@@ -305,60 +248,48 @@ help(waterdata.get_daily)
 
 ### Challenge 
 
-1. Open RStudio
+1. Open your preferred IDE (RStudio, VSCode, PyCharm, etc) or Jupyter notebook
 
-2. Install `dataRetrieval`, `dplyr`, `ggplot2`, and `data.table` (if they are not already installed).
+2. Install `dataRetrieval` (R) or `dataretrieval` (Python) if you haven't already.
 
-3. Load `dataRetrieval`
+3. Load `dataRetrieval` (R) / waterdata module in `dataretrieval` (Python)
 
 4. Open the help file for the function `read_waterdata_daily`
 
-5. Navigate to <https://doi-usgs.github.io/dataRetrieval/> and find the list of function help files and explore some articles in "Additional Articles"
 
+### R Solution:
 
-### Solution:
-
-
-```{r fig.height=7}
+```{r}
 #| eval: false
-install.packages(c("dataRetrieval", "dplyr", "ggplot2", "data.table"))
+install.packages(c("dataRetrieval"))
 library(dataRetrieval)
 ?read_waterdata_daily
 ```
 
+### Python Solution:
+
+```{bash}
+#| echo: true
+#| eval: false
+pip install dataretrieval
+```
+
+
+```{python}
+#| eval: false
+from dataretrieval import waterdata
+
+help(waterdata.get_daily)
+```
+
+
 :::
 
 ::: footer
 
 :::
 
-## dataRetrieval Updates {background-image="images/hex_logo.png" background-size="15%" background-position="85% 80%" }
 
-Are you a seasoned `dataRetrieval` user?
-
-Here are resources for recent major changes:
-
-* [Changes to dataRetrieval](https://doi-usgs.github.io/dataRetrieval/articles/changes_slides.html)
-
-*  [Water Data API Introduction](https://doi-usgs.github.io/dataRetrieval/articles/read_waterdata_functions.html)
-
-*  [Samples Data Introduction](https://doi-usgs.github.io/dataRetrieval/articles/samples_data.html)
-
-## What's New? {.smaller}
-
-There's been a lot of changes to `dataRetrieval` over the past year. If you'd like to see an overview of those changes, visit: [Changes to dataRetrieval](https://doi-usgs.github.io/dataRetrieval/articles/changes_slides.html)
-
-Biggest changes:
-
-* NWIS servers will be shut down, so all `readNWIS` functions will eventually stop working
-
-* `read_waterdata` functions are modern and should be used when possible
-
-* The "USGS Water Data APIs" are the new home for USGS data
-
-::: footer
-
-:::
 
 ## USGS Water Data API Token 
 
@@ -377,18 +308,11 @@ Biggest changes:
 
 1. Request a USGS Water Data API Token: <https://api.waterdata.usgs.gov/signup/>
 
-2. Save it in a safe place (KeePass or other password management tool)
+2. Save it in a safe place (KeyPass or other password management tool)
 
-3. Add it to your .Renviorn file as API_USGS_PAT. 
+3. Add it as environment variable
 
-4. Restart R 
-
-5. Check that it worked by running (you should see your token printed in the Console):
-
-```{r}
-#| eval: false
-Sys.getenv("API_USGS_PAT")
-```
+4. Restart 
 
 See next slide for a demonstration.
 
@@ -396,9 +320,13 @@ See next slide for a demonstration.
 
 :::
 
-## USGS Water Data API Token: Example {.smaller}
+## Water Data API Token: Example {.smaller}
 
-My favorite method to do add your token to .Renviron is to use the `usethis` package. Let's pretend the token sent you was "abc123":
+Let's pretend the token sent you was "abc123"
+
+::: {.panel-tabset}
+
+### R
 
 1. Run in R:
 ```{r}
@@ -409,36 +337,56 @@ usethis::edit_r_environ()
 
 2. Add this line to the file that opens up:
 
-```{r}
-#| eval: false
+```
 API_USGS_PAT = "abc123"
 ```
 
-3. Save that file using the save button
+3. Save that file
 
 4. Restart R/RStudio.
 
-5. Run after restarting R:
+5. Check that it worked by running (you should see your token printed in the Console):
 
 ```{r}
 #| eval: false
 Sys.getenv("API_USGS_PAT")
 ```
 
-## USGS Water Data API Token: Example {.smaller .nostretch}
+::: {.callout-note collapse="true"}
+Your .Renviorn file should never be pushed to a public repository.
+:::
 
-![](images/save_token.png){width="50%"}
+### Python
 
-After save and restart, check that it worked by running:
+1. Create a file in your working directory .env
 
-```{r}
-#| eval: false
-Sys.getenv("API_USGS_PAT")
+2. Add this line to the .env file:
+
 ```
+API_USGS_PAT = "abc123"
+```
+4. Restart your python session
+
+5. Check that it worked by running (you should see your token printed in the Console):
+
+```{python}
+#| echo: true
+#| eval: false
+import os
+os.getenv("API_USGS_PAT")
+'abc123'
+```
+
+::: {.callout-note collapse="true"}
+Your .env file should never be pushed to a public repository.
+:::
+
+:::
 
 ::: footer
 
 :::
+
 
 ## USGS Basic Retrievals {.smaller}
 
@@ -483,29 +431,9 @@ We're going walk through 3 retrievals:
 
 * **Workflow 1**: Daily Data
 
-  - Uses the new USGS Water Data API 
+* **Workflow 2**: Find Available Data
   
-  - Modern data access point going forward
 
-* **Workflow 2**: Discrete Data
-
-  - Uses new USGS Samples Data
-  
-  - Modern data access point going forward
-  
-* **Workflow 3**: Join Daily and Discrete
-
-* **Workflow 4**: Continuous Data
-  
-  - Uses the new USGS Water Data API 
-  
-  - Modern data access point going forward
-
-* **Workflow 5**: Join Continuous and Discrete
-
-::: footer
-
-:::
 
 ## Workflow 1: Daily data for known site {.smaller}
 
