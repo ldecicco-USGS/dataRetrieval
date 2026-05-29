@@ -37,6 +37,8 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   r-cran-knitr \
   r-cran-rmarkdown \
   r-cran-leaflet \
+  r-cran-data-table \
+  r-cran-readr \
   r-cran-rcmdcheck \
   r-cran-testthat \
   r-cran-pkgdown \
