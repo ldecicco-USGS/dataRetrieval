@@ -141,10 +141,10 @@ pages:
   variables:
     RETICULATE_PYTHON: /usr/bin/python3
   script:
-    # - |
-    #   Rscript -e '
-    #     pkgdown::build_site(override = list(destination = "public"))
-    #     file.copy(from = "./public/articles/logo.png", to = "./public/reference/logo.png")'
+    - |
+      Rscript -e '
+        pkgdown::build_site(override = list(destination = "public"))
+        file.copy(from = "./public/articles/logo.png", to = "./public/reference/logo.png")'
     - quarto render
   artifacts:
     paths:
