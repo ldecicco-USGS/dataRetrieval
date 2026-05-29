@@ -4,6 +4,7 @@ FROM code.chs.usgs.gov:5001/ctek/docker/r-lang/r-base:4.6
 RUN apt-get update && apt-get install -y --no-install-recommends \
   python3 \
   python3-pip \
+  python3-dev \
   # These might already come with r-cran-sf binary, commenting out for now:
   # libgdal-dev \
   # libgeos-dev \
