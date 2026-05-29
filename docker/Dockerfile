@@ -19,6 +19,8 @@ RUN pip3 install --no-cache-dir --break-system-packages \
   numpy \
   pandas \
   scipy \
+  folium>=0.12 \
+  mapclassify \
   python-dateutil \
   requests
 

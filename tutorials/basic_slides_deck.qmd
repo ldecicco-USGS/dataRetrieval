@@ -936,6 +936,69 @@ latest_discharge.set_crs(crs="WGS84").explore(
 
 ## Workflow 4: Get All Data
 
+Let's get daily discharge data for the last 3 years from 2 sites:
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+daily <- read_waterdata_daily(
+  monitoring_location_id = c("USGS-05406457", "USGS-05427930"),
+  parameter_code = c("00060"),
+  statistic_id = "00003",
+  time = c("2022-10-01", "2025-10-01")
+)
+
+```
+
+### Python
+
+```{python}
+df, md = waterdata.get_daily(
+    monitoring_location_id= ["USGS-05406457", "USGS-05427930"],
+    parameter_code="00060",
+    statistic_id="00003",
+    time="2022-10-01/2025-10-01",
+)
+```
+
+:::
+
+## Workflow 4: Get All Data: Plot It {.smaller}
+
+::: {.panel-tabset}
+
+### R
+
+```{r}
+ggplot(data = daily) +
+  geom_line(aes(x = time, y = value, color = approval_status)) +
+  facet_grid(monitoring_location_id ~ ., )
+```
+
+### Python
+
+```{python}
+#| eval: false
+import matplotlib.pyplot as plt
+import pandas as pd
+
+plt.rcParams["font.size"] = 20
+
+levels, categories = pd.factorize(df["approval_status"])
+
+fig, ax = plt.subplots()
+scatter = ax.scatter(x=df.time, y=df.value, c=levels)
+fig.legend(scatter.legend_elements()[0], categories, title="Status")
+```
+
+:::
+
+::: footer
+
+:::
+
 ## Workflow 5: Get Discrete Water Quality Data
 
 ## USGS Samples Data Notes: Data Types and Profiles 

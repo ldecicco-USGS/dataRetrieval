@@ -9,4 +9,6 @@ dependencies:
   - matplotlib-base
   - geopandas
   - pyqt
+  - folium>=0.12
+  - mapclassify
 prefix: /home/user/miniforge3/envs/dataretrieval
