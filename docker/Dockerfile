@@ -45,6 +45,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   r-cran-pkgdown \
   r-cran-covr \
   r-cran-readxl \
+  r-cran-dt \
   && rm -rf /var/lib/apt/lists/*
 
 ENV RETICULATE_PYTHON=/usr/bin/python3
