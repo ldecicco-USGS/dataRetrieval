@@ -135,10 +135,6 @@ longtest:
 pages:
   image: ${CI_REGISTRY_IMAGE}:latest
   stage: end
-  before_script:
-    - |
-      conda clean --all
-      conda env create -n dataretrieval -f environment.yml
   dependencies:
     - build-image
     - buildcheck
