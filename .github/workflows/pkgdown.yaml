@@ -31,6 +31,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       API_USGS_PAT: ${{ secrets.API_USGS_PAT }}
       CUSTOM_DR_UA: 'GitHub_CI'
+      RETICULATE_PYTHON: 
     steps:
       - uses: actions/checkout@581d62f320f2a4043a1ea6ac77290c60d27485cc
 
@@ -66,7 +67,7 @@ jobs:
           cache-downloads: false
       - name: Set RETICULATE_PYTHON environment variable
         run: |
-          echo "RETICULATE_PYTHON=$MAMBA_ROOT_PREFIX/envs/dataretrieval/bin/python" >>
+          echo "RETICULATE_PYTHON=$MAMBA_ROOT_PREFIX/envs/dataretrieval/bin/python" >> $RETICULATE_PYTHON
       - name: Create public directory
         run: |
           mkdir public
