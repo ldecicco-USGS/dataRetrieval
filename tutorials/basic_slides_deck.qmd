@@ -38,6 +38,8 @@ py_require("dataretrieval")
 py_require("panda")
 py_require("matplotlib")
 py_require("geopandas")
+py_require("folium")
+py_require("mapclassify")
 options(dplyr.summarise.inform = FALSE)
 
 theme_set(theme_bw(base_size = 20))
@@ -949,7 +951,6 @@ daily <- read_waterdata_daily(
   statistic_id = "00003",
   time = c("2022-10-01", "2025-10-01")
 )
-
 ```
 
 ### Python
