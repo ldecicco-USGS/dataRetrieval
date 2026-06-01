@@ -11,7 +11,7 @@ format:
     footer: <https://doi-usgs.github.io/dataRetrieval/>
     preview-links: auto
 title-slide-attributes: 
-  data-background-image: hex_logo.png
+  data-background-image: combo_hex.png
   data-background-size: 15%
   data-background-position: 2% 2%
 editor: source
@@ -113,8 +113,6 @@ library(dataRetrieval)
 ```
 
 ### Python
-
-Whether you are a user or developer we recommend installing `dataretrieval` in a virtual environment. This can be done using something like virtualenv or conda. 
 
 ```{bash}
 #| echo: true
@@ -365,7 +363,9 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 1. Open your preferred IDE (RStudio, VSCode, PyCharm, etc) or Jupyter notebook
 
-2. Install `dataRetrieval` (R) or `dataretrieval` (Python) if you haven't already.
+2. R: Install `dataRetrieval`, `ggplot2`, `leaflet` (if you haven't already)
+
+2. Python: Install `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` (if you haven't already)
 
 3. Load `dataRetrieval` (R) / waterdata module in `dataretrieval` (Python)
 
@@ -376,7 +376,7 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 ```{r}
 #| eval: false
-install.packages(c("dataRetrieval"))
+install.packages(c("dataRetrieval", "ggplot2", "leaflet"))
 library(dataRetrieval)
 ?read_waterdata_daily
 ```
@@ -386,7 +386,7 @@ library(dataRetrieval)
 ```{bash}
 #| echo: true
 #| eval: false
-pip install dataretrieval
+pip install dataretrieval matplotlib geopandas folium seaborn
 ```
 
 
@@ -397,14 +397,11 @@ from dataretrieval import waterdata
 help(waterdata.get_daily)
 ```
 
-
 :::
 
 ::: footer
 
 :::
-
-
 
 ## USGS Water Data API Token 
 
@@ -471,7 +468,7 @@ Sys.getenv("API_USGS_PAT")
 Your .Renviorn file should never be pushed to a public repository.
 :::
 
-### Python
+### Python: Project
 
 1. Create a file in your working directory .env
 
@@ -495,6 +492,54 @@ os.getenv("API_USGS_PAT")
 ::: {.callout-note collapse="true"}
 Your .env file should never be pushed to a public repository.
 :::
+
+### Python: Conda
+
+1. Open Miniforge, Anaconda, etc.
+
+2. Activate enviornment
+
+```{bash}
+#| eval: false
+conda activate flow_bootcamp
+```
+
+3. Add variable:
+
+```{bash}
+#| eval: false
+conda env config vars set API_USGS_PAT="abc123"
+```
+
+4. Reactivate enviornment
+
+```{bash}
+#| eval: false
+conda activate flow_bootcamp
+```
+
+5. Open your enviornment (for example Jupyter), and test that it's there:
+
+```{python}
+#| eval: false
+import os
+
+print(os.getenv("API_USGS_PAT"))
+"abc123"
+```
+
+
+### Python: Hard-coded
+
+Within your code, add:
+
+```{python}
+#| eval: false
+import os
+os.environ["API_USGS_PAT"] = "abc123"
+```
+
+This is not ideal because you are hard-coding your personal access token in the script/notebook. You would not want to share this code on a public repository for example.
 
 :::
 
@@ -616,7 +661,6 @@ time = "PT12H" # past hours
 ### Python
 
 ```{python}
-#| code-line-numbers: "1-2|3-4|5-6|7-8|9-12"
 # Ask for exact times:
 time = "2025-01-01"
 # Ask for specific range
@@ -643,11 +687,14 @@ time = "PT12H"  # past hours
 * **Workflow 1**: Find Available Sites
 
 * **Workflow 2**: Find Available Data
+
+* Challenge 
   
 * **Workflow 3**: Get Latest Data
 
 * **Workflow 4**: Get All Data
 
+* Challenge 
 
 ## Workflow 1: Find Available Sites
 
