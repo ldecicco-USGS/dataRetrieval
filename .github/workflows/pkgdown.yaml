@@ -31,7 +31,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       API_USGS_PAT: ${{ secrets.API_USGS_PAT }}
       CUSTOM_DR_UA: 'GitHub_CI'
-      RETICULATE_PYTHON: '/home/runner/micromamba'
+      RETICULATE_PYTHON: '/home/runner/micromamba/envs/dataretrieval/bin/python'
     steps:
       - uses: actions/checkout@581d62f320f2a4043a1ea6ac77290c60d27485cc
 
@@ -65,9 +65,6 @@ jobs:
           environment-name: dataretrieval
           cache-environment: false
           cache-downloads: false
-      - name: Set RETICULATE_PYTHON environment variable
-        run: |
-          echo "RETICULATE_PYTHON=$MAMBA_ROOT_PREFIX/envs/dataretrieval/bin/python" >> $RETICULATE_PYTHON
       - name: Create public directory
         run: |
           mkdir public
