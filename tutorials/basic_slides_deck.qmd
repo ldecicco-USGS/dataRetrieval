@@ -81,7 +81,7 @@ dt_me <- function(
 ```
 
 
-## Introduction {background-image="images/hex_logo.png" background-size="15%" background-position="90% 90%" }
+## Introduction {background-image="combo_flip.png" background-size="25%" background-position="95% 90%" }
 
 The goal of these slides are to:
 
@@ -91,6 +91,7 @@ The goal of these slides are to:
 
 - Introduce additional topics that often come up
   
+
 ## Software Installation
 
 ::: {.panel-tabset}
@@ -355,7 +356,7 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 
 
-## Exercise 1: Orientation
+## Exercise 1: Orientation  {.smaller}
 
 ::: {.panel-tabset}
 
@@ -363,7 +364,7 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 1. Open your preferred IDE (RStudio, VSCode, PyCharm, etc) or Jupyter notebook
 
-2. R: Install `dataRetrieval`, `ggplot2`, `leaflet` (if you haven't already)
+2. R: Install `dataRetrieval`, `ggplot2`, `dplyr`, `leaflet` (if you haven't already)
 
 2. Python: Install `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` (if you haven't already)
 
@@ -376,7 +377,7 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 ```{r}
 #| eval: false
-install.packages(c("dataRetrieval", "ggplot2", "leaflet"))
+install.packages(c("dataRetrieval", "ggplot2", "leaflet", "dplyr"))
 library(dataRetrieval)
 ?read_waterdata_daily
 ```
@@ -547,9 +548,6 @@ This is not ideal because you are hard-coding your personal access token in the 
 
 :::
 
-
-
-
 ## Water Data APIs: Initial Tips 
 
 Use your "tab" key!
@@ -688,13 +686,13 @@ time = "PT12H"  # past hours
 
 * **Workflow 2**: Find Available Data
 
-* Challenge 
+* Challenge 1
   
 * **Workflow 3**: Get Latest Data
 
 * **Workflow 4**: Get All Data
 
-* Challenge 
+* Challenge 2
 
 ## Workflow 1: Find Available Sites
 
@@ -826,7 +824,7 @@ site_info_refined.plot()
 
 :::
 
-## Interactive Leaflet Map
+## Interactive Map
 
 ::: {.panel-tabset}
 
@@ -912,6 +910,74 @@ dt_me(
   "0.7em"
 )
 ```
+
+## Challenge 1
+
+::: {.panel-tabset}
+
+### Problem Statement
+
+1. How many USGS stream sites are within Tuscaloosa County, Alabama?
+
+2. What are the unique parameter_names that come back from USGS sites in Tuscaloosa County, Alabama?
+
+3. What site has the longest period of record for daily mean discharge?
+
+4. Bonus: Create an interactive map of all sites that measure gage height.
+
+The amount you get done during this break will highly depend on the extent of your coding background. Use this time to explore dataretrieval functions and outputs.
+
+### Solution
+
+When these slides were generated on `{r} Sys.Date()`, the results were:
+
+```{r}
+#| message: false
+#| echo: false
+library(dplyr)
+cat("1. ")
+tus <- read_waterdata_combined_meta(
+  state_name = "Alabama",
+  county_name = "Tuscaloosa County",
+  site_type = "Stream"
+)
+tus |>
+  filter(parameter_name == "Gage height") |>
+  select(monitoring_location_id) |>
+  distinct() |>
+  pull() |>
+  length()
+
+cat("2. ")
+unique(tus$parameter_name)
+
+cat("3. ")
+tus_summary <- tus |>
+  filter(parameter_name == "Discharge", data_type == "Daily values") |>
+  mutate(por = end - begin) |>
+  arrange(desc(por))
+tus_summary$monitoring_location_name[1]
+tus_summary$begin[1]
+tus_summary$end[1]
+```
+
+### Bonus
+
+```{r}
+#| echo: false
+leaflet(
+  data = tus_summary |>
+    sf::st_transform(crs = leaflet_crs)
+) |>
+  addProviderTiles("CartoDB.Positron") |>
+  addCircleMarkers(popup = ~monitoring_location_name, radius = 3, opacity = 1)
+```
+
+:::
+
+::: footer
+
+:::
 
 ## Workflow 3: Get Latest Data {.smaller}
 
