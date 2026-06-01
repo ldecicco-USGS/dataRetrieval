@@ -306,16 +306,17 @@ knitr::kable(list(df, df2))
 
 ```{r}
 #| eval: false
+parameter_codes <- read_waterdata_metadata("parameter-codes")
+statistic_codes <- read_waterdata_metadata("statistic-codes")
+# Others:
 agency_codes <- read_waterdata_metadata("agency-codes")
 aquifer_codes <- read_waterdata_metadata("aquifer-codes")
 aquifer_types <- read_waterdata_metadata("aquifer-types")
 coordinate_datum_codes <- read_waterdata_metadata("coordinate-datum-codes")
 huc_codes <- read_waterdata_metadata("hydrologic-unit-codes")
 national_aquifer_codes <- read_waterdata_metadata("national-aquifer-codes")
-parameter_codes <- read_waterdata_metadata("parameter-codes")
 reliability_codes <- read_waterdata_metadata("reliability-codes")
 site_types <- read_waterdata_metadata("site-types")
-statistic_codes <- read_waterdata_metadata("statistic-codes")
 topographic_codes <- read_waterdata_metadata("topographic-codes")
 time_zone_codes <- read_waterdata_metadata("time-zone-codes")
 counties <- read_waterdata_metadata("counties")
@@ -326,21 +327,26 @@ states <- read_waterdata_metadata("states")
 
 ```{python}
 #| eval: false
-agency_codes, md = waterdata.get_reference_table("agency-codes")
-aquifer_codes, md = waterdata.get_reference_table("aquifer-codes")
-aquifer_types, md = waterdata.get_reference_table("aquifer-types")
-coordinate_datum_codes, md1 = waterdata.get_reference_table("coordinate-datum-codes")
-huc_codes, md1 = waterdata.get_reference_table("hydrologic-unit-codes")
-national_aquifer_codes, md1 = waterdata.get_reference_table("national-aquifer-codes")
-parameter_codes, md1 = waterdata.get_reference_table("parameter-codes")
-reliability_codes, md1 = waterdata.get_reference_table("reliability-codes")
-site_types, md1 = waterdata.get_reference_tablea("site-types")
-statistic_codes, md1 = waterdata.get_reference_table("statistic-codes")
-topographic_codes, md1 = waterdata.get_reference_table("topographic-codes")
-time_zone_codes, md1 = waterdata.get_reference_table("time-zone-codes")
-counties, md1 = waterdata.get_reference_table("counties")
-states, md1 = waterdata.get_reference_table("states")
+parameter_codes = waterdata.get_reference_table("parameter-codes")
+statistic_codes = waterdata.get_reference_table("statistic-codes")
+# Others:
+agency_codes = waterdata.get_reference_table("agency-codes")
+aquifer_codes = waterdata.get_reference_table("aquifer-codes")
+aquifer_types = waterdata.get_reference_table("aquifer-types")
+coordinate_datum_codes = waterdata.get_reference_table("coordinate-datum-codes")
+huc_codes = waterdata.get_reference_table("hydrologic-unit-codes")
+national_aquifer_codes = waterdata.get_reference_table("national-aquifer-codes")
+reliability_codes = waterdata.get_reference_table("reliability-codes")
+site_types = waterdata.get_reference_tablea("site-types")
+topographic_codes = waterdata.get_reference_table("topographic-codes")
+time_zone_codes = waterdata.get_reference_table("time-zone-codes")
+counties = waterdata.get_reference_table("counties")
+states = waterdata.get_reference_table("states")
 ```
+
+::: {style="font-size: 50%;"}
+Each function returns a Tuple, containing a dataframe and a Metadata class.
+:::
 
 :::
 
@@ -579,6 +585,10 @@ Time parameters have a few options:
 
 Here are a bunch of valid inputs:
 
+::: {.panel-tabset}
+
+### R
+
 ```{r}
 #| code-line-numbers: "1-9|10-11|12-15|16-19"
 # Ask for exact times:
@@ -601,6 +611,27 @@ time = "P1M" # past month
 time = "P7D" # past 7 days
 time = "PT12H" # past hours
 ```
+
+### Python
+
+```{python}
+#| code-line-numbers: "1-2|3-4|5-6|7-8|9-12"
+# Ask for exact times:
+time = "2025-01-01"
+# Ask for specific range
+time = "2025-01-01/2026-01-01"
+# Asking beginning of record to specific end:
+time = "../2024-01-01"  # or Date or POSIX
+# Asking specific beginning to end of record:
+time = "2024-01-01/.."  # or Date or POSIX
+# Ask for period
+time = "P1M"  # past month
+time = "P7D"  # past 7 days
+time = "PT12H"  # past hours
+```
+
+
+:::
 
 :::
 
@@ -775,8 +806,8 @@ If you have `geopandas` installed, the function will return a GeoDataFrame with 
 ```{python}
 #| eval: false
 site_info_refined.set_crs(crs="WGS84").explore(
-    marker_kwds=dict(radius=3),
-    style_kwds=dict(opacity=1),
+    marker_kwds=dict(radius=7),
+    style_kwds=dict(opacity=1, fillOpacity=1),
     tiles="CartoDB.Positron",
 )
 ```
@@ -789,7 +820,7 @@ site_info_refined.set_crs(crs="WGS84").explore(
 
 ## Workflow 2: Find Available Data
 
-Let's get all the time series in Dane County, WI with daily mean (statistic_id = "00003") discharge (parameter code = "00060) or temperature (parameter code = "00010). 
+Let's get all the time series in Dane County, WI with daily mean (statistic_id = "00003") discharge (parameter code = "00060") or temperature (parameter code = "00010"). 
 
 ::: {.panel-tabset}
 
@@ -818,7 +849,9 @@ sites_available, md = waterdata.get_combined_metadata(
 
 :::
 
-## waterdata.get_combined_metadata {.smaller .scrollable}
+## sites_available {.smaller .scrollable}
+
+Selecting just a few columns:
 
 ```{r}
 #| echo: false
@@ -921,11 +954,12 @@ leaflet(
 #| output-location: slide
 
 latest_discharge.set_crs(crs="WGS84").explore(
-    marker_kwds=dict(radius=3),
-    style_kwds=dict(opacity=1),
+    marker_kwds=dict(radius=7),
+    style_kwds=dict(opacity=1, fillOpacity=1),
     tiles="CartoDB.Positron",
     column="value",
     cmap="viridis",
+    zoom_start=10,
 )
 ```
 
@@ -981,17 +1015,16 @@ ggplot(data = daily) +
 ### Python
 
 ```{python}
-#| eval: false
+#| eval: true
 import matplotlib.pyplot as plt
 import pandas as pd
-
-plt.rcParams["font.size"] = 20
+import seaborn
 
 levels, categories = pd.factorize(df["approval_status"])
-
-fig, ax = plt.subplots()
-scatter = ax.scatter(x=df.time, y=df.value, c=levels)
-fig.legend(scatter.legend_elements()[0], categories, title="Status")
+graph = seaborn.FacetGrid(
+    df, row="monitoring_location_id", hue="approval_status", height=3, aspect=5
+)
+graph.map(plt.scatter, "time", "value").add_legend()
 ```
 
 :::

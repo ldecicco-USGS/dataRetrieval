@@ -3,4 +3,5 @@ matplotlib
 geopandas
 folium
 mapclassify
+seaborn
 

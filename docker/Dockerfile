@@ -22,6 +22,7 @@ RUN pip3 install --no-cache-dir --break-system-packages \
   folium>=0.12 \
   mapclassify \
   python-dateutil \
+  seaborn \
   requests
 
 # R dependencies
