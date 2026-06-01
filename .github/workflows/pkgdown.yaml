@@ -58,13 +58,15 @@ jobs:
             any::gridExtra
             local::.
           needs: website
-      - name: Setup Micromamba
-        uses: mamba-org/setup-micromamba@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
         with:
-          environment-file: environment.yml
-          environment-name: dataretrieval
-          cache-environment: false
-          cache-downloads: false
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[test,nldi, folium, geopandas, matplotlib, mapclassify]
       - name: Create public directory
         run: |
           mkdir public
