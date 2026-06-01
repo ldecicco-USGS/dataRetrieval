@@ -694,6 +694,8 @@ time = "PT12H"  # past hours
 
 * Challenge 2
 
+* **Workflow 5**: Discrete Water Quality
+
 ## Workflow 1: Find Available Sites
 
 Let's get all the monitoring locations for Dane County, Wisconsin:
@@ -911,7 +913,7 @@ dt_me(
 )
 ```
 
-## Challenge 1
+## Challenge 1 {.smaller}
 
 ::: {.panel-tabset}
 
@@ -981,7 +983,7 @@ leaflet(
 
 ## Workflow 3: Get Latest Data {.smaller}
 
-Let's get the daily discharge measurements in Dane County, WI (parameter code = "00060") that have measured data in the last 14 days. 
+Let's get the daily discharge measurements in Dane County, WI (parameter code = "00060") that has measured data within the last 14 days. 
 
 ::: {.panel-tabset}
 
@@ -1147,6 +1149,21 @@ graph.map(plt.scatter, "time", "value").add_legend()
 
 :::
 
+## Challenge 2
+
+### Problem
+
+1. Navigate to the National Water Dashboard <https://dashboard.waterdata.usgs.gov/app/nwd/en/>
+
+2. Zoom in and explore sections of the map that have generally higher than normal streamflow.
+
+3. Zoom in and explore sections of the map that have generally lower than normal streamflow.
+
+4. Pick a USGS site that is interesting to you (maybe you are a kayaker, maybe you fish, maybe it's a local stream, maybe it's in an extreme flood/drought).
+
+5. Plot the daily mean discharge data for all time for the site you picked. 
+
+
 ## Workflow 5: Get Discrete Water Quality Data {.smaller}
 
 Let's get orthophosphate ("00660") data from the Shenandoah River at Front Royal, VA ("USGS-01631000").
@@ -1168,8 +1185,6 @@ qw_data <- read_waterdata_samples(
 )
 ncol(qw_data)
 ```
-
-R generates a few POSIXct columns to combine date, time, timezone information.
 
 ### Python
 ```{python}
@@ -1194,7 +1209,6 @@ That's a LOT of columns returned.
 ::: footer
 
 :::
-
 
 ## USGS Samples Data Notes: Data Types and Profiles 
 
@@ -1263,6 +1277,20 @@ dt_me(df, escape = FALSE, paging = FALSE)
 ::: footer
 
 :::
+
+## Data Sources
+
+The examples in these slides got all the data from the Water Data API:
+
+<https://api.waterdata.usgs.gov/ogcapi/v0/>
+
+The `dataretrieval` packages also include functions to access:
+
+* [Water Quality Portal](<https://www.waterqualitydata.us/)
+
+* [National Groundwater Monitoring Network](https://api.waterdata.usgs.gov/ngwmn/ogcapi/collections) (coming soon)
+
+* [Daily Statistic Service](https://doi-usgs.github.io/dataRetrieval/articles/daily_data_statistics.html)
 
 ## More Information {.smaller}
 
