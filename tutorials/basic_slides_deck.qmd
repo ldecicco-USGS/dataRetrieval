@@ -16,6 +16,9 @@ title-slide-attributes:
   data-background-position: 2% 2%
 editor: source
 engine: knitr
+knitr:
+  opts_chunk:
+    python.reticulate: TRUE
 editor_options: 
   chunk_output_type: console
 execute:
@@ -93,8 +96,7 @@ import matplotlib.pyplot as plt
 import geopandas as gpd
 import os
 import dataretrieval
-
-from dataretrieval import waterdata
+# from dataretrieval import waterdata
 ```
 
 ## Introduction {background-image="combo_flip.png" background-size="25%" background-position="95% 90%" }
@@ -393,9 +395,11 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 1. Open your preferred IDE (RStudio, VSCode, PyCharm, etc) or Jupyter notebook
 
-2. R: Install `dataRetrieval`, `ggplot2`, `dplyr`, `leaflet` if you haven't already
+2. Install packages if needed:
 
-2. Python: Install `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` if you haven't already
+  - R: `dataRetrieval`, `ggplot2`, `dplyr`, `leaflet` 
+
+  - Python: `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` 
 
 3. Load `dataRetrieval` (R) / waterdata module in `dataretrieval` (Python)
 
@@ -675,6 +679,7 @@ Here are a bunch of valid inputs:
 
 ```{r}
 #| code-line-numbers: "1-9|10-11|12-15|16-19"
+#| label: rtime
 # Ask for exact times:
 time = "2025-01-01"
 time = as.Date("2025-01-01")
@@ -699,6 +704,8 @@ time = "PT12H" # past hours
 ### Python
 
 ```{python}
+#| label: pythontime
+
 # Ask for exact times:
 time = "2025-01-01"
 # Ask for specific range
@@ -745,6 +752,7 @@ Let's get all the monitoring locations for Dane County, Wisconsin:
 ### R
 
 ```{r}
+#| label: rdanecountysites
 #| message: false
 site_info <- read_waterdata_monitoring_location(
   state_name = "Wisconsin",
@@ -756,7 +764,7 @@ site_info <- read_waterdata_monitoring_location(
 
 ```{python}
 #| eval: !expr evaluate_python
-
+#| label: pythondanecountysites
 site_info, md = waterdata.get_monitoring_locations(
     state_name="Wisconsin", county_name="Dane County"
 )
@@ -770,6 +778,7 @@ site_info, md = waterdata.get_monitoring_locations(
 `read_waterdata_monitoring_location` requires "County" in the county_name argument. You can check county names using:
 ```{r}
 #| eval: false
+#| label: rcheckcounties
 counties <- check_waterdata_sample_params(service = "counties")
 ```
 :::
@@ -782,6 +791,7 @@ counties <- check_waterdata_sample_params(service = "counties")
 
 ```{r}
 #| echo: false
+#| label: showsiteinfo
 dt_me(site_info, 5, "0.6em")
 ```
 
@@ -799,6 +809,7 @@ Now that we've seen the whole data set, maybe we realize in the future we can as
 
 ```{r}
 #| message: true
+#| label: rsiteinforefined
 site_info_refined <- read_waterdata_monitoring_location(
   state_name = "Wisconsin",
   county_name = "Dane County",
@@ -816,6 +827,7 @@ site_info_refined <- read_waterdata_monitoring_location(
 
 ```{python}
 #| eval: !expr evaluate_python
+#| label: pythonsiteinforefined
 site_info_refined, md = waterdata.get_monitoring_locations(
     state_name="Wisconsin",
     county_name="Dane County",
@@ -961,9 +973,9 @@ dt_me(
 
 1. How many USGS stream sites are within Tuscaloosa County, Alabama?
 
-2. What are the unique parameter_names that come back from the Tuscaloosa County, Alabama stream USGS?
+2. What are the unique parameter_names that come back from those stream sites?
 
-3. What site has the longest period of record for daily mean discharge?
+3. Of those sites, what site has the longest period of record for daily mean discharge?
 
 4. Bonus: Create an interactive map of all sites that measure daily mean discharge.
 
