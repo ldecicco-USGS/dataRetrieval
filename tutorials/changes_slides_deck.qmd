@@ -41,6 +41,7 @@ options(ggplot2.discrete.colour = "viridis")
 py_require("dataretrieval")
 py_require("panda")
 py_require("matplotlib")
+py_require("geopandas")
 
 evaluate_python <- params$run_python
 
@@ -1236,8 +1237,8 @@ qw_data_slim <- qw_data |>
     DL_type = DetectionLimit_TypeA
   ) |>
   mutate(
-    nwis_value = if_else(DL_cond == "", DL_val, Result_Measure),
-    Detected = if_else(DL_cond == "", "Not Detected", "Detected")
+    nwis_value = if_else(DL_cond != "", DL_val, Result_Measure),
+    Detected = if_else(DL_cond != "", "Not Detected", "Detected")
   ) |>
   arrange(Detected)
 ```
@@ -1351,7 +1352,7 @@ pHData_wqx3 <- readWQPdata(
 
 * [Daily Statistics API](https://doi-usgs.github.io/dataRetrieval/articles/daily_data_statistics.html)
 
-* Updated National Groundwater Monitoring Location Network
+* [Updated National Groundwater Monitoring Location Network](https://api.waterdata.usgs.gov/ngwmn/ogcapi/collections)
 
 * [HASP](https://doi-usgs.github.io/HASP/)
 
