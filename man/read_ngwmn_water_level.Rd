@@ -15,8 +15,12 @@ read_ngwmn_water_level(
   water_level_above_navd88_ft = NA_character_,
   properties = NA_character_,
   datetime = NA_character_,
-  limit = NA,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+  limit = getOption("dataRetrieval.limit"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -53,34 +57,38 @@ The default (\code{NA}) will return all columns of the data.}
 
 \item{datetime}{Multiple time_series_ids can be requested as a character vector.}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
-selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
-connection is spotty. The default (\code{NA}) will set the limit to the maximum}
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
 
-\item{no_paging}{logical, defaults to \code{FALSE}. If \code{TRUE}, the data will
+\item{convertType}{logical, defaults to TRUE.
+If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
+vector and reorder the returned data frame.}
+
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
 be requested from a native csv format. This can be dangerous because the
 data will cut off at 50,000 rows without indication that more data
 is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
+selected features that should be returned in each page. The maximum allowable
+limit is 50,000. It may be beneficial to set this number lower if your internet
+connection is spotty. The default (\code{NA}) will set the limit to the maximum
+allowable limit for the service.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
 Water Level Observations data
-}
-\details{
-You can also use a vector of length 2 for any time queries (such as time
-or last_modified). The first value is the starting date (or datetime),
-the second value is the ending date(or datetime).
-NA's within the vector indicate a half-bound date.
-For example, \code{time = c("2024-01-01", NA)} will return all data starting
-at 2024-01-01.
-\code{time = c(NA, "2024-01-01")} will return all data from the beginning of
-the timeseries until 2024-01-01.
-By default, time is assumed UTC, although time zone attributes
-will be accommodated. As an example, setting \code{time = as.POSIXct(c("2021-01-01 12:00:00",
-"2021-01-01 14:00"), tz = "America/New_York")} will request data that between
-noon and 2pm eastern time on 2021-01-01.
-All time values RETURNED from the service are UTC with the exception of
-daily data, which returns time values in local dates.
 }
 \examples{
 \dontshow{if (is_dataRetrieval_user()) withAutoprint(\{ # examplesIf}
@@ -91,14 +99,14 @@ ngwmn_wl <- read_ngwmn_water_level(monitoring_location_id = site)
 
 ngwmn_wl_sub <- read_ngwmn_water_level(monitoring_location_id = site,
                      monitoring_location_obs_number = 1:10)
-                     
+
 ngwml_wl_time2 <- read_ngwmn_water_level(monitoring_location_id = site,
                      datetime = c("2022-01-01", "2024-01-01"))
-                     
+
 sites <- c("USGS-272838082142201", "USGS-404159100494601",
            "USGS-401216080362703", "MBMG-702934")
 ngwml_wl_sites <- read_ngwmn_water_level(monitoring_location_id = sites)
-                 
+
 }
 \dontshow{\}) # examplesIf}
 }

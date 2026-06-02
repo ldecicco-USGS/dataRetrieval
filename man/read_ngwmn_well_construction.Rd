@@ -9,8 +9,12 @@ read_ngwmn_well_construction(
   monitoring_location_obs_number = NA_character_,
   material = NA_character_,
   properties = NA_character_,
-  limit = NA,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+  limit = getOption("dataRetrieval.limit"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -25,15 +29,35 @@ Available options are:
 agency_code, monitoring_location_number, monitoring_location_id, monitoring_location_obs_number, type, depth_from, depth_to, depth_from_unit, depth_to_unit, material, diameter, diameter_unit, hole_size, hole_size_unit.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
-selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
-connection is spotty. The default (\code{NA}) will set the limit to the maximum}
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
 
-\item{no_paging}{logical, defaults to \code{FALSE}. If \code{TRUE}, the data will
+\item{convertType}{logical, defaults to TRUE.
+If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
+vector and reorder the returned data frame.}
+
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
 be requested from a native csv format. This can be dangerous because the
 data will cut off at 50,000 rows without indication that more data
 is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
+selected features that should be returned in each page. The maximum allowable
+limit is 50,000. It may be beneficial to set this number lower if your internet
+connection is spotty. The default (\code{NA}) will set the limit to the maximum
+allowable limit for the service.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
 Well Construction Observations data
@@ -47,11 +71,11 @@ ngwmn_well <- read_ngwmn_well_construction(monitoring_location_id = site)
 
 ngwmn_well_sub <- read_ngwmn_well_construction(monitoring_location_id = site,
                      monitoring_location_obs_number = 2)
-                     
+
 sites <- c("USGS-272838082142201", "USGS-404159100494601",
            "USGS-401216080362703", "MBMG-702934")
 ngwml_well_sites <- read_ngwmn_well_construction(monitoring_location_id = sites)
-                 
+
 }
 \dontshow{\}) # examplesIf}
 }

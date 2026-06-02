@@ -32,7 +32,7 @@ ts_meta_queryables <- check_OGC_requests(endpoint = "time-series-metadata",
                                 type = "queryables")
 ts_meta_schema <- check_OGC_requests(endpoint = "time-series-metadata",
                                 type = "schema")
-                                
+
 ngwml <- check_OGC_requests(endpoint = "waterLevelObs",
                             type = "schema",
                             base = "NGWMN")
