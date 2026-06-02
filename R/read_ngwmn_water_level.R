@@ -29,17 +29,8 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("waterLevelObs", base = "NGWMN")`.
 #' The default (`NA`) will return all columns of the data.
-
-#' @param limit The optional limit parameter is used to control the subset of the
-#' selected features that should be returned in each page. The maximum allowable
-#' limit is 50000. It may be beneficial to set this number lower if your internet
-#' connection is spotty. The default (`NA`) will set the limit to the maximum
-#' @param no_paging logical, defaults to `FALSE`. If `TRUE`, the data will
-#' be requested from a native csv format. This can be dangerous because the
-#' data will cut off at 50,000 rows without indication that more data
-#' is available. Use `TRUE` with caution.
 #'
-#' @inherit read_waterdata_continuous details
+#' @inheritParams check_arguments_non_api
 #'
 #' @examplesIf is_dataRetrieval_user()
 #'

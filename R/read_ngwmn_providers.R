@@ -13,11 +13,7 @@
 #' Available options are: 
 #' `r dataRetrieval:::get_properties_for_docs("providers", base = "NGWMN")`.
 #' The default (`NA`) will return all columns of the data.
-
-#' @param limit The optional limit parameter is used to control the subset of the 
-#' selected features that should be returned in each page. The maximum allowable
-#' limit is 50000. It may be beneficial to set this number lower if your internet
-#' connection is spotty. The default (`NA`) will set the limit to the maximum
+#' @inheritParams check_arguments_non_api
 #' 
 #' @examplesIf is_dataRetrieval_user()
 #' 
@@ -34,21 +30,23 @@ read_ngwmn_providers <- function(state = NA_character_,
                                  agency_code = NA_character_,
                                  organization_type = NA_character_,
                                  properties = NA_character_,
-                                 limit = NA){
+                                 ...,
+                                 convertType = getOption("dataRetrieval.convertType"),
+                                 no_paging = getOption("dataRetrieval.no_paging"),
+                                 chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+                                 limit = getOption("dataRetrieval.limit"),
+                                 attach_request = getOption("dataRetrieval.attach_request")){
   
   service <- "providers"
-  
+  rlang::check_dots_empty()
   args <- mget(names(formals()))
   
-  return_list <- get_ngwmn_data(args, service)
-  
-  return_list <- deal_with_empty(return_list, 
-                                 properties, 
-                                 service,
-                                 skipGeometry = TRUE, 
-                                 convertType = TRUE,
-                                 no_paging = FALSE,
-                                 base = "NGWMN")
+  return_list <- get_ogc_data(
+    args = args,
+    output_id = "id",
+    service = service,
+    base = "NGWMN"
+  )
   
   
   return_list <- sf::st_drop_geometry(return_list)

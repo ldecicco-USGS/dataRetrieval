@@ -11,16 +11,7 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("lithologyObs", base = "NGWMN")`.
 #' The default (`NA`) will return all columns of the data.
-
-#' @param limit The optional limit parameter is used to control the subset of the
-#' selected features that should be returned in each page. The maximum allowable
-#' limit is 50000. It may be beneficial to set this number lower if your internet
-#' connection is spotty. The default (`NA`) will set the limit to the maximum
-#' @param no_paging logical, defaults to `FALSE`. If `TRUE`, the data will
-#' be requested from a native csv format. This can be dangerous because the
-#' data will cut off at 50,000 rows without indication that more data
-#' is available. Use `TRUE` with caution.
-#'
+#' @inheritParams check_arguments_non_api
 #'
 #' @examplesIf is_dataRetrieval_user()
 #'
@@ -28,8 +19,6 @@
 #' site <- "AKDNR-535134236016630"
 #' ngwmn_lith <- read_ngwmn_lithology(monitoring_location_id = site)
 #'
-#' ngwmn_lith_sub <- read_ngwmn_lithology(monitoring_location_id = site,
-#'                      monitoring_location_obs_number = 2)
 #'
 #' sites <- c("ISWS-P428197", "ISWS-P428197",
 #'            "AKDNR-535143966816631", "AKDNR-535134236016630")
@@ -51,7 +40,12 @@ read_ngwmn_lithology <- function(
   rlang::check_dots_empty()
   args <- mget(names(formals()))
 
-  return_list <- get_ngwmn_data(args, service)
+  return_list <- get_ogc_data(
+    args = args,
+    output_id = "id",
+    service = service,
+    base = "NGWMN"
+  )
 
   return(return_list)
 }

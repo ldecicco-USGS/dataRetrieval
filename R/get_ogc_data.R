@@ -54,13 +54,13 @@ get_ogc_data <- function(args, output_id, service, base = "OGC") {
       return_list <- walk_pages(req)
     }
 
-    return_list <- deal_with_empty(
-      return_list,
-      args[["properties"]],
-      service,
-      isTRUE(args[["skipGeometry"]]),
-      args[["convertType"]],
-      no_paging
+    return_list <- deal_with_empty(return_list = return_list,
+                                   properties = args[["properties"]],
+                                   service = service,
+                                   skipGeometry = isTRUE(args[["skipGeometry"]]),
+                                   convertType = args[["convertType"]],
+                                   no_paging = no_paging, 
+                                   base = base
     )
 
     return_list <- rejigger_cols(return_list, args[["properties"]], output_id)

@@ -61,30 +61,22 @@
 #' @param skipGeometry This option can be used to skip response geometries for
 #' each feature. The returning object will be a data frame with no spatial
 #' information.
-#' @param limit The optional limit parameter is used to control the subset of the
-#' selected features that should be returned in each page. The maximum allowable
-#' limit is 50000. It may be beneficial to set this number lower if your internet
-#' connection is spotty. The default (`NA`) will set the limit to the maximum
+
 #' @param bbox Only features that have a geometry that intersects the bounding
 #' box are selected.The bounding box is provided as four or six numbers, depending
 #' on whether the coordinate reference system includes a vertical axis (height or
 #' depth). Coordinates are assumed to be in crs 4326. The expected format is a numeric
 #' vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
 #' Southern-most latitude, Eastern-most longitude, Northern-most longitude).
-#' @param no_paging logical, defaults to `FALSE`. If `TRUE`, the data will
-#' be requested from a native csv format. This can be dangerous because the
-#' data will cut off at 50,000 rows without indication that more data
-#' is available. Use `TRUE` with caution.
 #'
+#' @inheritParams check_arguments_non_api
 #' @examplesIf is_dataRetrieval_user()
 #'
 #' \donttest{
 #'
 #' ngwmn_sites <- read_ngwmn_sites(state_name = "Wisconsin")
 #'
-#' ngwml_providers2 <- read_ngwmn_sites(state = c("WI", "MN"))
-#'
-#' org_type <- read_ngwmn_sites(organization_type = "NWIS")
+#' org_type <- read_ngwmn_sites(agency_code = "NWIS", state_name = "Wisconsin")
 #'
 #' }
 read_ngwmn_sites <- function(
@@ -116,14 +108,23 @@ read_ngwmn_sites <- function(
   bbox = NA,
   properties = NA_character_,
   skipGeometry = FALSE,
-  limit = NA,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+  limit = getOption("dataRetrieval.limit"),
+  attach_request = getOption("dataRetrieval.attach_request")
 ) {
   service <- "sites"
   rlang::check_dots_empty()
   args <- mget(names(formals()))
 
-  return_list <- get_ngwmn_data(args, service)
+  return_list <- get_ogc_data(
+    args = args,
+    output_id = "id",
+    service = service,
+    base = "NGWMN"
+  )
 
   return(return_list)
 }

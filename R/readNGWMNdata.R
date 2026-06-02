@@ -39,8 +39,9 @@
 #'
 readNGWMNdata <- function(service, ..., asDateTime = TRUE, tz = "UTC") {
   .Deprecated(
-    "read_ngwmn_water_level",
-    msg = "Begin converting to read_ngwmn suite of functions"
+    new = "read_ngwmn_water_level",
+    package = "dataRetrieval",
+    msg = "Updated NGWMN APIs will use read_ngwmn set of functions."
   )
 
   dots <- convertLists(...)
