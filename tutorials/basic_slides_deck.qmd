@@ -1149,9 +1149,8 @@ graph.map(plt.scatter, "time", "value").add_legend()
 
 :::
 
-## Challenge 2
+## Challenge 2 {.smaller}
 
-### Problem
 
 1. Navigate to the National Water Dashboard <https://dashboard.waterdata.usgs.gov/app/nwd/en/>
 
@@ -1163,6 +1162,9 @@ graph.map(plt.scatter, "time", "value").add_legend()
 
 5. Plot the daily mean discharge data for all time for the site you picked. 
 
+::: footer
+
+:::
 
 ## Workflow 5: Get Discrete Water Quality Data {.smaller}
 
