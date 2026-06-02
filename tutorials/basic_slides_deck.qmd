@@ -1125,7 +1125,7 @@ df, md = waterdata.get_daily(
 ```{r}
 ggplot(data = daily) +
   geom_line(aes(x = time, y = value, color = approval_status)) +
-  facet_grid(monitoring_location_id ~ ., )
+  facet_grid(monitoring_location_id ~ ., scale = "free_y")
 ```
 
 ### Python
@@ -1138,9 +1138,10 @@ import seaborn
 
 levels, categories = pd.factorize(df["approval_status"])
 graph = seaborn.FacetGrid(
-    df, row="monitoring_location_id", hue="approval_status", height=3, aspect=5
+    df, row="monitoring_location_id", hue="approval_status", 
+    height=3, aspect=3, sharey=False
 )
-graph.map(plt.scatter, "time", "value").add_legend()
+graph.map(plt.plot, "time", "value").add_legend()
 ```
 
 :::
