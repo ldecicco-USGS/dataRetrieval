@@ -29,10 +29,12 @@ params:
 ```{r}
 #| echo: false
 #| include: false
-# library(dataRetrieval)
+#| label: rsetup
 library(ggplot2)
 library(dplyr)
 library(reticulate)
+
+reticulate::py_config()
 
 py_require("dataretrieval")
 py_require("panda")
@@ -80,6 +82,20 @@ dt_me <- function(
 }
 ```
 
+```{python}
+#| echo: false
+#| label: loadlibs
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn
+import matplotlib.pyplot as plt
+import geopandas as gpd
+import os
+import dataretrieval
+
+from dataretrieval import waterdata
+```
 
 ## Introduction {background-image="combo_flip.png" background-size="25%" background-position="95% 90%" }
 
@@ -103,6 +119,7 @@ The goal of these slides are to:
 ```{r}
 #| echo: true
 #| eval: false
+#| label: rinstall
 install.packages("dataRetrieval")
 ```
 
@@ -110,6 +127,7 @@ Then each time you open R, you'll need to load the library:
 
 ```{r}
 #| message: true
+#| label: rload
 library(dataRetrieval)
 ```
 
@@ -118,6 +136,7 @@ library(dataRetrieval)
 ```{bash}
 #| echo: true
 #| eval: false
+#| label: pythoninstall
 pip install dataretrieval
 ```
 
@@ -126,13 +145,15 @@ or
 ```{bash}
 #| echo: true
 #| eval: false
+#| label: pythoninstallconda
 conda install conda-forge::dataretrieval
 ```
 
 Then each time you open Python, you'll need to load the library:
 
 ```{python}
-#| eval: !expr evaluate_python
+#| eval: true
+#| label: loadpython
 from dataretrieval import waterdata
 ```
 
@@ -162,6 +183,7 @@ Within R, you can call help files for any `dataRetrieval` function:
 ```{r}
 #| echo: true
 #| eval: false
+#| label: rhelp
 ?read_waterdata_daily
 ```
 
@@ -184,6 +206,7 @@ Examples
 
 ```{r}
 #| eval: false
+#| label: rexample
 site <- "USGS-02238500"
 dv_data_sf <- read_waterdata_daily(
   monitoring_location_id = site,
@@ -202,6 +225,7 @@ Within Python, you can call help for any `dataretrieval` function:
 
 ```{python}
 #| eval: !expr evaluate_python
+#| label: pythonhelp
 help(waterdata.get_daily)
 ```
 
@@ -278,7 +302,10 @@ The USGS uses various codes for basic retrievals. These codes can have leading z
 Here are some examples of a few common codes:
 
 
-```{r echo=FALSE, eval=TRUE}
+```{r}
+#| echo: false
+#| eval: true
+#| label: commonpcodes
 library(knitr)
 
 df <- data.frame(
@@ -306,6 +333,7 @@ knitr::kable(list(df, df2))
 
 ```{r}
 #| eval: false
+#| label: rmetadataexamples
 parameter_codes <- read_waterdata_metadata("parameter-codes")
 statistic_codes <- read_waterdata_metadata("statistic-codes")
 # Others:
@@ -327,6 +355,7 @@ states <- read_waterdata_metadata("states")
 
 ```{python}
 #| eval: false
+#| label: pythonmetadataexamples
 parameter_codes = waterdata.get_reference_table("parameter-codes")
 statistic_codes = waterdata.get_reference_table("statistic-codes")
 # Others:
@@ -364,19 +393,20 @@ Each function returns a Tuple, containing a dataframe and a Metadata class.
 
 1. Open your preferred IDE (RStudio, VSCode, PyCharm, etc) or Jupyter notebook
 
-2. R: Install `dataRetrieval`, `ggplot2`, `dplyr`, `leaflet` (if you haven't already)
+2. R: Install `dataRetrieval`, `ggplot2`, `dplyr`, `leaflet` if you haven't already
 
-2. Python: Install `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` (if you haven't already)
+2. Python: Install `dataretrieval`, `matplotlib`, `geopandas`, `folium`, `seaborn` if you haven't already
 
 3. Load `dataRetrieval` (R) / waterdata module in `dataretrieval` (Python)
 
-4. Open the help file for the function `read_waterdata_daily`
+4. Open the help file for the function `read_waterdata_daily` (R) or `waterdata.get_daily` (Python)
 
 
 ### R
 
 ```{r}
 #| eval: false
+#| label: rchallengeintro
 install.packages(c("dataRetrieval", "ggplot2", "leaflet", "dplyr"))
 library(dataRetrieval)
 ?read_waterdata_daily
@@ -387,12 +417,14 @@ library(dataRetrieval)
 ```{bash}
 #| echo: true
 #| eval: false
+#| label: pythonchallengeintro
 pip install dataretrieval matplotlib geopandas folium seaborn
 ```
 
 
 ```{python}
 #| eval: false
+#| label: pythonchallengeintro2
 from dataretrieval import waterdata
 
 help(waterdata.get_daily)
@@ -445,6 +477,7 @@ Let's pretend the token sent you was "abc123"
 ```{r}
 #| echo: true
 #| eval: false
+#| label: usethis
 usethis::edit_r_environ()
 ```
 
@@ -462,6 +495,7 @@ API_USGS_PAT = "abc123"
 
 ```{r}
 #| eval: false
+#| label: apitest1
 Sys.getenv("API_USGS_PAT")
 ```
 
@@ -485,9 +519,11 @@ API_USGS_PAT = "abc123"
 ```{python}
 #| echo: true
 #| eval: false
+#| label: pythonapitest
 import os
+
 os.getenv("API_USGS_PAT")
-'abc123'
+"abc123"
 ```
 
 ::: {.callout-note collapse="true"}
@@ -502,6 +538,7 @@ Your .env file should never be pushed to a public repository.
 
 ```{bash}
 #| eval: false
+#| label: activateenv
 conda activate flow_bootcamp
 ```
 
@@ -509,6 +546,7 @@ conda activate flow_bootcamp
 
 ```{bash}
 #| eval: false
+#| label: setapi2
 conda env config vars set API_USGS_PAT="abc123"
 ```
 
@@ -516,6 +554,7 @@ conda env config vars set API_USGS_PAT="abc123"
 
 ```{bash}
 #| eval: false
+#| label: reactivateenv
 conda activate flow_bootcamp
 ```
 
@@ -523,6 +562,7 @@ conda activate flow_bootcamp
 
 ```{python}
 #| eval: false
+#| label: checkapi3
 import os
 
 print(os.getenv("API_USGS_PAT"))
@@ -921,11 +961,11 @@ dt_me(
 
 1. How many USGS stream sites are within Tuscaloosa County, Alabama?
 
-2. What are the unique parameter_names that come back from USGS sites in Tuscaloosa County, Alabama?
+2. What are the unique parameter_names that come back from the Tuscaloosa County, Alabama stream USGS?
 
 3. What site has the longest period of record for daily mean discharge?
 
-4. Bonus: Create an interactive map of all sites that measure gage height.
+4. Bonus: Create an interactive map of all sites that measure daily mean discharge.
 
 The amount you get done during this break will highly depend on the extent of your coding background. Use this time to explore dataretrieval functions and outputs.
 
@@ -944,7 +984,6 @@ tus <- read_waterdata_combined_meta(
   site_type = "Stream"
 )
 tus |>
-  filter(parameter_name == "Gage height") |>
   select(monitoring_location_id) |>
   distinct() |>
   pull() |>
@@ -983,7 +1022,7 @@ leaflet(
 
 ## Workflow 3: Get Latest Data {.smaller}
 
-Let's get the daily discharge measurements in Dane County, WI (parameter code = "00060") that has measured data within the last 14 days. 
+Let's get the continuous discharge measurements in Dane County, WI (parameter code = "00060") that have measured data within the last 14 days. 
 
 ::: {.panel-tabset}
 
@@ -1283,11 +1322,7 @@ dt_me(df, escape = FALSE, paging = FALSE)
 
 ## Data Sources
 
-The examples in these slides got all the data from the Water Data API:
-
-<https://api.waterdata.usgs.gov/ogcapi/v0/>
-
-The `dataretrieval` packages also include functions to access:
+* [Water Data API](https://api.waterdata.usgs.gov/ogcapi/v0/)
 
 * [Water Quality Portal](<https://www.waterqualitydata.us/)
 
