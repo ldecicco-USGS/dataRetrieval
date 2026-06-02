@@ -74,9 +74,10 @@
 #'
 #' \donttest{
 #'
-#' ngwmn_sites <- read_ngwmn_sites(state_name = "Wisconsin")
+#' ngwmn_sites <- read_ngwmn_sites(state_name = "Minnesota")
 #'
-#' org_type <- read_ngwmn_sites(agency_code = "NWIS", state_name = "Wisconsin")
+#' org_type <- read_ngwmn_sites(agency_code = "MN_DNR",
+#'                              county_name = "Washington County")
 #'
 #' }
 read_ngwmn_sites <- function(
