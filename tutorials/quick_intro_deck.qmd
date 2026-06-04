@@ -685,11 +685,27 @@ That's a LOT of columns returned. We won't look at them here, but you can use `V
 
 ## USGS Samples Data Notes: Data Types and Profiles 
 
+::: {.panel-tabset}
+
+### R
+
 * There are 2 arguments that dictate what kind of data is returned
   - "dataType"  defines what kind of data comes back
   - "dataProfile" defines what columns from that type come back
 
+### Python
+
+* There are 2 parameters that dictate what kind of data is returned
+  - "service"  defines what kind of data comes back
+  - "profile" defines what columns from that type come back
+
+:::
+
 ## Data Types and Profiles {.smaller}
+
+::: {.panel-tabset}
+
+### R
 
 ```{r}
 #| echo: false
@@ -719,6 +735,17 @@ df <- tibble(
 
 dt_me(df, escape = FALSE, paging = FALSE)
 ```
+
+### Python
+
+```{r}
+#| echo: false
+names(df) <- c("service", "Description", "profile")
+
+dt_me(df, escape = FALSE, paging = FALSE)
+```
+
+:::
 
 ::: footer
 

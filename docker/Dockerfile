@@ -1,48 +1,60 @@
 FROM code.chs.usgs.gov:5001/ctek/docker/r-lang/r-base:4.6
 
-# Change the name of this environment to something which pleases you, if you
-# so please. But the name will not be relevant for most cases, as reticulate
-# will be pointed to the environment no matter what it is named.
-ARG CONDA_ENVIRONMENT_NAME=dataretrieval
-
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-  wget \
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  python3 \
+  python3-pip \
+  python3-dev \
+  # These might already come with r-cran-sf binary, commenting out for now:
+  # libgdal-dev \
+  # libgeos-dev \
+  # libproj-dev \
   && rm -rf /var/lib/apt/lists/*
-  
-RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" &&  \
-    bash Miniforge3.sh -b -p "${HOME}/conda" && \
-    rm Miniforge3.sh
-ENV CONDA_DIR="/root/conda"
-ENV PATH=$CONDA_DIR/bin:$PATH
-COPY environment.yml /
-RUN conda env create -n ${CONDA_ENVIRONMENT_NAME} -f /environment.yml && conda clean -a -y
 
-# Necessary R libraries
-RUN apt-get update -qq && apt-get -y --no-install-recommends install \
-    r-cran-rcmdcheck \
-    r-cran-testthat \
-    r-cran-pkgdown \
-    r-cran-rmarkdown \
-    r-cran-knitr \
-    r-cran-dt \
-    r-cran-data.table \
-    r-cran-dplyr \
-    r-cran-purrr \
-    r-cran-lubridate \
-    r-cran-tidyr \
-    r-cran-jsonlite \
-    r-cran-readr \
-    r-cran-xml2 \
-    r-cran-httr2 \
-    r-cran-covr \
-    r-cran-sf \
-    r-cran-patchwork \
-    r-cran-leaflet \
-    r-cran-readxl \
-    r-cran-whisker \
-    r-cran-ggplot2 \
-    r-cran-reticulate \
-    && rm -rf /var/lib/apt/lists/* 
+# Python dependencies
+RUN pip3 install --no-cache-dir --break-system-packages \
+  dataretrieval \
+  matplotlib \
+  geopandas \
+  numpy \
+  pandas \
+  scipy \
+  folium>=0.12 \
+  mapclassify \
+  python-dateutil \
+  seaborn \
+  requests
 
-ENV RETICULATE_PYTHON=/root/conda/envs/${CONDA_ENVIRONMENT_NAME}/bin/python
+# R dependencies
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+  r-cran-reticulate \
+  r-cran-curl \
+  r-cran-lubridate \
+  r-cran-xml2 \
+  r-cran-httr2 \
+  r-cran-dplyr \
+  r-cran-sf \
+  r-cran-ggplot2 \
+  r-cran-tidyr \
+  r-cran-purrr \
+  r-cran-jsonlite \
+  r-cran-knitr \
+  r-cran-rmarkdown \
+  r-cran-leaflet \
+  r-cran-data.table \
+  r-cran-readr \
+  r-cran-rcmdcheck \
+  r-cran-testthat \
+  r-cran-pkgdown \
+  r-cran-covr \
+  r-cran-readxl \
+  r-cran-dt \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV RETICULATE_PYTHON=/usr/bin/python3
+
+COPY *.tar.gz /tmp/pkg.tar.gz
+RUN set -eux; \
+  R CMD INSTALL /tmp/pkg.tar.gz && \
+  Rscript -e "library(dataRetrieval)" && \
+  rm -f /tmp/*.tar.gz

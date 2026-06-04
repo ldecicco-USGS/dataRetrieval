@@ -654,5 +654,7 @@ time_periods <- c(
   "begin",
   "end",
   "begin_utc",
-  "end_utc"
+  "end_utc",
+  "revision_created",
+  "revision_modified"
 )

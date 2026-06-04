@@ -1,0 +1,7 @@
+dataretrieval
+matplotlib
+geopandas
+folium
+mapclassify
+seaborn
+
