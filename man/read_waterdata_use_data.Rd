@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_waterdata_use.R
 \name{read_waterdata_use_data}
 \alias{read_waterdata_use_data}
-\title{Get USGS Daily Data}
+\title{Get USGS Water Use Data}
 \usage{
 read_waterdata_use_data(
   model = NA_character_,
