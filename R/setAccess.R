@@ -27,18 +27,24 @@ setAccess <- function(access = "public") {
   if (access == "internal") {
     pkg.env$access <- "3"
     message("setting access to internal")
-    warning("Internal access is slated for decommision.
-Please contact comptools@usgs.gov for more information.")
+    warning(
+      "Internal access is slated for decommision.
+Please contact comptools@usgs.gov for more information."
+    )
   } else if (access == "cooperator") {
     pkg.env$access <- "1"
     message("setting access to cooperator")
-    warning("Cooperator access is slated for decommision.
-Please contact comptools@usgs.gov for more information.")
+    warning(
+      "Cooperator access is slated for decommision.
+Please contact comptools@usgs.gov for more information."
+    )
   } else if (access == "USGS") {
     pkg.env$access <- "2"
     message("setting access to all USGS Water Science Centers")
-    warning("Water Science Center access is slated for decommision.
-Please contact comptools@usgs.gov for more information.")
+    warning(
+      "Water Science Center access is slated for decommision.
+Please contact comptools@usgs.gov for more information."
+    )
   } else {
     pkg.env$access <- NULL
     message("setting access to public")
@@ -48,15 +54,11 @@ Please contact comptools@usgs.gov for more information.")
   pkg.env$iv <- "https://nwis.waterservices.usgs.gov/nwis/iv/"
   pkg.env$iv_recent <- "https://waterservices.usgs.gov/nwis/iv/"
   pkg.env$dv <- "https://waterservices.usgs.gov/nwis/dv/"
-  pkg.env$gwlevels <- "https://nwis.waterdata.usgs.gov/nwis/gwlevels"
-  pkg.env$measurements <- "https://waterdata.usgs.gov/nwis/measurements/"
   pkg.env$peak <- "https://nwis.waterdata.usgs.gov/usa/nwis/peak/"
   pkg.env$rating <- "https://waterdata.usgs.gov/nwisweb/get_ratings/"
   pkg.env$stat <- "https://waterservices.usgs.gov/nwis/stat/"
-  pkg.env$useNat <- "https://waterdata.usgs.gov/nwis/water_use"
   pkg.env$pCode <- "https://help.waterdata.usgs.gov/code/parameter_cd_query"
   pkg.env$pCodeSingle <- "https://help.waterdata.usgs.gov/code/parameter_cd_nm_query"
-
 
   pkg.env$Result <- "https://www.waterqualitydata.us/data/Result/search"
   pkg.env$Station <- "https://www.waterqualitydata.us/data/Station/search"
@@ -73,8 +75,7 @@ Please contact comptools@usgs.gov for more information.")
   pkg.env$ActivityWQX3 <- "https://www.waterqualitydata.us/wqx3/Activity/search"
   pkg.env$samplesData <- "https://api.waterdata.usgs.gov/samples-data/summary"
   pkg.env$status <- "https://www.waterqualitydata.us/wqx3/status/"
-  
+
   pkg.env$NGWMN <- "https://cida.usgs.gov/ngwmn_cache/sos"
   # nolint end
 }
-

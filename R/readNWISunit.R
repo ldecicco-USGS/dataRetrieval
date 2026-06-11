@@ -1,6 +1,6 @@
 #' Instantaneous value data retrieval from USGS (NWIS)
 #'
-#' Imports data from NWIS web service. 
+#' Imports data from NWIS web service.
 #' Inputs to this function are USGS site ids, USGS parameter codes,
 #' and start and end date. For a more complex query, use [readNWISdata()],
 #' including an arguement service="uv".
@@ -8,7 +8,7 @@
 #' Use the function [whatNWISdata()] to discover what data
 #' is available for a USGS site. The column data_type_cd with the values "uv"
 #' returned from [whatNWISdata()]) are available from this service.
-#' 
+#'
 #'
 #' @param siteNumbers character USGS site number (or multiple sites).  This is usually an 8 digit number
 #' @param parameterCd character USGS parameter code.  This is usually an 5 digit number.
@@ -58,39 +58,34 @@
 #' endDate <- "2014-10-10"
 #' \donttest{
 #'
-#' rawData <- readNWISuv(site_id, parameterCd, startDate, endDate)
+#' #rawData <- readNWISuv(site_id, parameterCd, startDate, endDate)
 #'
-#' rawData_today <- readNWISuv(site_id, parameterCd, Sys.Date(), Sys.Date())
+#' #rawData_today <- readNWISuv(site_id, parameterCd, Sys.Date(), Sys.Date())
 #'
-#' timeZoneChange <- readNWISuv(
-#'   c("04024430", "04024000"), parameterCd,
-#'   "2013-11-03", "2013-11-03"
-#' )
-#'
-#' centralTime <- readNWISuv(site_id, parameterCd,
-#'   "2014-10-10T12:00", "2014-10-10T23:59",
-#'   tz = "America/Chicago"
-#' )
-#'
-#' # Adding 'Z' to the time indicates to the web service to call the data with UTC time:
-#' GMTdata <- readNWISuv(
-#'   site_id, parameterCd,
-#'   "2014-10-10T00:00Z", "2014-10-10T23:59Z"
-#' )
 #' }
-readNWISuv <- function(siteNumbers, parameterCd, startDate = "", endDate = "", tz = "UTC") {
-  if (as.character(startDate) == "" || (as.Date(startDate) <= Sys.Date() - 120)) {
+readNWISuv <- function(
+  siteNumbers,
+  parameterCd,
+  startDate = "",
+  endDate = "",
+  tz = "UTC"
+) {
+  if (
+    as.character(startDate) == "" || (as.Date(startDate) <= Sys.Date() - 120)
+  ) {
     service <- "iv"
   } else {
     service <- "iv_recent"
   }
 
-  .Deprecated(new = "read_waterdata_continuous",
-              package = "dataRetrieval",
-              msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_continuous.")
-  
-  
-  url <- constructNWISURL(siteNumbers,
+  .Deprecated(
+    new = "read_waterdata_continuous",
+    package = "dataRetrieval",
+    msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_continuous."
+  )
+
+  url <- constructNWISURL(
+    siteNumbers,
     parameterCd,
     startDate,
     endDate,
@@ -105,8 +100,8 @@ readNWISuv <- function(siteNumbers, parameterCd, startDate = "", endDate = "", t
 
 #' Peak flow data from USGS (NWIS)
 #'
-#' Reads peak flow from NWISweb. 
-#' 
+#' Reads peak flow from NWISweb.
+#'
 #' In some cases, the specific date of the peak data is not know. This function
 #' will default to
 #' converting complete dates to a "Date" object, and converting incomplete dates to
@@ -161,21 +156,25 @@ readNWISuv <- function(siteNumbers, parameterCd, startDate = "", endDate = "", t
 #' @seealso [constructNWISURL()], [importRDB1()]
 #' @export
 #' @examplesIf is_dataRetrieval_user()
-#' site_ids <- c("01594440", "040851325")
+#' #site_ids <- c("01594440", "040851325")
 #' \donttest{
-#' data <- readNWISpeak(site_ids)
-#' data2 <- readNWISpeak(site_ids, asDateTime = FALSE)
-#' stations <- c("06011000")
-#' peakdata <- readNWISpeak(stations, convertType = FALSE)
+#' #data <- readNWISpeak(site_ids)
+#' #data2 <- readNWISpeak(site_ids, asDateTime = FALSE)
+#' #stations <- c("06011000")
+#' #peakdata <- readNWISpeak(stations, convertType = FALSE)
 #' }
-readNWISpeak <- function(siteNumbers,
-                         startDate = "",
-                         endDate = "",
-                         asDateTime = TRUE,
-                         convertType = TRUE) {
-
-  message(new_nwis_message())
-  
+readNWISpeak <- function(
+  siteNumbers,
+  startDate = "",
+  endDate = "",
+  asDateTime = TRUE,
+  convertType = TRUE
+) {
+  .Deprecated(
+    new = "read_waterdata_peaks",
+    package = "dataRetrieval",
+    msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_peaks."
+  )
   # Doesn't seem to be a peak xml service
   url <- constructNWISURL(
     siteNumbers = siteNumbers,
@@ -185,28 +184,32 @@ readNWISpeak <- function(siteNumbers,
     service = "peak"
   )
 
-  data <- importRDB1(url,
-    asDateTime = asDateTime,
-    convertType = convertType
-  )
+  data <- importRDB1(url, asDateTime = asDateTime, convertType = convertType)
 
   if (nrow(data) > 0) {
     if (asDateTime && convertType) {
       if ("peak_dt" %in% names(data)) {
-        if (any(nchar(as.character(data$peak_dt)) <= 7, na.rm = TRUE) ||
-          any(grepl("[0-9]*-[0-9]*-00", data$peak_dt), na.rm = TRUE)) {
-          stop("Not all dates could be converted to Date object. Use convertType=FALSE to retrieve the raw text")
+        if (
+          any(nchar(as.character(data$peak_dt)) <= 7, na.rm = TRUE) ||
+            any(grepl("[0-9]*-[0-9]*-00", data$peak_dt), na.rm = TRUE)
+        ) {
+          stop(
+            "Not all dates could be converted to Date object. Use convertType=FALSE to retrieve the raw text"
+          )
         } else {
           data$peak_dt <- as.Date(data$peak_dt, format = "%Y-%m-%d")
         }
         if (anyNA(data$peak_dt)) {
-          message("Some dates could not be converted to a valid date, and were returned as NA")
+          message(
+            "Some dates could not be converted to a valid date, and were returned as NA"
+          )
         }
       }
 
-      if ("ag_dt" %in% names(data)) data$ag_dt <- as.Date(data$ag_dt, format = "%Y-%m-%d")
+      if ("ag_dt" %in% names(data)) {
+        data$ag_dt <- as.Date(data$ag_dt, format = "%Y-%m-%d")
+      }
     }
-
 
     siteInfo <- suppressWarnings(readNWISsite(siteNumbers))
     siteInfo <- merge(
@@ -261,19 +264,22 @@ readNWISpeak <- function(siteNumbers,
 #' @examplesIf is_dataRetrieval_user()
 #' site_id <- "01594440"
 #' \donttest{
-#' data <- readNWISrating(site_id, "base")
-#' attr(data, "RATING")
+#' #data <- readNWISrating(site_id, "base")
+#' #attr(data, "RATING")
 #' }
 readNWISrating <- function(siteNumber, type = "base", convertType = TRUE) {
+  .Deprecated(
+    new = "read_waterdata_ratings",
+    package = "dataRetrieval",
+    msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_ratings."
+  )
 
-  message(new_nwis_message())
   # No rating xml service
   url <- constructNWISURL(siteNumber, service = "rating", ratingType = type)
 
   data <- importRDB1(url, asDateTime = FALSE, convertType = convertType)
 
   if ("current_rating_nu" %in% names(data)) {
-    intColumns <- intColumns[!("current_rating_nu" %in% names(data)[intColumns])]
     data$current_rating_nu <- gsub(" ", "", data$current_rating_nu)
   }
 
@@ -295,255 +301,6 @@ readNWISrating <- function(siteNumber, type = "base", convertType = TRUE) {
   return(data)
 }
 
-#' Surface-water measurement data retrieval from USGS (NWIS)
-#'
-#' Reads surface-water measurement data from NWISweb. 
-#'
-#' @param siteNumbers character USGS site number (or multiple sites).  This is usually an 8 digit number
-#' @param startDate character starting date for data retrieval in the form YYYY-MM-DD. Default is "" which indicates
-#' retrieval for the earliest possible record.
-#' @param endDate character ending date for data retrieval in the form YYYY-MM-DD. Default is "" which indicates
-#' retrieval for the latest possible record.
-#' @param tz character to set timezone attribute of dateTime. Default is "UTC", and converts the
-#' date times to UTC, properly accounting for daylight savings times based on the data's provided tz_cd column.
-#' Possible values to provide are "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
-#' "America/Anchorage", as well as the following which do not use daylight savings time: "America/Honolulu",
-#' "America/Jamaica", "America/Managua", "America/Phoenix", and "America/Metlakatla". See also  `OlsonNames()`
-#' for more information on time zones.
-#' @param expanded logical. Whether or not (TRUE or FALSE) to call the expanded data.
-#' @param convertType logical, defaults to `TRUE`. If `TRUE`, the function will
-#' convert the data to dates, datetimes,
-#' numerics based on a standard algorithm. If false, everything is returned as a character
-#' @return A data frame with at least the following columns:
-#' \tabular{lll}{
-#' Name \tab Type \tab Description \cr
-#' agency_cd \tab character \tab The NWIS code for the agency reporting the data\cr
-#' site_no \tab character \tab The USGS site number \cr
-#' measurement_dt \tab POSIXct \tab The date and time (in POSIXct) of the measurement. Unless specified
-#' with the tz parameter, this is converted to UTC. If the measurement_dt column is
-#' an incomplete, a measurement_dt_date and
-#' measurement_dt_time column are added to the returned data frame.   \cr
-#' tz_cd \tab character \tab The time zone code for the measurement_dt column \cr
-#' }
-#'
-#'
-#' There are also several useful attributes attached to the data frame:
-#' \tabular{lll}{
-#' Name \tab Type \tab Description \cr
-#' url \tab character \tab The url used to generate the data \cr
-#' queryTime \tab POSIXct \tab The time the data was returned \cr
-#' comment \tab character \tab Header comments from the RDB file \cr
-#' siteInfo \tab data.frame \tab A data frame containing information on the requested sites \cr
-#' tz_cd_reported \tab The originally reported time zone \cr
-#' }
-#' @seealso [constructNWISURL()], [importRDB1()]
-#' @export
-#' @examplesIf is_dataRetrieval_user()
-#' site_ids <- c("01594440", "040851325")
-#' \donttest{
-#' data <- readNWISmeas(site_ids)
-#' Meas05316840 <- readNWISmeas("05316840")
-#' Meas05316840.ex <- readNWISmeas("05316840", expanded = TRUE)
-#' Meas07227500.ex <- readNWISmeas("07227500", expanded = TRUE)
-#' Meas07227500.exRaw <- readNWISmeas("07227500", expanded = TRUE, convertType = FALSE)
-#' }
-readNWISmeas <- function(siteNumbers,
-                         startDate = "",
-                         endDate = "",
-                         tz = "UTC",
-                         expanded = FALSE,
-                         convertType = TRUE) {
-
-  .Deprecated(new = "read_waterdata_field_measurements",
-              package = "dataRetrieval", 
-              msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_field_measurements.")
-  
-  # Doesn't seem to be a WaterML1 format option
-  url <- constructNWISURL(
-    siteNumbers = siteNumbers,
-    parameterCd = NA,
-    startDate = startDate,
-    endDate = endDate,
-    service = "meas",
-    expanded = expanded
-  )
-
-  data <- importRDB1(
-    obs_url = url,
-    asDateTime = TRUE,
-    tz = tz,
-    convertType = convertType
-  )
-
-  if (nrow(data) > 0) {
-    if ("diff_from_rating_pc" %in% names(data)) {
-      data$diff_from_rating_pc <- as.numeric(data$diff_from_rating_pc)
-    }
-
-    url <- attr(data, "url")
-    comment <- attr(data, "comment")
-    queryTime <- attr(data, "queryTime")
-    header <- attr(data, "headerInfo")
-
-    if (convertType) {
-      data$measurement_dateTime <- data$measurement_dt
-      data$measurement_dt <- suppressWarnings(as.Date(data$measurement_dateTime))
-      data$measurement_tm <- strftime(data$measurement_dateTime, "%H:%M")
-      data$measurement_tm[is.na(data$tz_cd_reported)] <- ""
-      indexDT <- which("measurement_dt" == names(data))
-      indexTZ <- which("tz_cd" == names(data))
-      indexTM <- which("measurement_tm" == names(data))
-      indexTZrep <- which("tz_cd_reported" == names(data))
-      newOrder <- c(
-        1:indexDT, indexTM, indexTZrep,
-        c((indexDT + 1):ncol(data))[!(c((indexDT + 1):ncol(data)) %in%
-          c(indexTZrep, indexTM, indexTZ))],
-        indexTZ
-      )
-
-      data <- data[, newOrder]
-    }
-
-
-    siteInfo <- suppressWarnings(readNWISsite(siteNumbers))
-    siteInfo <- merge(
-      x = unique(data[, c("agency_cd", "site_no")]),
-      y = siteInfo,
-      by = c("agency_cd", "site_no"),
-      all.x = TRUE
-    )
-    attr(data, "url") <- url
-    attr(data, "comment") <- comment
-    attr(data, "queryTime") <- queryTime
-    attr(data, "header") <- header
-
-    attr(data, "siteInfo") <- siteInfo
-    attr(data, "variableInfo") <- NULL
-    attr(data, "statisticInfo") <- NULL
-  }
-
-  return(data)
-}
-
-#' Groundwater level measurements retrieval from USGS (NWIS)
-#'
-#' Imports groundwater level data from NWIS web service. 
-#' Inputs to this function are just USGS site ids, USGS parameter codes,
-#' and start and end date. For a more complex query, use [readNWISdata()],
-#' including an argument service="gwlevels".
-#' Not all parameter codes are available for all data.
-#' Use the function [whatNWISdata()] to discover what data
-#' is available for a USGS site. The column data_type_cd with the values "gw"
-#' returned from [whatNWISdata()]) are available from this service.
-#' 
-#' 
-#'
-#' @param siteNumbers character USGS site number (or multiple sites).  This is usually an 8 digit number
-#' @param startDate character starting date for data retrieval in the form YYYY-MM-DD. Default is "" which indicates
-#' retrieval for the earliest possible record.
-#' @param endDate character ending date for data retrieval in the form YYYY-MM-DD. Default is "" which indicates
-#' retrieval for the latest possible record.
-#' @param parameterCd character USGS parameter code.  This is usually an 5 digit number. Default is "".
-#' @param convertType logical, defaults to `TRUE`. If `TRUE`, the
-#' function will convert the data to dates, datetimes,
-#' numerics based on a standard algorithm. If false, everything is returned as a character
-#' @param tz character to set timezone attribute of dateTime. Default is "UTC", and converts the
-#' date times to UTC, properly accounting for daylight savings times based on the data's provided tz_cd column.
-#' Possible values to provide are "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
-#' "America/Anchorage", as well as the following which do not use daylight savings time: "America/Honolulu",
-#' "America/Jamaica", "America/Managua", "America/Phoenix", and "America/Metlakatla". See also  `OlsonNames()`
-#' for more information on time zones.
-#' @return A data frame with the following columns:
-#' \tabular{lll}{
-#' Name \tab Type \tab Description \cr
-#' agency_cd \tab character \tab The NWIS code for the agency reporting the data\cr
-#' site_no \tab character \tab The USGS site number \cr
-#' site_tp_cd \tab character \tab Site type code \cr
-#' lev_dt \tab Date \tab Date level measured\cr
-#' lev_tm \tab character \tab Time level measured \cr
-#' lev_tz_cd \tab character \tab Time datum \cr
-#' lev_va \tab numeric \tab Water level value in feet below land surface\cr
-#' sl_lev_va \tab numeric \tab Water level value in feet above specific vertical datum \cr
-#' lev_status_cd \tab character \tab The status of the site at the time the water level was measured \cr
-#' lev_agency_cd \tab character \tab The agency code of the person measuring the water level \cr
-#' }
-#'
-#' There are also several useful attributes attached to the data frame:
-#' \tabular{lll}{
-#' Name \tab Type \tab Description \cr
-#' url \tab character \tab The url used to generate the data \cr
-#' queryTime \tab POSIXct \tab The time the data was returned \cr
-#' comment \tab character \tab Header comments from the RDB file \cr
-#' siteInfo \tab data.frame \tab A data frame containing information on the requested sites \cr
-#' }
-#'
-#' @seealso [constructNWISURL()], [importRDB1()]
-#' @export
-#' @examplesIf is_dataRetrieval_user()
-#' #site_id <- "434400121275801"
-#' \donttest{
-#' #data <- readNWISgwl(site_id)
-#' #sites <- c("434400121275801", "375907091432201")
-#' #data2 <- readNWISgwl(sites, "", "")
-#' #data3 <- readNWISgwl("420125073193001", "", "")
-#' # handling of data where date has no day
-#' #data4 <- readNWISgwl("425957088141001", startDate = "1980-01-01")
-#'
-#' #data5 <- readNWISgwl("263819081585801", parameterCd = "72019")
-#' }
-readNWISgwl <- function(siteNumbers,
-                        startDate = "",
-                        endDate = "",
-                        parameterCd = NA,
-                        convertType = TRUE, tz = "UTC") {
-  
-  .Deprecated(new = "read_waterdata_field_measurements.",
-              package = "dataRetrieval", 
-              msg = "NWIS servers are slated for decommission. Please begin to migrate to read_waterdata_field_measurements.")
-  
-  message(new_nwis_message())
-  
-  url <- constructNWISURL(
-    siteNumbers = siteNumbers,
-    parameterCd = parameterCd,
-    startDate = startDate,
-    endDate = endDate,
-    service = "gwlevels",
-    format = "rdb"
-  )
-  
-  data <- importRDB1(
-    obs_url = url,
-    asDateTime = TRUE,
-    convertType = convertType,
-    tz = tz
-  )
-  
-  if(!all(is.na(parameterCd))){
-    data <- data[data$parameter_cd %in% parameterCd, ]
-  }
-
-  if (nrow(data) > 0 && !all(is.na(data$lev_dt))) {
-    if (convertType) {
-      # check that the date includes a day, based on date string length
-      if (any(nchar(as.character(data$lev_dt)) <= 7) || any(grepl("[0-9]*-[0-9]*-00", data$lev_dt))) {
-        message("Not all dates were converted to Date object. Returning raw text for date columns.")
-      } else {
-        data$lev_dt <- as.Date(data$lev_dt)
-      }
-    }
-    siteInfo <- suppressWarnings(readNWISsite(siteNumbers))
-    siteInfo <- merge(
-      x = unique(data[, c("agency_cd", "site_no")]),
-      y = siteInfo,
-      by = c("agency_cd", "site_no"),
-      all.x = TRUE
-    )
-    attr(data, "siteInfo") <- siteInfo
-  }
-
-  return(data)
-}
 
 #' Site statistics retrieval from USGS (NWIS)
 #'
@@ -585,35 +342,43 @@ readNWISgwl <- function(siteNumbers,
 #' @export
 #' @examplesIf is_dataRetrieval_user()
 #' \donttest{
-#' x1 <- readNWISstat(
-#'   siteNumbers = c("02319394"),
-#'   parameterCd = c("00060"),
-#'   statReportType = "annual"
-#' )
+#' # x1 <- readNWISstat(
+#' #   siteNumbers = c("02319394"),
+#' #   parameterCd = c("00060"),
+#' #   statReportType = "annual"
+#' # )
 #'
 #' # all the annual mean discharge data for two sites
-#' x2 <- readNWISstat(
-#'   siteNumbers = c("02319394", "02171500"),
-#'   parameterCd = c("00010", "00060"),
-#'   statReportType = "annual"
-#' )
+#' #x2 <- readNWISstat(
+#' #   siteNumbers = c("02319394", "02171500"),
+#' #   parameterCd = c("00010", "00060"),
+#' #   statReportType = "annual"
+#' # )
 #'
 #' # Request p25, p75, and mean values for temperature and discharge for the 2000s
 #' # Note that p25 and p75 were not available for temperature, and return NAs
-#' x <- readNWISstat(
-#'   siteNumbers = c("02171500"),
-#'   parameterCd = c("00010", "00060"),
-#'   statReportType = "daily",
-#'   statType = c("mean", "median"),
-#'   startDate = "2000", endDate = "2010"
-#' )
+#' #x <- readNWISstat(
+#' #   siteNumbers = c("02171500"),
+#' #   parameterCd = c("00010", "00060"),
+#' #   statReportType = "daily",
+#' #   statType = c("mean", "median"),
+#' #   startDate = "2000", endDate = "2010"
+#' # )
 #' }
-readNWISstat <- function(siteNumbers, parameterCd, startDate = "", endDate = "", convertType = TRUE,
-                         statReportType = "daily", statType = "mean") {
-  
-  .Deprecated(new = "read_waterdata_stats_por",
-              package = "dataRetrieval", 
-              msg = "NWIS servers are slated for decommission. Please begin to migrate to either read_waterdata_stats_por or read_waterdata_stats_daterange.")
+readNWISstat <- function(
+  siteNumbers,
+  parameterCd,
+  startDate = "",
+  endDate = "",
+  convertType = TRUE,
+  statReportType = "daily",
+  statType = "mean"
+) {
+  .Deprecated(
+    new = "read_waterdata_stats_por",
+    package = "dataRetrieval",
+    msg = "NWIS servers are slated for decommission. Please begin to migrate to either read_waterdata_stats_por or read_waterdata_stats_daterange."
+  )
 
   message(new_nwis_message())
   # check for NAs in site numbers
@@ -702,11 +467,4 @@ readNWISuse <- function(stateCd,
   return(NULL)
 
 
-}
-
-.capitalALL <- function(input) {
-  if (any(grepl("(?i)all", input))) {
-    input <- toupper(input)
-  }
-  return(input)
 }

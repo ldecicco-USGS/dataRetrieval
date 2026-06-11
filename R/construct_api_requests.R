@@ -1,526 +1,660 @@
 #' Create API url
-#' 
+#'
 #' Main documentation: <https://api.waterdata.usgs.gov/ogcapi/v0/>,
 #' Swagger docs: <https://api.waterdata.usgs.gov/ogcapi/v0/openapi?f=html>.
-#' 
+#'
 #' @export
 #' @param service Which service available on <https://api.waterdata.usgs.gov/ogcapi/v0/>.
+#' @param output_id Name of id column to return
 #' @param ... Extra parameters from the specific services.
 #' @param bbox Only features that have a geometry that intersects the bounding
 #' box are selected.The bounding box is provided as four or six numbers, depending
 #' on whether the coordinate reference system includes a vertical axis (height or
 #' depth).
-#' @param properties The properties that should be included for each feature. The
-#' parameter value is a comma-separated list of property names which depend on the
-#' service being called.
-#' @param skipGeometry This option can be used to skip response geometries for
-#' each feature. The returning object will be a data frame with no spatial
-#' information.
 #' @keywords internal
+#'
+#' @inheritParams check_arguments_api
+#' @inheritParams check_arguments_non_api
+#'
 #' @examples
 #' site <- "USGS-02238500"
 #' pcode <- "00060"
 #' req_dv <- construct_api_requests("daily",
+#'                                  output_id = "daily_id",
 #'                                  monitoring_location_id = site,
 #'                                  parameter_code = "00060")
 #'
 #' req_dv <- construct_api_requests("daily",
+#'                                  output_id = "daily_id",
 #'                                  monitoring_location_id = site,
 #'                                  parameter_code = c("00060", "00065"))
-#' 
+#'
 #' sites <- c("USGS-01491000", "USGS-01645000")
 #' start_date <- "2018-01-01"
 #' end_date <- "2022-01-01"
 #' req_dv <- construct_api_requests("daily",
-#'                                 monitoring_location_id = sites,
-#'                                 parameter_code = c("00060", "00065"),
-#'                                 datetime = c(start_date, end_date))
-#' 
-construct_api_requests <- function(service,
-                                   properties = NA_character_,
-                                   bbox = NA,
-                                   skipGeometry = FALSE,
-                                   no_paging = FALSE,
-                                   ...){
-  
+#'                                  output_id = "daily_id",
+#'                                  monitoring_location_id = sites,
+#'                                  parameter_code = c("00060", "00065"),
+#'                                  datetime = c(start_date, end_date))
+#'
+construct_api_requests <- function(
+  service,
+  output_id,
+  ...,
+  bbox = NA,
+  convertType = getOption("dataRetrieval.convertType"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+  limit = getOption("dataRetrieval.limit"),
+  attach_request = getOption("dataRetrieval.attach_request")
+) {
   POST <- FALSE
-  
-  single_params <- c("datetime", "last_modified", 
-                     "begin", "end", "time", "limit",
-                     "begin_utc", "end_utc")
-  comma_params <- c("monitoring_location_id", "parameter_code", 
-                    "statistic_id", "time_series_id",
-                    "computation_period_identifier",
-                    "computation_identifier")
-  
-  if(service %in% c("monitoring-locations", "parameter-codes", 
-                    "time-series-metadata")){
+
+  full_list <- list(...)
+  full_list[["limit"]] <- limit
+
+  check_arguments_non_api(
+    convertType = convertType,
+    no_paging = no_paging,
+    limit = full_list[["limit"]],
+    attach_request = attach_request,
+    chunk_size = chunk_size
+  )
+
+  check_arguments_api(
+    bbox = full_list[["bbox"]],
+    skipGeometry = full_list[["skipGeometry"]]
+  )
+
+  full_list <- switch_arg_id(
+    full_list,
+    id_name = output_id,
+    service = service
+  )
+
+  # Clean out non-API arguments:
+  properties <- switch_properties_id(
+    properties = full_list[["properties"]],
+    id = output_id
+  )
+
+  full_list[["properties"]] <- NULL
+
+  if (any(time_periods %in% names(full_list))) {
+    for (i in time_periods[time_periods %in% names(full_list)]) {
+      dates <- FALSE
+      if (all(service == "daily" & i != "last_modified")) {
+        dates <- TRUE
+      }
+      full_list[[i]] <- format_api_dates(full_list[[i]], date = dates)
+    }
+  }
+
+  single_params <- c(
+    "datetime",
+    "last_modified",
+    "begin",
+    "end",
+    "time",
+    "begin_utc",
+    "end_utc",
+    "limit",
+    "skipGeometry"
+  )
+
+  comma_params <- c(
+    "monitoring_location_id",
+    "parameter_code",
+    "statistic_id",
+    "time_series_id",
+    "computation_period_identifier",
+    "computation_identifier",
+    "data_type"
+  )
+
+  if (
+    service %in%
+      c(
+        "monitoring-locations",
+        "parameter-codes",
+        "time-series-metadata",
+        "field-measurements-metadata",
+        "combined-metadata"
+      )
+  ) {
     comma_params <- c(comma_params, "id")
   }
-  
-  full_list <- list(...)
-  
-  if(all(is.na(full_list)) & all(is.na(bbox))){
+
+  if (all(is.na(full_list)) & all(is.na(bbox))) {
     warning("No filtering arguments specified.")
   }
   # Figure out if the GET request will be > 2048 characters
   # and remove NA's from the comma parameters
-  comma_params_filtered <- Filter(Negate(anyNA), lapply(full_list[comma_params], function(x) x[!is.na(x)]))
-  comma_params_filtered <- comma_params_filtered[!sapply(comma_params_filtered,is.null)]
-  
+  comma_params_filtered <- Filter(
+    Negate(anyNA),
+    lapply(full_list[comma_params], function(x) x[!is.na(x)])
+  )
+
+  comma_params_filtered <- comma_params_filtered[
+    !sapply(comma_params_filtered, is.null)
+  ]
+
   single_params_filtered <- Filter(Negate(anyNA), full_list[single_params])
-  single_params_filtered <- single_params_filtered[!sapply(single_params_filtered,is.null)]
-  
-  force_post <- nchar(paste0(unlist(comma_params_filtered), collapse = ",")) > 2048
-  
-  if(force_post){
+  single_params_filtered <- single_params_filtered[
+    !sapply(single_params_filtered, is.null)
+  ]
+
+  force_post <- nchar(paste0(unlist(comma_params_filtered), collapse = ",")) >
+    2048
+
+  if (force_post) {
     get_list <- single_params_filtered
   } else {
     # GET list refers to arguments that will go in the URL no matter what (not POST)
-    get_list <- c(single_params_filtered, comma_params_filtered)    
+    get_list <- c(single_params_filtered, comma_params_filtered)
   }
 
-  get_list[["skipGeometry"]] <- skipGeometry
-  
   get_list <- get_list[!is.na(get_list)]
-  
-  time_periods <- c("last_modified", "datetime", "time", "begin", "end", "begin_utc", "end_utc")
-  if(any(time_periods %in% names(get_list))){
 
-    for(i in time_periods[time_periods %in% names(get_list)]){
-      dates <- FALSE
-      if (all(service == "daily" & i != "last_modified")){
-        dates <- TRUE
-      } 
-      get_list[[i]] <- format_api_dates(get_list[[i]], date = dates)
-      full_list[[i]] <- format_api_dates(full_list[[i]], date = dates) 
-    }
-  }
-  
   format_type <- ifelse(isTRUE(no_paging), "csv", "json")
-  
+
   baseURL <- setup_api(service, format = format_type)
   baseURL <- explode_query(baseURL, POST = FALSE, get_list, multi = "comma")
-  
-  if(all(!is.na(bbox))){
-    baseURL <- httr2::req_url_query(baseURL,
-                                    bbox = as.numeric(bbox),
-                                    .multi = "comma")      
+
+  if (all(!is.na(bbox))) {
+    baseURL <- httr2::req_url_query(
+      baseURL,
+      bbox = as.numeric(bbox),
+      .multi = "comma"
+    )
   }
-  
-  if(!all(is.na(properties))){
+
+  if (!all(is.na(properties))) {
     available_properties <- property_list[[service]]
-    
-    if(!all(properties %in% available_properties)){
+
+    if (!all(properties %in% available_properties)) {
       # Check again:
       schema <- check_OGC_requests(endpoint = service, type = "schema")
       properties_fresh <- names(schema$properties)
-      if(!all(properties %in% properties_fresh)){
-        stop("Invalid properties: ", 
-             paste0(properties[!properties %in% properties_fresh], collapse = ", "))
+      if (!all(properties %in% properties_fresh)) {
+        stop(
+          "Invalid properties: ",
+          paste0(properties[!properties %in% properties_fresh], collapse = ", ")
+        )
       }
     }
-    
-    baseURL <- httr2::req_url_query(baseURL,
-                                    properties = properties,
-                                    .multi = "comma")    
+
+    baseURL <- httr2::req_url_query(
+      baseURL,
+      properties = properties,
+      .multi = "comma"
+    )
   }
-  
+
   #POST list are the arguments that need to be in the POST body
   post_list <- full_list[!names(full_list) %in% names(get_list)]
-  
+
   post_params <- explode_post(post_list)
-  
+
   # Should we do a POST?
   POST = length(post_params) > 0
-  
-  if(POST){
+
+  if (POST) {
     baseURL <- baseURL |>
-      httr2::req_headers(`Content-Type` = "application/query-cql-json") 
-    
-    post_params <- list(
-      "params" = unname(post_params)
-    )
-    
-    template_path_post <- system.file("templates/post.CQL2", package = "dataRetrieval")
-    template_post <- readChar(template_path_post, file.info(template_path_post)$size)
-    
-    x <- whisker::whisker.render(template_post, post_params)
-    baseURL <- httr2::req_body_raw(baseURL, x) 
-    
+      httr2::req_headers(`Content-Type` = "application/query-cql-json")
+
+    if (length(post_params) > 1) {
+      post_params <- list(
+        "params" = unname(post_params)
+      )
+
+      template_path_post <- system.file(
+        "templates/post.CQL2",
+        package = "dataRetrieval"
+      )
+      template_post <- readChar(
+        template_path_post,
+        file.info(template_path_post)$size
+      )
+
+      x <- whisker::whisker.render(template_post, post_params)
+    } else {
+      x <- post_params[[1]]
+    }
+
+    baseURL <- httr2::req_body_raw(baseURL, x)
   } else {
     baseURL <- explode_query(baseURL, POST = FALSE, full_list, multi = "comma")
   }
-  
+
   return(baseURL)
 }
 
-check_limits <- function(args){
-  current_api_limit <- 50000
-  
-  if(is.na(args[["limit"]])){
-    args[["limit"]] <- current_api_limit
-  } 
-  
-  return(args)
-}
 
 #' Setup the request for the OGC API requests
-#' 
+#'
 #' @noRd
 #' @return httr2 request
 #' @examplesIf is_dataRetrieval_user()
-#' 
+#'
 #' \donttest{
 #' request <- dataRetrieval:::base_url()
 #' request
 #' }
-base_url <- function(){
-  
-  httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |> 
-    httr2::req_url_path_append(getOption("dataRetrieval.api_version")) 
+base_url <- function() {
+  httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |>
+    httr2::req_url_path_append(getOption("dataRetrieval.api_version"))
 }
 
 #' Setup the request for a particular endpoint collection
-#' 
+#'
 #' @noRd
 #' @return httr2 request
 #' @examplesIf is_dataRetrieval_user()
-#' 
+#'
 #' \donttest{
 #' request <- dataRetrieval:::setup_api("daily")
 #' request
 #' }
-setup_api <- function(service, format = "json"){
-  
-  baseURL <- base_url() |> 
-    httr2::req_url_path_append("collections") |> 
-    httr2::req_url_path_append(service, "items") |> 
-    basic_request(format = format) 
-  
+setup_api <- function(service, format = "json") {
+  baseURL <- base_url() |>
+    httr2::req_url_path_append("collections") |>
+    httr2::req_url_path_append(service, "items") |>
+    basic_request(format = format)
 }
 
 #' Switch endpoint id arg
-#' 
+#'
 #' @noRd
 #' @return list
 #' @examples
-#' 
+#'
 #' l1 <- list("id" = "1234")
-#' dataRetrieval:::switch_arg_id(l1, 
+#' dataRetrieval:::switch_arg_id(l1,
 #'                               id_name = "monitoring_location_id",
 #'                               service = "monitoring-locations")
-#'                               
+#'
 #' l2 <- list("monitoring_location_id" = "1234")
-#' dataRetrieval:::switch_arg_id(l2, 
+#' dataRetrieval:::switch_arg_id(l2,
 #'                               id_name = "monitoring_location_id",
 #'                               service = "monitoring-locations")
-#'                               
+#'
 #' l3 <- list("monitoring_locations_id" = "1234")
-#' dataRetrieval:::switch_arg_id(l3, 
+#' dataRetrieval:::switch_arg_id(l3,
 #'                               id_name = "monitoring_location_id",
 #'                               service = "monitoring-locations")
-#' 
-switch_arg_id <- function(ls, id_name, service){
-
+#'
+switch_arg_id <- function(ls, id_name, service) {
   service_id <- paste0(gsub("-", "_", service), "_id")
-  if(!"id" %in% names(ls)){
-    if(service_id %in% names(ls)){
+  if (!"id" %in% names(ls)) {
+    if (service_id %in% names(ls)) {
       ls[["id"]] <- ls[[service_id]]
     } else {
       ls[["id"]] <- ls[[id_name]]
     }
   }
-  
+
   ls[[service_id]] <- NULL
   ls[[id_name]] <- NULL
   return(ls)
 }
 
 #' Format the date request
-#' 
-#' Users will want to give either start/end dates or 
-#' period requests. 
-#' 
+#'
+#' Users will want to give either start/end dates or
+#' period requests.
+#'
 #' @param datetime character, Date, or POSIX
 #' @param date logical, whether to return Date or POSIX
-#' 
+#'
 #' @noRd
 #' @return character vector with a length of either 1 or 2.
 #' @examples
-#' 
+#'
 #' start_end <- c("2021-01-01", "2022-01-01")
 #' dataRetrieval:::format_api_dates(start_end, date = TRUE)
 #' dataRetrieval:::format_api_dates(start_end, date = FALSE)
-#' 
+#'
 #' start_end <- c("", "")
 #' dataRetrieval:::format_api_dates(start_end)
-#' 
+#'
 #' period <- "P7D"
 #' dataRetrieval:::format_api_dates(period)
-#' 
+#'
 #' start <- c("2021-01-01", NA)
 #' dataRetrieval:::format_api_dates(start)
 #' dataRetrieval:::format_api_dates(start, TRUE)
-#' 
+#'
 #' end <- c(NA, "2021-01-01")
 #' dataRetrieval:::format_api_dates(end)
 #' dataRetrieval:::format_api_dates(end, TRUE)
-#' 
-#' end <- c(NA, as.POSIXct("2021-01-01 12:15:00"))
+#'
+#' end <- as.POSIXct(c(NA, "2021-01-01 12:15:00"))
 #' dataRetrieval:::format_api_dates(end)
-#' 
-#' start_end <- as.POSIXct(c("2021-01-01 12:15:00", 
+#'
+#' start_end <- as.POSIXct(c("2021-01-01 12:15:00",
 #'                           "2022-01-01 16:45"))
 #' dataRetrieval:::format_api_dates(start_end)
-#' 
-#' start_end <- as.POSIXct(c("2021-01-01 12:15:00", 
-#'                           "2022-01-01 16:45"), 
+#'
+#' start_end <- as.POSIXct(c("2021-01-01 12:15:00",
+#'                           "2022-01-01 16:45"),
 #'                           tz = "America/New_York")
-#'                           
+#'
 #' dataRetrieval:::format_api_dates(start_end)
-#' 
+#'
 #' # If you don't specify a timezone, it will assume UTC
 #' start_end2 <- c("2021-01-01 12:15:00", "")
 #' dataRetrieval:::format_api_dates(start_end2)
-#' 
+#'
 #' # If you do specify a timezone, it should maintain it, but convert to UTC:
 #' start_end2 <- c("2021-01-01T12:15:00-0500", "")
 #' dataRetrieval:::format_api_dates(start_end2)
-#' 
+#'
 #' time = c("2014-05-01T00:00:00Z", "2014-05-01T12:00:00Z")
 #' dataRetrieval:::format_api_dates(time)
-#' 
+#'
 #' time = c("2014-05-01T00:00Z", "2014-05-01T12:00Z")
 #' dataRetrieval:::format_api_dates(time)
-#' 
+#'
 #' start <- "2025-10-01"
 #' end <- Sys.Date()
 #' dataRetrieval:::format_api_dates(c(start, end), date = TRUE)
-format_api_dates <- function(datetime, date = FALSE){
-  
-  if(is.character(datetime)){
+#'
+#' # This is a problem because the first value forces the
+#' # vector to be numeric, and then we don't really
+#' # know if the 2nd value is a Date (number of days since 1970)
+#' # or if it's a date/time (number of seconds..)
+#' half_range <- c(NA, as.Date("2025-01-01"))
+#' # Will error:
+#' #dataRetrieval:::format_api_dates(half_range, date = FALSE)
+#' # Better way to do it:
+#' better_half <- as.Date(c(NA, "2025-01-01"))
+#' dataRetrieval:::format_api_dates(better_half, date = FALSE)
+format_api_dates <- function(datetime, date = FALSE) {
+  if (is.character(datetime)) {
     datetime[datetime == ""] <- NA
     datetime <- toupper(datetime)
   }
-  
-  if(all(is.na(datetime))){
+
+  if (all(is.na(datetime)) | all(is.null(datetime))) {
     return(NA)
   }
-  
-  if(all(is.null(datetime))){
-    return(NA)
-  }
-  
-  if(length(datetime) > 2){
+
+  if (length(datetime) > 2) {
     stop("datetime should only include 1-2 values")
   }
 
-  if(length(datetime) == 1){
-    # If the user has "P" or the "/" we assume they know what they are doing
-    if(grepl("P", datetime, ignore.case = TRUE) |
-       grepl("/", datetime)){
-      return(datetime)
-    } else {
+  if (is.numeric(datetime)) {
+    # Until we can figure out a way to know if the
+    # original input was suppose to be Date or Posix
+    # We can't determine what the user meant.
+    stop(
+      "A time query was entered as numeric. This could lead to errors.
+Check any time queries that might have been automatically converted to numeric.
+This could happen if you use c(NA, as.Date(Sys.Date())) instead of
+as.Date(c(NA, Sys.Date()) for example."
+    )
+  }
 
-      if(date){
-        datetime <- get_Date(datetime)
-      } else {
-        datetime1 <- get_dateTime(datetime)
-        datetime <- lubridate::format_ISO8601(datetime1, usetz = "Z")
-      }
+  if (length(datetime) == 1) {
+    # If the user has "P" or the "/" we assume they know what they are doing
+    if (
+      grepl("P", datetime, ignore.case = TRUE) |
+        grepl("/", datetime)
+    ) {
+      return(datetime)
+    }
+
+    if (date) {
+      datetime <- get_Date(datetime)
+    } else {
+      datetime1 <- get_dateTime(datetime)
+      datetime <- lubridate::format_ISO8601(datetime1, usetz = "Z")
     }
   } else if (length(datetime) == 2) {
-
-    if(date){
-      for(i in seq_along(datetime)){
+    if (date) {
+      for (i in seq_along(datetime)) {
         datetime[i] <- get_Date(datetime[i])
       }
       datetime <- paste0(datetime, collapse = "/")
     } else {
-      for(i in seq_along(datetime)){
-        datetime1 <- get_dateTime(datetime)
-      }
-      datetime <- paste0(lubridate::format_ISO8601(datetime1, usetz = "Z"), 
-                         collapse = "/")
+      datetime1 <- lapply(datetime, get_dateTime)
+      datetime <- paste0(
+        vapply(datetime1, lubridate::format_ISO8601, character(1), usetz = "Z"),
+        collapse = "/"
+      )
     }
 
     datetime <- gsub("NA", "..", datetime)
-  } 
-  
+  }
+
   return(datetime)
 }
 
-get_dateTime <- function(d){
-  
+get_dateTime <- function(d) {
   temp_date <- tryCatch({
     strptime(d, format = "%Y-%m-%dT%H:%MZ", tz = "UTC")
   })
-  
-  if(all(is.na(temp_date))){
-    temp_date <- tryCatch({
-      lubridate::as_datetime(d)
-    },
-    error = function(e) {
-      NA
-    })    
+
+  if (all(is.na(temp_date))) {
+    temp_date <- tryCatch(
+      {
+        lubridate::as_datetime(d)
+      },
+      error = function(e) {
+        NA
+      }
+    )
   }
-  
+
   return(temp_date)
-  
 }
 
-get_Date <- function(d){
-  temp_date <- tryCatch({
-    as.Date(d)
-  },
-  error = function(e) {
-    "try again"
-  })
-  
-  if(is.na(temp_date)){
-    return("..")
-  } else if(as.character(temp_date) == "try again"){
-    temp_date <- tryCatch({
-      as.Date(as.numeric(d), origin = "1970-01-01")
+get_Date <- function(d) {
+  temp_date <- tryCatch(
+    {
+      as.Date(d)
     },
     error = function(e) {
       "try again"
-    })        
+    }
+  )
+
+  if (is.na(temp_date)) {
+    return("..")
+  } else if (as.character(temp_date) == "try again") {
+    temp_date <- tryCatch(
+      {
+        as.Date(as.numeric(d), origin = "1970-01-01")
+      },
+      error = function(e) {
+        "try again"
+      }
+    )
   }
-  
+
   return(as.character(temp_date))
 }
 
 
 #' Turn request list into POST body cql
-#' 
+#'
 #' @noRd
 #' @return character vector of CQL filters
 #' @examplesIf is_dataRetrieval_user()
-#' 
+#'
 #' \donttest{
-#' 
+#'
 #' query_list <- list(monitoring_location_id = c("USGS-01491000",
 #'                                               "USGS-01645000"),
 #'                    parameter_code = c("00060", "00010"))
-#' 
+#'
 #' dataRetrieval:::explode_post(query_list)
-#' 
+#'
 #' }
-explode_post <- function(ls){
-  
+explode_post <- function(ls) {
   ls <- Filter(Negate(anyNA), ls)
   params <- NULL
-  
-  if(length(ls) > 0){
-    if(max(lengths(ls)) > 1) {
-      
-      for(i in seq_along(ls)){
+
+  if (length(ls) > 0) {
+    if (max(lengths(ls)) > 1) {
+      for (i in seq_along(ls)) {
         params[names(ls[i])] <- cql2_param(ls[i])
       }
-      
-      if(length(params) > 1){
-        params[seq_along(1:(length(params)-1))] <- paste0(params[seq_along(1:(length(params)-1))], ",")
+
+      if (length(params) > 1) {
+        params[seq_along(1:(length(params) - 1))] <- paste0(
+          params[seq_along(1:(length(params) - 1))],
+          ","
+        )
       }
     }
   }
-  return(params)  
+  return(params)
 }
 
 #' Create CQL parameters
-#' 
+#'
 #' Helps to give more informative messages on some errors.
-#' 
+#'
 #' @param parameter named vector
 #' @noRd
 #' @return list
 #' @examples
-#' 
+#'
 #' parameter <- list("monitoring_location_id" = c("USGS-02238500",
 #'                                                "USGS-01491000"))
 #' dataRetrieval:::cql2_param(parameter)
-#' 
-cql2_param <- function(parameter){
-  template_path <- system.file("templates/param.CQL2", package = "dataRetrieval")
-  template <- readChar(template_path, file.info(template_path)$size)
-  
-  parameters <- paste0(unlist(parameter), collapse = '", "')
-  parameters <- paste0('"', parameters, '"')
-  parameter_list <- list("property" = names(parameter),
-                         "parameter" = parameters)
-  return(whisker::whisker.render(template, parameter_list))
-} 
+#'
+cql2_param <- function(parameter) {
+  # Wildcards:
+  if (names(parameter) %in% c("hydrologic_unit_code")) {
+    template_path <- system.file(
+      "templates/param.CQL2.like",
+      package = "dataRetrieval"
+    )
+    template <- readChar(template_path, file.info(template_path)$size)
 
+    params <- c()
+    for (i in parameter[[1]]) {
+      parameter_list <- list("property" = names(parameter), "parameter" = i)
+      params <- c(params, whisker::whisker.render(template, parameter_list))
+    }
+    template_path_or <- system.file(
+      "templates/post.CQL2.or",
+      package = "dataRetrieval"
+    )
+    template_or <- readChar(template_path_or, file.info(template_path_or)$size)
+
+    post_params <- list(
+      "params" = paste0(params, collapse = ", ")
+    )
+    cql_text <- whisker::whisker.render(template_or, post_params)
+  } else {
+    # INs
+    parameters <- paste0(unlist(parameter), collapse = '", "')
+    parameters <- paste0('"', parameters, '"')
+    parameter_list <- list(
+      "property" = names(parameter),
+      "parameter" = parameters
+    )
+
+    template_path <- system.file(
+      "templates/param.CQL2",
+      package = "dataRetrieval"
+    )
+    template <- readChar(template_path, file.info(template_path)$size)
+
+    cql_text <- whisker::whisker.render(template, parameter_list)
+  }
+
+  return(cql_text)
+}
 
 
 #' Custom Error Messages
-#' 
+#'
 #' Helps to give more informative messages on some errors.
-#' 
+#'
 #' @param resp httr2 response
 #' @return list
 #' @noRd
 #' @examplesIf is_dataRetrieval_user()
-#' 
+#'
 #' \donttest{
-#' check_collections <- dataRetrieval:::base_url() |> 
-#'   httr2::req_url_path_append("openapi") |> 
+#' check_collections <- dataRetrieval:::base_url() |>
+#'   httr2::req_url_path_append("openapi") |>
 #'   httr2::req_url_query(f = "html#/server/getCollections")
-#'   
+#'
 #' collect_request <- dataRetrieval:::basic_request(check_collections)
-#' query_ret <- httr2::req_perform(collect_request) 
+#' query_ret <- httr2::req_perform(collect_request)
 #' dataRetrieval:::error_body(query_ret)
 #' }
-#' 
+#'
 error_body <- function(resp) {
   status <- httr2::resp_status(resp)
-  if(status == 429){
+  if (status == 429) {
     x <- httr2::resp_body_json(resp)$error
     return(x[["message"]])
-  } else if (status == 403){
-    return("Query request denied. Possible reasons include query exceeding server limits.")
+  } else if (status == 403) {
+    return(
+      "Query request denied. Possible reasons include query exceeding server limits."
+    )
   }
 }
 
 
 #' Basic request to API services
-#' 
+#'
 #' Automatically includes json format, gzip encoding, dataRetrieval
 #' user agents, and the X-Api-Key token if available.
-#' 
+#'
 #' @param url_base httr2 request
 #' @return list
 #' @noRd
 #' @examplesIf is_dataRetrieval_user()
-#' 
+#'
 #' \donttest{
-#' check_collections <- dataRetrieval:::base_url() |> 
-#'   httr2::req_url_path_append("openapi") |> 
+#' check_collections <- dataRetrieval:::base_url() |>
+#'   httr2::req_url_path_append("openapi") |>
 #'   httr2::req_url_query(f = "html#/server/getCollections")
 #' collect_request <- dataRetrieval:::basic_request(check_collections)
 #' collect_request
 #' }
-#' 
-basic_request <- function(url_base, format = "json"){
-  
-  req <- url_base |> 
-    httr2::req_user_agent(default_ua()) |> 
-    httr2::req_headers(`Accept-Encoding` = c("compress", "gzip")) |> 
-    httr2::req_url_query(f = format,
-                         lang = "en-US") |> 
-    httr2::req_error(body = error_body) |> 
+#'
+basic_request <- function(url_base, format = "json") {
+  req <- url_base |>
+    httr2::req_user_agent(default_ua()) |>
+    httr2::req_headers(`Accept-Encoding` = c("compress", "gzip")) |>
+    httr2::req_url_query(f = format, lang = "en-US") |>
+    httr2::req_error(body = error_body) |>
+    httr2::req_retry(max_tries = 3, retry_on_failure = TRUE) |>
     httr2::req_timeout(seconds = 180)
-  
+
+  req <- add_api_token(req)
+
+  return(req)
+}
+
+add_api_token <- function(req) {
   token <- Sys.getenv("API_USGS_PAT")
-  
-  if(token != ""){
+  if (token != "") {
     req <- req |>
       httr2::req_headers_redacted(`X-Api-Key` = token)
   }
-  
-  return(req)
-  
+  req
 }
 
-
+# Treat these columns as time:
+time_periods <- c(
+  "last_modified",
+  "datetime",
+  "time",
+  "begin",
+  "end",
+  "begin_utc",
+  "end_utc",
+  "revision_created",
+  "revision_modified"
+)

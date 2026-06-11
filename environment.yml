@@ -1,0 +1,14 @@
+name: dataretrieval
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.10
+  - pip
+  - dataretrieval
+  - matplotlib-base
+  - geopandas
+  - pyqt
+  - folium>=0.12
+  - mapclassify
+prefix: /home/user/miniforge3/envs/dataretrieval

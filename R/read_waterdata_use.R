@@ -1,4 +1,4 @@
-#' Get USGS Daily Data
+#' Get USGS Water Use Data
 #' 
 #' @description USGS's National Water Availability Assessment Data Companion
 #' (NWDC) offers web services that provide access to national-scale USGS

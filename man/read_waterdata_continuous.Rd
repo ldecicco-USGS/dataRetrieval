@@ -15,9 +15,12 @@ read_waterdata_continuous(
   value = NA,
   last_modified = NA_character_,
   time = NA_character_,
-  limit = NA,
-  convertType = TRUE,
-  no_paging = FALSE
+  ...,
+  convertType = getOption("dataRetrieval.convertType"),
+  limit = getOption("dataRetrieval.limit"),
+  no_paging = getOption("dataRetrieval.no_paging"),
+  chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
+  attach_request = getOption("dataRetrieval.attach_request")
 )
 }
 \arguments{
@@ -31,7 +34,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, continuous_id, internal_id, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
+geometry, continuous_id, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.
@@ -73,23 +76,37 @@ Only features that have a \code{time} that intersects the value of datetime are 
 
 See also Details below for more information.}
 
-\item{limit}{The optional limit parameter is used to control the subset of the
+\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
+
+\item{convertType}{logical, defaults to TRUE.
+If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
+vector and reorder the returned data frame.}
+
+\item{limit}{numeric, The optional limit parameter is used to control the subset of the
 selected features that should be returned in each page. The maximum allowable
-limit is 50000. It may be beneficial to set this number lower if your internet
+limit is 50,000. It may be beneficial to set this number lower if your internet
 connection is spotty. The default (\code{NA}) will set the limit to the maximum
 allowable limit for the service.}
 
-\item{convertType}{logical, defaults to \code{TRUE}. If \code{TRUE}, the function
-will convert the data to dates and qualifier to string vector, and sepcifically
-order the returning data frame by time and monitoring_location_id.}
-
-\item{no_paging}{logical, defaults to \code{FALSE}. If \code{TRUE}, the data will
+\item{no_paging}{logical, defaults to FALSE.
+If \code{TRUE}, the data will
 be requested from a native csv format. This can be dangerous because the
 data will cut off at 50,000 rows without indication that more data
 is available. Use \code{TRUE} with caution.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions that don't generally return long-term data records
+is 250, while
+the default for time series functions is
+10.
+Setting to \code{NA} will eliminate site chunking, giving users full control.}
+
+\item{attach_request}{logical, defaults to TRUE.
+If set to \code{TRUE}, the full request sent to the Water Data API is attached
+as an attribute to the data set.}
 }
 \description{
-This is an early version of the continuous endpoint. It is feature-complete and provides access to the full continuous data record, and is being made available as we continue to work on performance improvements.
 Continuous data are collected via automated sensors installed at a monitoring location. They are collected at a high frequency and often at a fixed 15-minute interval. Depending on the specific monitoring location, the data may be transmitted automatically via telemetry and be available on WDFN within minutes of collection, while other times the delivery of data may be delayed if the monitoring location does not have the capacity to automatically transmit data. Continuous data are described by parameter name and parameter code (pcode). These data might also be referred to as "instantaneous values" or "IV".
 
 Currently, the services only allow up to 3 years of data to be requested with
@@ -124,10 +141,10 @@ site <- "USGS-451605097071701"
 pcode <- "72019"
 
 uv_data_trim <- read_waterdata_continuous(monitoring_location_id = site,
-                           parameter_code = pcode, 
+                           parameter_code = pcode,
                            properties = c("value", "time"),
-                           time = as.POSIXct(c("2026-02-07 12:00", 
-                                               "2026-02-08 12:00"), 
+                           time = as.POSIXct(c("2026-02-07 12:00",
+                                               "2026-02-08 12:00"),
                                               tz = "America/Chicago"))
 
 uv_data <- read_waterdata_continuous(monitoring_location_id = site,
@@ -135,11 +152,43 @@ uv_data <- read_waterdata_continuous(monitoring_location_id = site,
                            time = "P2D")
 
 
-# Only return data that has been modified in last 7 days         
+# Only return data that has been modified in last 7 days
 multi_site2 <- read_waterdata_continuous(monitoring_location_id =  c("USGS-451605097071701",
                                                                      "USGS-14181500"),
                                                parameter_code = c("00060", "72019"),
                                                last_modified = "P7D")
+
+# how to split up request into roughly 3 year chunks
+
+site <- "USGS-0208458892"
+pcode <- "00095" # Specific conductance
+start <- as.Date("2013-01-01")
+end <- as.Date("2025-12-31")
+
+n_days <- difftime(end, start, units = "days")
+
+# create a vector of dates that are about 3 years apart:
+time_chunks <- seq(from = start,
+                   to = end,
+                   length.out = ceiling(n_days/(3*365.25)) + 1)
+
+
+# create a list where each element starts at the beginning
+# of a chunk, and ends the day before the next chunk:
+time_df <- data.frame(start = time_chunks[-length(time_chunks)],
+                      end = time_chunks[-1]-1)
+
+#all_data <- data.frame()
+#for(i in seq_along(time_df$start)){
+#   sub_df <- read_waterdata_continuous(monitoring_location_id = site,
+#                                       parameter_code = pcode,
+#                                      time = c(time_df$start[i],
+#                                                time_df$end[i]))
+#   all_data <- rbind(all_data, sub_df)
+# }
+
+# Set the time to Eastern:
+# all_data$time <- lubridate::force_tz(all_data$time, "America/New_York")
 
 }
 \dontshow{\}) # examplesIf}

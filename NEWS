@@ -1,4 +1,36 @@
-dataRetrieval 2.7.22.9000
+dataRetrieval 2.7.25
+===================
+* Added read_waterdata_ratings to access USGS rating curves with
+new modern endpoint.
+* Added read_waterdata_peaks to access USGS peak data with
+new modern endpoint.
+* Increase flexibility of chunking by monitoring_location_id by 
+including it as an argument in each relevant waterdata OGC function.
+* Clean up deprecated code.
+* Updated retry strategy to include retry_on_failure = TRUE.
+* Added countries, methods, method-categories, method-citations, and
+citations to possible values in read_waterdata_metadata.
+* Added field_measurements_series_id argument to read_waterdata_field_measurement
+* Removed NWIS tests
+* Introduce an error if user inputs a numeric to any of the "time" arguments.
+Because it is impossible to tell if they intended Dates or POSIX, we cannot
+know for sure and therefore could add incorrect filters to the query.
+* The "id" column that comes back from read_waterdata_field_meta was changed to
+field_measurements_series_id to match the expectation of `read_waterdata_field_measurements`
+* New argument added to read_waterdata_stats_por: "normal_type" accepts
+"DOY" and "MOY"
+* New argument added to read_waterdata_stats_daterange: "interval_type" accepts
+"M" (month), "CY" (calendar year), and "WY" (water year).
+
+
+dataRetrieval 2.7.24
+===================
+* Let dataRetrieval take care of chunking up requests by monitoring_location_id.
+* Fixed bug causing some character columns in importWQP to be numeric
+* Fixed bug causing open ended date requests in waterdata funcitons to 
+return full period of record.
+
+dataRetrieval 2.7.23
 ===================
 * Added data.table to Imports
 * Added read_waterdata_stats_por and read_waterdata_stats_daterange to access USGS daily data statistics.
@@ -12,6 +44,13 @@ request object as an attribute to the returned data frames. Setting
 options("dataRetrieval.attach_request" = FALSE) will return a data frame without
 the request attribute
 * Improved time documentation
+* Improved error handling in WQP functions
+* Added read_waterdata_field_meta, read_waterdata_combine_meta, 
+and read_waterdata_channel
+* Removed readNWISgwl and readNWISmeas as services have been turned off
+* Updated CQL2 templates to allow HUC queries specifically to use a wildcard
+to get multiple inclusive HUCs.
+* Add deprecation message to readNGWMN functions. read_ngwmn will be coming soon.
 
 
 dataRetrieval 2.7.22
