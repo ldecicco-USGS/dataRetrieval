@@ -67,8 +67,9 @@ site <- "AKDNR-535134236016630"
 ngwmn_lith <- read_ngwmn_lithology(monitoring_location_id = site)
 
 
-sites <- c("ISWS-P428197", "ISWS-P428197",
-           "AKDNR-535143966816631", "AKDNR-535134236016630")
+sites <- c("ISWS-P428197",
+           "AKDNR-535143966816631",
+           "AKDNR-535134236016630")
 ngwml_lith_sites <- read_ngwmn_lithology(monitoring_location_id = sites)
 
 }

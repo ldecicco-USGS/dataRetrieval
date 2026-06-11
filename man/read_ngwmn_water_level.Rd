@@ -98,7 +98,7 @@ site <- "USGS-272838082142201"
 ngwmn_wl <- read_ngwmn_water_level(monitoring_location_id = site)
 
 ngwmn_wl_sub <- read_ngwmn_water_level(monitoring_location_id = site,
-                     monitoring_location_obs_number = 1:10)
+                     monitoring_location_obs_number = 1:5)
 
 ngwml_wl_time2 <- read_ngwmn_water_level(monitoring_location_id = site,
                      datetime = c("2022-01-01", "2024-01-01"))
