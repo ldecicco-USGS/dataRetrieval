@@ -147,6 +147,8 @@ read_waterdata_ratings <- function(
     httr2::req_url_query(limit = limit) |>
     basic_request()
 
+  message("Requesting:\n", request$url)
+  
   resp <- httr2::req_perform(request)
   log_rate_limit(resp)
 
