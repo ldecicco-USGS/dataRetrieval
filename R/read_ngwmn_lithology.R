@@ -38,6 +38,12 @@ read_ngwmn_lithology <- function(
   attach_request = getOption("dataRetrieval.attach_request")
 ) {
   service <- "lithologyObs"
+  
+  # Check for mandatory arguments:
+  if(is.na(monitoring_location_id)){
+    stop("monitoring_location_id is a mandatory argument.")
+  }
+  
   rlang::check_dots_empty()
   args <- mget(names(formals()))
 

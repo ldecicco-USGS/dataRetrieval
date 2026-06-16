@@ -77,7 +77,7 @@ See also Details below for more information.}
 
 \item{peak_since}{If not null, this record represents the peak value for the parameter code since the year contained in "peak_since".}
 
-\item{qualifier}{}
+\item{qualifier}{This field indicates any qualifiers associated with an observation, for instance if a sensor may have been impacted by ice or if values were estimated.}
 
 \item{skipGeometry}{This parameter can be used to skip response geometries for
 each feature. The returning object will be a data frame with no spatial

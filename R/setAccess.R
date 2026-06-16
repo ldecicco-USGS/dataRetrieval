@@ -76,7 +76,5 @@ Please contact comptools@usgs.gov for more information."
   pkg.env$samplesData <- "https://api.waterdata.usgs.gov/samples-data/summary"
   pkg.env$status <- "https://www.waterqualitydata.us/wqx3/status/"
 
-  pkg.env$NGWMN <- "https://cida.usgs.gov/ngwmn_cache/sos"
-  # pkg.env$NGWMN <- "https://www.usgs.gov/apps/ngwmn/ngwmn_cache/sos"
   # nolint end
 }

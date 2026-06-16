@@ -23,8 +23,8 @@
 #' `r get_ogc_params("waterLevelObs", base = "NGWMN")$water_level_above_navd88_ft$description`
 #'
 #' @param datetime
-#' `r get_ogc_params("waterLevelObs", base = "NGWMN")$sample_time$descriptiond`
-#' Multiple time_series_ids can be requested as a character vector.
+#' `r get_ogc_params("waterLevelObs", base = "NGWMN")$sample_time$description`
+#' 
 #' @param properties A vector of requested columns to be returned from the query.
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("waterLevelObs", base = "NGWMN")`.
@@ -68,6 +68,12 @@ read_ngwmn_water_level <- function(
   attach_request = getOption("dataRetrieval.attach_request")
 ) {
   service <- "waterLevelObs"
+  
+  # Check for mandatory arguments:
+  if(is.na(monitoring_location_id)){
+    stop("monitoring_location_id is a mandatory argument.")
+  }
+  
   rlang::check_dots_empty()
   args <- mget(names(formals()))
 

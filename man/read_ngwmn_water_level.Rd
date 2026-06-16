@@ -55,7 +55,15 @@ Available options are:
 agency_code, monitoring_location_number, monitoring_location_id, monitoring_location_obs_number, sample_time, orig_unit, orig_value, accuracy_unit, accuracy_value, obs_datum_cd, obs_comment, obs_method, data_provided_by, water_depth_below_land_surface_ft, water_level_above_site_datum_ft, monitoring_location_vertical_datum, water_level_above_navd88_ft.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{datetime}{Multiple time_series_ids can be requested as a character vector.}
+\item{datetime}{The date of an observation. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+Examples:
+\itemize{
+\item A date-time: "2018-02-12T23:20:50-00:00"
+\item A bounded interval:"2018-02-12T00:00:00+05:00/2018-03-18T12:31:12+05:00"
+\item Half-bounded intervals: "2018-02-12T00:00:00-05:00/.." or "../2018-03-18T12:31:12-05:00"
+}
+
+Only features that have a \code{sample_time} that intersects the value of datetime are selected. If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.}
 
 \item{...}{Not used. Included to help differentiate official Water Data API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
