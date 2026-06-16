@@ -59,7 +59,7 @@ get_collection <- function(base = "OGC") {
 #' available, it will also contain a description.
 #'
 #' @param service Character, can be any of the USGS Waterdata API endpoints or collections.
-#' @param base Either "OGC" for waterdata, or "NGWMN".
+#' @param base Either "OGC" for waterdata, or "NGWMN" for National Groundwater Monitoring Network.
 #' @return list
 #' @export
 #' @examplesIf is_dataRetrieval_user()
