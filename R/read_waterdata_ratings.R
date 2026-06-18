@@ -204,14 +204,12 @@ parse_ratings_metadata <- function(ratings_df) {
   if (is.null(raw_comments)) {
     return(data.frame(
       header = character(),
-      value = character(),
-      stringsAsFactors = FALSE
+      value = character()
     ))
   }
 
   com <- data.frame(
-    line = raw_comments,
-    stringsAsFactors = FALSE
+    line = raw_comments
   )
 
   # remove whitespace
@@ -254,8 +252,7 @@ parse_ratings_metadata <- function(ratings_df) {
           sub("^[A-Za-z0-9_]+\\s*=\\s*", "", kv_flat, perl = TRUE)
         )
       )
-    ),
-    stringsAsFactors = FALSE
+    )
   )
 
   # handle data with colons
@@ -277,8 +274,7 @@ parse_ratings_metadata <- function(ratings_df) {
       trimws(
         sub("^[A-Z][A-Z _-]+:\\s*", "", colon_lines, perl = TRUE)
       )
-    ),
-    stringsAsFactors = FALSE
+    )
   )
 
   # parse any lines that don't fit other patterns
@@ -298,16 +294,14 @@ parse_ratings_metadata <- function(ratings_df) {
       trimws(
         sub("^[A-Z][A-Z _-]+\\s*", "", other_lines, perl = TRUE)
       )
-    ),
-    stringsAsFactors = FALSE
+    )
   )
 
   # combine into one dataframe to be added to list object
   final <- rbind(
     data.frame(
       header = "WARNING",
-      value = warning_block,
-      stringsAsFactors = FALSE
+      value = warning_block
     ),
     pairs_df,
     date_df,
