@@ -5,8 +5,8 @@
 \title{Generalized NGWMN API retrieval function}
 \usage{
 read_ngwmn(
-  CQL,
   service,
+  CQL = NA_character_,
   monitoring_location_id = NA_character_,
   ...,
   convertType = getOption("dataRetrieval.convertType"),
@@ -15,8 +15,6 @@ read_ngwmn(
 )
 }
 \arguments{
-\item{CQL}{A string in a Common Query Language format.}
-
 \item{service}{character, can be any existing collection. Can be:
 "providers", "constructionObs", "waterLevelObs", "sites", or "lithologyObs".
 The date of an observation. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
@@ -30,6 +28,10 @@ Examples:
 Only features that have a \code{sample_time} that intersects the value of datetime are selected. If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
 
 See also Details below for more information.}
+
+\item{CQL}{A string in a Common Query Language format.}
+
+\item{monitoring_location_id}{This field is required. Combined site identifier of agency code and site number (format of  \code{{agency_code}}-\code{{monitoring_location_number}}). A list of values can be passed for this field, seperated by commas.}
 
 \item{\dots}{Additional arguments to send to the request.}
 
@@ -57,12 +59,10 @@ for more information.
 
 \donttest{
 cql <- '{
-"op": "and",
-"args": 
-   "op": "between",
+ "op": "between",
    "args": [
       { "property": "water_level_above_navd88_ft" },
-      [ "100.00", "120.00" ]
+      [ "100.00", "200.00" ]
    ]
 }'
 

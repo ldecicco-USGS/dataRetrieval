@@ -169,13 +169,12 @@ test_that("peak, rating curves, surface-water measurements", {
   expect_equal(unique(gwl_1$monitoring_location_id), siteID)
 
   # No data:
-  stations <- "06011000"
-  expect_message(readNWISpeak(
-    stations,
-    startDate = "2024-08-01",
-    endDate = "2024-08-31",
-    convertType = FALSE
-  ))
+
+  no_data <- read_waterdata_peaks(
+    monitoring_location_id = "USGS-06011000",
+    time = c("2024-08-01", "2024-08-31")
+  )
+  expect_equal(nrow(no_data), 0)
 })
 
 test_that("read_waterdata_daily", {

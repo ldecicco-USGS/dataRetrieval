@@ -11,6 +11,7 @@
 #' `r get_ogc_params("waterLevelObs", base = "NGWMN")$sample_time$description`
 #' See also Details below for more information.
 #' @param CQL A string in a Common Query Language format.
+#' @param monitoring_location_id `r get_ogc_params("waterLevelObs", base = "NGWMN")$monitoring_location_id$description`
 #' @param convertType logical, defaults to `TRUE`. If `TRUE`, the function
 #' will convert the data to dates and qualifier to string vector.
 #' @param \dots Additional arguments to send to the request.
@@ -20,12 +21,10 @@
 #'
 #' \donttest{
 #' cql <- '{
-#' "op": "and",
-#' "args": 
-#'    "op": "between",
+#'  "op": "between",
 #'    "args": [
 #'       { "property": "water_level_above_navd88_ft" },
-#'       [ "100.00", "120.00" ]
+#'       [ "100.00", "200.00" ]
 #'    ]
 #' }'
 #'
@@ -61,8 +60,8 @@
 #'
 #' }
 read_ngwmn <- function(
-    CQL,
     service,
+    CQL = NA_character_,
     monitoring_location_id = NA_character_,
     ...,
     convertType = getOption("dataRetrieval.convertType"),
@@ -81,8 +80,6 @@ read_ngwmn <- function(
     if(all(is.na(monitoring_location_id))){
       args[["monitoring_location_id"]] <- "ALL"
     }
-    
-    
   } else {
     if(is.na(monitoring_location_id)){
       args[["monitoring_location_id"]] <- NULL
@@ -103,12 +100,16 @@ read_ngwmn <- function(
   args[["output_id"]] <- "id"
   args[["base"]] <- "NGWMN"
   args[["service"]] <- service
-  args[["..."]] <- NULL
+
   data_req <- suppressWarnings(do.call(construct_api_requests, args))
   
-  data_req <- data_req |>
-    httr2::req_headers(`Content-Type` = "application/query-cql-json") |>
-    httr2::req_body_raw(CQL)
+  if(isTRUE(!is.na(CQL) | CQL == "")){
+    data_req <- data_req |>
+      httr2::req_headers(`Content-Type` = "application/query-cql-json") |>
+      httr2::req_body_raw(CQL)    
+  } 
+  
+  message("Requesting:\n", data_req$url)
   
   return_list <- walk_pages(data_req)
   
@@ -132,6 +133,11 @@ read_ngwmn <- function(
     return_list <- order_results(return_list)
     return_list <- move_id_col(return_list, args[["output_id"]])
   }
+  
+  if (args[["attach_request"]]) {
+    attr(return_list, "request") <- data_req
+  }
+  attr(return_list, "queryTime") <- Sys.time()
   
   return(return_list)
 }
