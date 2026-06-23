@@ -43,7 +43,7 @@ read_ngwmn_well_construction <- function(
 ) {
   service <- "constructionObs"
   # Check for mandatory arguments:
-  if(is.na(monitoring_location_id)){
+  if(all(is.na(monitoring_location_id))){
     stop("monitoring_location_id is a mandatory argument.")
   }
   

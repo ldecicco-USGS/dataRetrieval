@@ -9,7 +9,7 @@ get_ogc_params(service, base = "OGC")
 \arguments{
 \item{service}{Character, can be any of the USGS Waterdata API endpoints or collections.}
 
-\item{base}{Either "OGC" for waterdata, or "NGWMN".}
+\item{base}{Either "OGC" for waterdata, or "NGWMN" for National Groundwater Monitoring Network.}
 }
 \value{
 list

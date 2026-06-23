@@ -69,7 +69,7 @@ NGWMN contributing providers
 
 ngwmn_providers <- read_ngwmn_providers(state = "WI")
 
-ngwml_providers2 <- read_ngwmn_providers(state = c("WI", "MN"))
+ngwml_providers2 <- read_ngwmn_providers(state = c("WI", "CA", "AZ", "MN"))
 
 org_type <- read_ngwmn_providers(organization_type = "NWIS", state = c("WI", "MN"))
 
