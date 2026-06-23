@@ -33,47 +33,47 @@
 #' @examplesIf is_dataRetrieval_user()
 #' 
 #' \donttest{
-#' wu1 <- read_waterdata_use(model = "wu-public-supply-wd",
-#'                           variable = c("pswdtot", "pswdgw", "pswdsw"),
-#'                           location = "stateCd:RI",
-#'                           startdate = "2020-01",
-#'                           timeres = "monthly")
+#' wu1 <- read_wateruse(model = "wu-public-supply-wd",
+#'                      variable = c("pswdtot", "pswdgw", "pswdsw"),
+#'                      location = "stateCd:RI",
+#'                      startdate = "2020-01",
+#'                      timeres = "monthly")
 #'                                
-#' wu2 <- read_waterdata_use(model = "wu-thermoelectric",
-#'                           variable = c('tecufgw', 'tecufsw', 'tecuftot',
-#'                                        'tewdfgw', 'tewdfsw', 'tewdftot',
-#'                                        'tewdssw'),
-#'                           location = "stateCd:RI",
-#'                           startdate = "2020-01",
-#'                           timeres = "monthly")
-#'                                
-#' wu3 <- read_waterdata_use(model = "wu-irrigation-cu",
-#'                           variable = "irrcutot",
-#'                           location = "stateCd:WI",
-#'                           startdate = "2020-01",
-#'                           timeres = "monthly")
+#' wu2 <- read_wateruse(model = "wu-thermoelectric",
+#'                      variable = c('tecufgw', 'tecufsw', 'tecuftot',
+#'                                   'tewdfgw', 'tewdfsw', 'tewdftot',
+#'                                   'tewdssw'),
+#'                      location = "stateCd:RI",
+#'                      startdate = "2020-01",
+#'                      timeres = "monthly")
 #'
-#' wu4 <- read_waterdata_use(model = "wu-irrigation-wd",
-#'                           variable = c("irrwdtot", "irrwdgw", "irrwdsw"),
-#'                           location = "huc2:04",
-#'                           startdate = "2015",
-#'                           timeres = "annualcy")
-#'                                
-#' wu5 <- read_waterdata_use(model = "wu-public-supply-cu",
-#'                           variable = "pscutot",
-#'                           location = "stateCd:WI",
-#'                           startdate = "2020",
-#'                           timeres = "annualwy")
+#' wu3 <- read_wateruse(model = "wu-irrigation-cu",
+#'                      variable = "irrcutot",
+#'                      location = "stateCd:WI",
+#'                      startdate = "2020-01",
+#'                      timeres = "monthly")
+#'
+#' wu4 <- read_wateruse(model = "wu-irrigation-wd",
+#'                      variable = c("irrwdtot", "irrwdgw", "irrwdsw"),
+#'                      location = "huc2:04",
+#'                      startdate = "2015",
+#'                      timeres = "annualcy")
+#'          
+#' wu5 <- read_wateruse(model = "wu-public-supply-cu",
+#'                      variable = "pscutot",
+#'                      location = "stateCd:WI",
+#'                      startdate = "2020",
+#'                      timeres = "annualwy")
 #' }
-read_waterdata_use <- function(model = NA_character_,
-                               variable = NA_character_,
-                               location = NA_character_,
-                               timeres = NA_character_,
-                               startdate = NA_character_,
-                               enddate = NA_character_,
-                               intersection = "overlap",
-                               limit = 500,
-                               attach_request = getOption("dataRetrieval.attach_request")){
+read_wateruse <- function(model = NA_character_,
+                          variable = NA_character_,
+                          location = NA_character_,
+                          timeres = NA_character_,
+                          startdate = NA_character_,
+                          enddate = NA_character_,
+                          intersection = "overlap",
+                          limit = 500,
+                          attach_request = getOption("dataRetrieval.attach_request")){
   
   match.arg(intersection, choices = c("overlap", "envelop"), several.ok = FALSE)
   match.arg(model, choices = c("wu-public-supply-wd",
@@ -120,7 +120,6 @@ read_waterdata_use <- function(model = NA_character_,
     }
   }
 
-  
   args <- mget(names(formals()))
 
   args[["attach_request"]] <- NULL
@@ -137,9 +136,7 @@ read_waterdata_use <- function(model = NA_character_,
     httr2::req_url_query(format = format ) |> 
     httr2::req_error(body = error_body) |> 
     httr2::req_timeout(seconds = 180)
-  
-  baseURL <- add_api_token(baseURL)
-  
+
   baseURL <- explode_query(baseURL, POST = FALSE, args, multi = "comma")
   
   message("Requesting:\n", baseURL$url)
