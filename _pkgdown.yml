@@ -118,7 +118,7 @@ reference:
   - title: National Ground-Water Monitoring Network
     desc: Functions to retrieve NGWMN data.
     contents:
-      - read_ngwmn_water_levels
+      - read_ngwmn_water_level
       - read_ngwmn_sites
       - read_ngwmn_providers
       - read_ngwmn_well_construction
