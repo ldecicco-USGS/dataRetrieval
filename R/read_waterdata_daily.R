@@ -100,7 +100,7 @@ read_waterdata_daily <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
-  return_list <- get_ogc_data(args, output_id, service)
+  return_list <- get_ogc_data(args, output_id, service, base = "OGC")
 
   return(return_list)
 }

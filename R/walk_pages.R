@@ -47,6 +47,10 @@ get_resp_data <- function(resp) {
   
   return_df <- coerce_qualifier_cols(return_df, is_sf = TRUE)
 
+  if ("altitude_accuracy" %in% names(return_df)) {
+    return_df$altitude_accuracy <- as.character(return_df$altitude_accuracy)
+  }
+
   if (!use_sf) {
     return_df <- sf::st_drop_geometry(return_df)
     if ("AsGeoJSON(geometry)" %in% names(return_df)) {

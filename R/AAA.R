@@ -78,6 +78,7 @@ pkg.env <- new.env()
     "time_zone_code"
   )
 
+  num_cols <- c()
   pkg.env$api_endpoints <- services
   pkg.env$metadata <- collections
 }

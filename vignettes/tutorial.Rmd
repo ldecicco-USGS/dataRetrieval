@@ -441,9 +441,11 @@ There are two services that also have functions in `dataRetrieval`, the National
 Similar to WQP, the NGWMN brings groundwater data from multiple sources into a single location. There are currently a few `dataRetrieval` functions included:
 
 
-*  `readNGWMNsites()`
-*  `readNGWMNlevels()`
-*  `readNGWMNdata()`.
+* `read_ngwmn_sites`
+* `read_ngwmn_water_levels`
+* `read_ngwmn_providers`
+* `read_ngwmn_well_construction`
+* `read_ngwmn_lithology`
 
 ## Network Linked Data Index (NLDI)
 

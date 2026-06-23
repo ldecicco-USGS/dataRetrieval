@@ -22,16 +22,3 @@ dec_lat_va, dec_lon_va \tab numeric \tab Site latitude and longitude \cr
 \description{
 Retrieve site data from the National Ground Water Monitoring Network.
 }
-\examples{
-\dontshow{if (is_dataRetrieval_user()) withAutoprint(\{ # examplesIf}
-\donttest{
-# one site
-site <- "USGS.430427089284901"
-#oneSite <- readNGWMNsites(siteNumbers = site)
-
-# non-USGS site
-site <- "MBMG.103306"
-#siteInfo <- readNGWMNsites(siteNumbers = site)
-}
-\dontshow{\}) # examplesIf}
-}

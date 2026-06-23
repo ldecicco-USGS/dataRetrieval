@@ -9,6 +9,7 @@ construct_api_requests(
   output_id,
   ...,
   bbox = NA,
+  base = "OGC",
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
   chunk_size = getOption("dataRetrieval.site_chunk_size_data"),

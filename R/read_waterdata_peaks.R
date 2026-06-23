@@ -22,6 +22,7 @@
 #' @param day `r get_ogc_params("peaks")$day`
 #' @param time_of_day `r get_ogc_params("peaks")$time_of_day`
 #' @param peak_since `r get_ogc_params("peaks")$peak_since`
+#' @param qualifier `r get_ogc_params("peaks")$qualifier`
 #' @param properties A vector of requested columns to be returned from the query.
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("peaks", "peak_id")`.
@@ -78,6 +79,7 @@ read_waterdata_peaks <- function(
   day = NA_character_,
   time_of_day = NA_character_,
   peak_since = NA_character_,
+  qualifier = NA_character_,
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
