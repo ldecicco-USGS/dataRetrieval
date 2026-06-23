@@ -461,7 +461,7 @@ readNWISuse <- function(stateCd,
                         convertType = TRUE,
                         transform = FALSE) {
 
-  .Deprecated(new = "read_waterdata_use_data in development",
+  .Deprecated(new = "read_waterdata_use",
               package = "dataRetrieval", 
               msg = "NWIS servers for water use have been decommission. New functions are being developed.")
   return(NULL)
