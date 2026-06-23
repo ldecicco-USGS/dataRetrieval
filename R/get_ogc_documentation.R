@@ -3,6 +3,7 @@
 #' This function populates the parameter descriptions.
 #'
 #' @param service Character, can be any of the endpoints
+#' @param base Character, can be "OGC" or "NGWMN"
 #' @return list
 #' @noRd
 #' @examplesIf is_dataRetrieval_user()
@@ -10,10 +11,13 @@
 #' \donttest{
 #' ml_desc <- dataRetrieval:::get_description("monitoring-locations")
 #' ml_desc
+#'
+#' wl_desc <- dataRetrieval:::get_description("waterLevelObs", base = "NGWMN")
+#' wl_desc
 #' }
 #'
-get_description <- function(service) {
-  query_ret <- get_collection()
+get_description <- function(service, base = "OGC") {
+  query_ret <- get_collection(base)
 
   tags <- query_ret[["tags"]]
 
@@ -36,8 +40,8 @@ get_description <- function(service) {
 #' collection
 #' }
 #'
-get_collection <- function() {
-  check_collections <- base_url() |>
+get_collection <- function(base = "OGC") {
+  check_collections <- base_url(base = base) |>
     httr2::req_url_path_append("openapi") |>
     httr2::req_url_query(f = "html#/server/getCollections")
 
@@ -55,6 +59,7 @@ get_collection <- function() {
 #' available, it will also contain a description.
 #'
 #' @param service Character, can be any of the USGS Waterdata API endpoints or collections.
+#' @param base Either "OGC" for waterdata, or "NGWMN" for National Groundwater Monitoring Network.
 #' @return list
 #' @export
 #' @examplesIf is_dataRetrieval_user()
@@ -64,8 +69,8 @@ get_collection <- function() {
 #' ml$national_aquifer_code
 #' }
 #'
-get_ogc_params <- function(service) {
-  check_queryables_req <- base_url() |>
+get_ogc_params <- function(service, base = "OGC") {
+  check_queryables_req <- base_url(base) |>
     httr2::req_url_path_append("collections") |>
     httr2::req_url_path_append(service) |>
     httr2::req_url_path_append("schema") |>
@@ -74,7 +79,13 @@ get_ogc_params <- function(service) {
   query_ret <- httr2::req_perform(check_queryables_req) |>
     httr2::resp_body_json()
 
-  params <- sapply(query_ret$properties, function(x) x[["description"]])
+  if (base == "OGC") {
+    params <- sapply(query_ret$properties, function(x) x[["description"]])
+  } else if (base == "NGWMN") {
+    params <- query_ret$properties
+  }
+
+  params
 }
 
 
@@ -85,6 +96,7 @@ get_ogc_params <- function(service) {
 #'
 #' @param service Character, can be any of the endpoints
 #' @param output_id Character, dataRetrieval output name
+#' @param base Character, either "OGC" or "NGWMN"
 #' @return list
 #' @noRd
 #' @examplesIf is_dataRetrieval_user()
@@ -93,10 +105,14 @@ get_ogc_params <- function(service) {
 #' dataRetrieval:::get_properties_for_docs("monitoring-locations",
 #'                                         "monitoring_location_id")
 #'
+#' dataRetrieval:::get_properties_for_docs("waterLevelObs",
+#'                                         base = "NGWMN")
+#'
 #' }
 #'
-get_properties_for_docs <- function(service, output_id = NA) {
-  schema <- check_OGC_requests(endpoint = service, type = "schema")
+get_properties_for_docs <- function(service, output_id = NA, base = "OGC") {
+  schema <- check_OGC_requests(endpoint = service, type = "schema", base = base)
+
   properties <- names(schema$properties)
   if (!is.na(output_id)) {
     properties[properties == "id"] <- output_id
@@ -109,6 +125,7 @@ get_properties_for_docs <- function(service, output_id = NA) {
 #'
 #' @param endpoint Character, can be any existing collection
 #' @param type Character, can be "queryables", "schema"
+#' @param base Character, can be "OGC" or "NGWMN"
 #' @export
 #' @keywords internal
 #' @return list
@@ -124,13 +141,24 @@ get_properties_for_docs <- function(service, output_id = NA) {
 #'                                 type = "queryables")
 #' ts_meta_schema <- check_OGC_requests(endpoint = "time-series-metadata",
 #'                                 type = "schema")
+#'
+#' ngwml <- check_OGC_requests(endpoint = "waterLevelObs",
+#'                             type = "schema",
+#'                             base = "NGWMN")
 #' }
-check_OGC_requests <- function(endpoint = "daily", type = "queryables") {
+check_OGC_requests <- function(
+  endpoint = "daily",
+  type = "queryables",
+  base = "OGC"
+) {
   match.arg(type, c("queryables", "schema"))
+  match.arg(base, c("OGC", "NGWMN"))
 
-  match.arg(endpoint, c(pkg.env$api_endpoints, pkg.env$metadata))
+  if (base == "OGC") {
+    match.arg(endpoint, c(pkg.env$api_endpoints, pkg.env$metadata))
+  }
 
-  req <- base_url() |>
+  req <- base_url(base) |>
     httr2::req_url_path_append("collections") |>
     httr2::req_url_path_append(endpoint) |>
     httr2::req_url_path_append(type) |>

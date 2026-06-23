@@ -12,37 +12,11 @@
 #' "America/Jamaica", "America/Managua", "America/Phoenix", and "America/Metlakatla". See also  `OlsonNames()`
 #' for more information on time zones.
 #' @export
-#' @examplesIf is_dataRetrieval_user()
-#' \donttest{
-#' # one site
-#' site <- "USGS.430427089284901"
-#' #oneSite <- readNGWMNdata(siteNumbers = site, service = "observation")
-#'
-#' # multiple sites
-#' sites <- c("USGS.272838082142201", "USGS.404159100494601", "USGS.401216080362703")
-#' # Very slow:
-#' # multiSiteData <- readNGWMNdata(siteNumbers = sites, service = "observation")
-#' # attributes(multiSiteData)
-#'
-#' # non-USGS site
-#' # accepts colon or period between agency and ID
-#' site <- "MBMG:702934"
-#' # data <- readNGWMNdata(siteNumbers = site, service = "featureOfInterest")
-#'
-#' # bounding box
-#' # bboxSites <- readNGWMNdata(service = "featureOfInterest", bbox = c(30, -102, 31, 99))
-#' # retrieve  sites.  Set asDateTime to false since one site has an invalid date
-#' # Very slow:
-#' # bboxData <- readNGWMNdata(service = "observation", siteNumbers = bboxSites$site[1:3],
-#' #                           asDateTime = FALSE)
-#' }
-#'
 readNGWMNdata <- function(service, ..., asDateTime = TRUE, tz = "UTC") {
   .Deprecated(
-    "",
-    msg = "read_ngwmn_data coming soon. Check back at
-              https://doi-usgs.github.io/dataRetrieval/articles/Status.html
-              for more information"
+    new = "read_ngwmn_water_level",
+    package = "dataRetrieval",
+    msg = "Updated NGWMN APIs will use read_ngwmn set of functions."
   )
 
   dots <- convertLists(...)
@@ -64,7 +38,10 @@ readNGWMNdata <- function(service, ..., asDateTime = TRUE, tz = "UTC") {
     attr_list <- vector("list", length(featureID))
     for (idx in seq_along(featureID)) {
       obsFID <- retrieveObservation(
-        featureID = featureID[idx], asDateTime, attrs, tz = tz
+        featureID = featureID[idx],
+        asDateTime,
+        attrs,
+        tz = tz
       )
       attr_list[[idx]] <- saveAttrs(attrs, obsFID)
       obs_list[[idx]] <- removeAttrs(attrs, obsFID)
@@ -120,25 +97,6 @@ readNGWMNdata <- function(service, ..., asDateTime = TRUE, tz = "UTC") {
 #' "America/Jamaica", "America/Managua", "America/Phoenix", and "America/Metlakatla". See also  `OlsonNames()`
 #' for more information on time zones.
 #' @export
-#'
-#' @examplesIf is_dataRetrieval_user()
-#' \donttest{
-#' # one site
-#' site <- "USGS.430427089284901"
-#' # oneSite <- readNGWMNlevels(siteNumbers = site)
-#'
-#' # multiple sites
-#' sites <- c("USGS:272838082142201", "USGS:404159100494601", "USGS:401216080362703")
-#' # multiSiteData <- readNGWMNlevels(sites)
-#'
-#' # non-USGS site
-#' site <- "MBMG.103306"
-#' # data <- readNGWMNlevels(siteNumbers = site, asDateTime = FALSE)
-#'
-#' # site with no data returns empty data frame
-#' noDataSite <- "UTGS.401544112060301"
-#' # noDataSite <- readNGWMNlevels(siteNumbers = noDataSite)
-#' }
 readNGWMNlevels <- function(siteNumbers, asDateTime = TRUE, tz = "UTC") {
   data <- readNGWMNdata(
     siteNumbers = siteNumbers,
@@ -162,16 +120,7 @@ readNGWMNlevels <- function(siteNumbers, asDateTime = TRUE, tz = "UTC") {
 #' description \tab char \tab Site description \cr
 #' dec_lat_va, dec_lon_va \tab numeric \tab Site latitude and longitude \cr
 #' }
-#' @examplesIf is_dataRetrieval_user()
-#' \donttest{
-#' # one site
-#' site <- "USGS.430427089284901"
-#' #oneSite <- readNGWMNsites(siteNumbers = site)
-#'
-#' # non-USGS site
-#' site <- "MBMG.103306"
-#' #siteInfo <- readNGWMNsites(siteNumbers = site)
-#' }
+
 readNGWMNsites <- function(siteNumbers) {
   sites <- readNGWMNdata(
     siteNumbers = siteNumbers,

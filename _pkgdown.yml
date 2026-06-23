@@ -83,14 +83,14 @@ reference:
       - read_waterdata_parameter_codes
       - read_waterdata_metadata
       - read_waterdata
-      - summarize_waterdata_samples
-      - check_waterdata_sample_params
-      - get_ogc_params
       - read_waterdata_channel
       - read_waterdata_field_meta
       - read_waterdata_combined_meta
       - read_waterdata_ratings
       - read_waterdata_peaks
+      - read_waterdata_use
+      - summarize_waterdata_samples
+      - check_waterdata_sample_params
   - title: National Water Information System (NWIS)
     desc:  Functions to retrieve (USGS) NWIS data. These will be slowly phased out and replaced with the read_waterdata family of functions.
     contents:
@@ -119,9 +119,12 @@ reference:
   - title: National Ground-Water Monitoring Network
     desc: Functions to retrieve NGWMN data.
     contents:
-      - readNGWMNlevels
-      - readNGWMNsites
-      - readNGWMNdata
+      - read_ngwmn_water_levels
+      - read_ngwmn_sites
+      - read_ngwmn_providers
+      - read_ngwmn_well_construction
+      - read_ngwmn_lithology
+      - read_ngwmn
   - title: Network Linked Data Index
     desc: Functions to interface with the NLDI.
     contents:
@@ -161,3 +164,4 @@ reference:
       - getWebServiceData
       - is_dataRetrieval_user
       - checkWQPdates
+      - get_ogc_params

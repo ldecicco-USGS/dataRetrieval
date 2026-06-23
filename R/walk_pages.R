@@ -43,15 +43,12 @@ get_resp_data <- function(resp) {
   
   return_df <- coerce_num_cols(return_df, is_sf = TRUE)
   
-  if ("qualifier" %in% names(return_df)) {
-    return_df$qualifier <- as.character(vapply(
-      X = return_df$qualifier,
-      FUN = function(x) {
-        x[is.na(x)] <- ""
-        paste(x, collapse = ", ")
-      },
-      FUN.VALUE = c(NA_character_)
-    ))
+  return_df <- coerce_time_cols(return_df, is_sf = TRUE)
+  
+  return_df <- coerce_qualifier_cols(return_df, is_sf = TRUE)
+  
+  if ("altitude_accuracy" %in% names(return_df)) {
+    return_df$altitude_accuracy <- as.character(return_df$altitude_accuracy)
   }
   
   if (!use_sf) {
@@ -119,7 +116,9 @@ get_csv <- function(req, limit) {
       colClasses = "character"
     )
     
-    df <- coerce_num_cols(df)
+    df <- coerce_num_cols(df, is_sf = FALSE)
+    
+    df <- coerce_time_cols(df, is_sf = FALSE)
     
     if (skip_geo) {
       df <- df[, names(df)[!names(df) %in% c("x", "y")]]
@@ -140,6 +139,39 @@ ensure all requested data is returned."
     df <- data.frame()
   }
   
+  return(df)
+}
+
+coerce_qualifier_cols <- function(df, is_sf = FALSE){
+  
+  if ("qualifier" %in% names(df)) {
+    df$qualifier <- as.character(vapply(
+      X = df$qualifier,
+      FUN = function(x) {
+        x[is.na(x)] <- ""
+        paste(x, collapse = ", ")
+      },
+      FUN.VALUE = c(NA_character_)
+    ))
+  }
+  return(df)
+}
+
+coerce_time_cols <- function(df, is_sf = FALSE){
+  included_time_cols <- names(df)[names(df) %in% time_periods]
+  if (length(included_time_cols) == 0) {
+    return(df)
+  }
+  
+  check_df <- if (is_sf) {
+    sf::st_drop_geometry(df[, included_time_cols, drop = FALSE])
+  } else {
+    df[, included_time_cols, drop = FALSE]
+  }
+  
+  if (any(vapply(check_df, is.character, TRUE))) {
+    df[, included_time_cols] <- lapply(check_df, function(x) as.POSIXct(x, tz = "UTC"))
+  }
   return(df)
 }
 
