@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #' @return data.frame with attributes
-get_ogc_data <- function(args, output_id, service) {
+get_ogc_data <- function(args, output_id, service, base = "OGC") {
   chunk_size <- args[["chunk_size"]]
   args[["..."]] <- NULL
 
@@ -20,7 +20,12 @@ get_ogc_data <- function(args, output_id, service) {
 
     rl <- lapply(ml_splits, function(x) {
       args[["monitoring_location_id"]] <- x
-      get_ogc_data(args = args, output_id = output_id, service = service)
+      get_ogc_data(
+        args = args,
+        output_id = output_id,
+        service = service,
+        base = base
+      )
     })
 
     rl_filtered <- rl[
@@ -35,6 +40,7 @@ get_ogc_data <- function(args, output_id, service) {
   } else {
     args[["output_id"]] <- output_id
     args[["service"]] <- service
+    args[["base"]] <- base
 
     req <- do.call(construct_api_requests, args)
 
@@ -48,13 +54,13 @@ get_ogc_data <- function(args, output_id, service) {
       return_list <- walk_pages(req)
     }
 
-    return_list <- deal_with_empty(
-      return_list,
-      args[["properties"]],
-      service,
-      isTRUE(args[["skipGeometry"]]),
-      args[["convertType"]],
-      no_paging
+    return_list <- deal_with_empty(return_list = return_list,
+                                   properties = args[["properties"]],
+                                   service = service,
+                                   skipGeometry = isTRUE(args[["skipGeometry"]]),
+                                   convertType = args[["convertType"]],
+                                   no_paging = no_paging, 
+                                   base = base
     )
 
     return_list <- rejigger_cols(return_list, args[["properties"]], output_id)
