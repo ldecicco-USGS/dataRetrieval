@@ -85,7 +85,6 @@ reference:
       - read_waterdata
       - summarize_waterdata_samples
       - check_waterdata_sample_params
-      - get_ogc_params
       - read_waterdata_channel
       - read_waterdata_field_meta
       - read_waterdata_combined_meta
@@ -124,6 +123,7 @@ reference:
       - read_ngwmn_providers
       - read_ngwmn_well_construction
       - read_ngwmn_lithology
+      - read_ngwmn
   - title: Network Linked Data Index
     desc: Functions to interface with the NLDI.
     contents:
@@ -163,3 +163,4 @@ reference:
       - getWebServiceData
       - is_dataRetrieval_user
       - checkWQPdates
+      - get_ogc_params
