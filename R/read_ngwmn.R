@@ -8,6 +8,8 @@
 #' @export
 #' @param service character, can be any existing collection. Can be:
 #' "providers", "constructionObs", "waterLevelObs", "sites", or "lithologyObs".
+#' `r get_ogc_params("waterLevelObs", base = "NGWMN")$sample_time$description`
+#' See also Details below for more information.
 #' @param CQL A string in a Common Query Language format.
 #' @param convertType logical, defaults to `TRUE`. If `TRUE`, the function
 #' will convert the data to dates and qualifier to string vector.
@@ -19,32 +21,49 @@
 #' \donttest{
 #' cql <- '{
 #' "op": "and",
-#' "args": [
-#'   {
-#'     "op": "between",
-#'     "args": [
+#' "args": 
+#'    "op": "between",
+#'    "args": [
 #'       { "property": "water_level_above_navd88_ft" },
-#'       [ "30.00", "80.00" ]
-#'     ]
-#'   },
-#'  {
-#'     "op": "in",
-#'     "args": [
-#'       { "property": "monitoring_location_id" },
-#'       [ "USGS-272838082142201", "USGS-404159100494601", "USGS-401216080362703" ]
-#'     ]
-#'   }
-#' ]
+#'       [ "100.00", "120.00" ]
+#'    ]
 #' }'
 #'
 #' wl_data <- read_ngwmn(service = "waterLevelObs",
+#'                       monitoring_location_id = c("USGS-272838082142201", 
+#'                                                  "USGS-404159100494601", 
+#'                                                  "USGS-401216080362703"),
 #'                       CQL = cql)
 #'
+#'cql3 <- '{
+#' "op": "and",
+#' "args": [
+#'  {
+#'    "op": "between",
+#'    "args": [
+#'      { "property": "water_level_above_navd88_ft" },
+#'      [ "100.00", "200.00" ]
+#'    ]
+#'  },
+#'  {
+#'    "op": "in",
+#'    "args": [
+#'      { "property": "monitoring_location_id" },
+#'      [ "USGS-272838082142201", "USGS-404159100494601", "USGS-401216080362703" ]
+#'    ]
+#'  }
+#']
+#'}'
+#'
+#' 
+#' wl_data_alt <- read_ngwmn(service = "waterLevelObs",
+#'                           CQL = cql3)
 #'
 #' }
 read_ngwmn <- function(
-    service,
     CQL,
+    service,
+    monitoring_location_id = NA_character_,
     ...,
     convertType = getOption("dataRetrieval.convertType"),
     limit = getOption("dataRetrieval.limit"),
@@ -55,6 +74,20 @@ read_ngwmn <- function(
                        "lithologyObs"))
   
   args <- list(...)
+  args[["monitoring_location_id"]] <- monitoring_location_id
+  
+  if(service %in% c("lithologyObs", "waterLevelObs",  "constructionObs")){
+    # Mandatory monitoring_location_ids
+    if(all(is.na(monitoring_location_id))){
+      args[["monitoring_location_id"]] <- "ALL"
+    }
+    
+    
+  } else {
+    if(is.na(monitoring_location_id)){
+      args[["monitoring_location_id"]] <- NULL
+    }
+  }
   
   args[["convertType"]] <- convertType
   args[["limit"]] <- limit
@@ -62,7 +95,7 @@ read_ngwmn <- function(
   args[["bbox"]] <- NA
   args[["no_paging"]] <- FALSE # drops id if TRUE
   args[["chunk_size"]] <- NA # Chunking doesn't make sense.
-  
+
   if (!"properties" %in% names(args)) {
     args[["properties"]] <- NA_character_
   }
@@ -70,7 +103,7 @@ read_ngwmn <- function(
   args[["output_id"]] <- "id"
   args[["base"]] <- "NGWMN"
   args[["service"]] <- service
-  
+  args[["..."]] <- NULL
   data_req <- suppressWarnings(do.call(construct_api_requests, args))
   
   data_req <- data_req |>
