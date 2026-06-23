@@ -316,6 +316,8 @@ parse_ratings_metadata <- function(ratings_df) {
 
   final <- final[!(final$header == "" & final$value == ""), , drop = FALSE]
   final <- unique(final)
+  rownames(final) <- final$header
+  # final_t <- data.frame(t(final))
   rownames(final) <- NULL
 
   final
