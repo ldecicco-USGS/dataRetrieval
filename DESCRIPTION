@@ -34,7 +34,10 @@ Authors@R: c(
             comment=c(ORCID = "0000-0001-5396-1583")),  
     person("Michael", "Mahoney", role="ctb",
             email = "mjmahoney@usgs.gov",
-            comment=c(ORCID = "0000-0003-2402-304X"))  
+            comment=c(ORCID = "0000-0003-2402-304X")),
+    person("Matthew", "Conlon", role="ctb",
+            email = "mconlon@usgs.gov",
+            comment=c(ORCID = "0000-0001-8266-9610")) 
             )
 Description: Collection of functions to help retrieve U.S. Geological Survey
     and U.S. Environmental Protection Agency water quality and

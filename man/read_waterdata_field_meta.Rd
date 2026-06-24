@@ -83,7 +83,7 @@ See also Details below for more information.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, field_measurement_id, monitoring_location_id, parameter_code, parameter_name, parameter_description, begin, end, last_modified.
+geometry, field_measurement_id, reading_type, monitoring_location_id, parameter_code, parameter_name, parameter_description, begin, end, last_modified.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{skipGeometry}{This parameter can be used to skip response geometries for

@@ -49,7 +49,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, time_series_id, unit_of_measure, parameter_name, parameter_code, statistic_id, hydrologic_unit_code, state_name, last_modified, begin, end, begin_utc, end_utc, computation_period_identifier, computation_identifier, thresholds, sublocation_identifier, primary, monitoring_location_id, web_description, parameter_description, parent_time_series_id.
+geometry, time_series_id, unit_of_measure, parameter_name, parameter_code, statistic_id, hydrologic_unit_code, state_name, last_modified, begin, end, begin_utc, end_utc, computation_period_identifier, computation_identifier, thresholds, sublocation_identifier, primary, monitoring_location_id, web_description, parameter_description, parent_time_series_id, data_gap_interval.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{statistic_id}{A code corresponding to the statistic an observation represents. Example codes include 00001 (max), 00002 (min), and 00003 (mean). A complete list of codes and their descriptions can be found at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/statistic-codes/items}.
@@ -99,7 +99,7 @@ Only features that have a \code{end_utc} that intersects the value of datetime a
 
 See also Details below for more information.}
 
-\item{hydrologic_unit_code}{The United States is divided and sub-divided into successively smaller hydrologic units which are classified into four levels: regions, sub-regions, accounting units, and cataloging units. The hydrologic units are arranged within each other, from the smallest (cataloging units) to the largest (regions). Each hydrologic unit is identified by a unique hydrologic unit code (HUC) consisting of two to eight digits based on the four levels of classification in the hydrologic unit system.}
+\item{hydrologic_unit_code}{The hydrologic unit code (HUC) for the monitoring location. Supports prefix matching — querying with a shorter HUC (e.g. "04") matches all locations within that hydrologic region.}
 
 \item{state_name}{The name of the state or state equivalent in which the monitoring location is located.}
 

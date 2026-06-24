@@ -88,7 +88,7 @@ Multiple monitoring_location_ids can be requested as a character vector.}
 
 \item{site_type}{A description of the hydrologic setting of the monitoring location. A list of codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/site-types/items}.}
 
-\item{hydrologic_unit_code}{The United States is divided and sub-divided into successively smaller hydrologic units which are classified into four levels: regions, sub-regions, accounting units, and cataloging units. The hydrologic units are arranged within each other, from the smallest (cataloging units) to the largest (regions). Each hydrologic unit is identified by a unique hydrologic unit code (HUC) consisting of two to eight digits based on the four levels of classification in the hydrologic unit system.}
+\item{hydrologic_unit_code}{The hydrologic unit code (HUC) for the monitoring location. Supports prefix matching — querying with a shorter HUC (e.g. "04") matches all locations within that hydrologic region.}
 
 \item{basin_code}{The Basin Code or "drainage basin code" is a two-digit code that further subdivides the 8-digit hydrologic-unit code. The drainage basin code is defined by the USGS State Office where the monitoring location is located.}
 

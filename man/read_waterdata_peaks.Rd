@@ -42,7 +42,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, time_series_id, monitoring_location_id, parameter_code, peak_id, unit_of_measure, value, last_modified, time, water_year, year, month, day, time_of_day, peak_since, qualifier.
+geometry, time_series_id, monitoring_location_id, parameter_code, unit_of_measure, value, last_modified, time, water_year, year, month, day, time_of_day, peak_since, qualifier.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.}
