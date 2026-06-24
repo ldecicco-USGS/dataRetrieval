@@ -128,8 +128,6 @@ a single request. If no "time" is specified, the service will return the
 last single year of data. If this is a bottleneck, please check back
 for new direct download functions that are expected to be available sometime
 in 2026.
-
-Geometry output is not supported in the continuous data API endpoint.
 }
 \details{
 You can also use a vector of length 2 for any time queries (such as time

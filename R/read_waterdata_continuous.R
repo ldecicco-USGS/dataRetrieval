@@ -8,7 +8,6 @@
 #' for new direct download functions that are expected to be available sometime
 #' in 2026.
 #'
-#' Geometry output is not supported in the continuous data API endpoint.
 #'
 #' @export
 #' @param monitoring_location_id `r get_ogc_params("continuous")$monitoring_location_id`
