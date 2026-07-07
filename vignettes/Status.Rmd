@@ -181,9 +181,6 @@ Currently, any "qw" data summaries provided by `whatNWISdata` are very likely ou
 
 ## National Groundwater Monitoring Network
 
-Coming soon, a new new access point for the National Groundwater Monitoring Network. The original `readNGWMNdata` functions have been broken for some time. Stay tuned!
-
-
-
+Coming soon, a new new access point for the National Groundwater Monitoring Network. The original `readNGWMNdata` functions have been broken for some time. `read_waterdata_use` is currently in development!
 
 
