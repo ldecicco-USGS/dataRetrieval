@@ -33,27 +33,20 @@
 #' @examplesIf is_dataRetrieval_user()
 #'
 #' \donttest{
-#' site <- "USGS-02238500"
-#' pcode <- "00060"
-#' dv_data_sf <- read_waterdata_latest_field(monitoring_location_id = site,
-#'                               parameter_code = pcode)
+#' site <- "USGS-01435000"
 #'
-#' dv_data_last_modified <- read_waterdata_latest_field(monitoring_location_id = site,
-#'                               parameter_code = pcode,
-#'                               last_modified = "P7D")
+#' field_data_sf <- read_waterdata_latest_field(monitoring_location_id = site)
 #'
 #' dv_data_trim <- read_waterdata_latest_field(monitoring_location_id = site,
-#'                           parameter_code = pcode,
 #'                           properties = c("monitoring_location_id",
 #'                                          "value",
 #'                                          "time"))
 #'
-#' dv_data <- read_waterdata_latest_field(monitoring_location_id = site,
-#'                            parameter_code = pcode,
+#' field_data <- read_waterdata_latest_field(monitoring_location_id = site,
 #'                            skipGeometry = TRUE)
 #'
-#' multi_site <- read_waterdata_latest_field(monitoring_location_id =  c("USGS-01491000",
-#'                                                                       "USGS-01645000"))
+#' multi_site <- read_waterdata_latest_field(monitoring_location_id =  c("USGS-01435000",
+#'                                                                       "USGS-14202650"))
 #'
 #' }
 read_waterdata_latest_field <- function(
