@@ -84,13 +84,13 @@ reference:
       - read_waterdata_parameter_codes
       - read_waterdata_metadata
       - read_waterdata
-      - summarize_waterdata_samples
-      - check_waterdata_sample_params
       - read_waterdata_channel
       - read_waterdata_field_meta
       - read_waterdata_combined_meta
       - read_waterdata_ratings
       - read_waterdata_peaks
+      - summarize_waterdata_samples
+      - check_waterdata_sample_params
   - title: National Water Information System (NWIS)
     desc:  Functions to retrieve (USGS) NWIS data. These will be slowly phased out and replaced with the read_waterdata family of functions.
     contents:
@@ -130,6 +130,10 @@ reference:
     contents:
       - findNLDI
       - get_nldi_sources
+  - title: National Water Availability Assessment Data
+    desc: Functions to get Water Use data
+    contents:
+      - read_wateruse
   - title: Import data
     desc: Functions to import different data formats
     contents:

@@ -11,13 +11,13 @@ walk_pages <- function(req) {
     max_reqs = Inf,
     on_error = "stop"
   )
-
+  
   failures <- resps |> httr2::resps_failures()
-
+  
   return_list <- resps |>
     httr2::resps_successes() |>
     httr2::resps_data(\(resp) get_resp_data(resp))
-
+  
   return(return_list)
 }
 
@@ -34,30 +34,30 @@ walk_pages <- function(req) {
 get_resp_data <- function(resp) {
   body <- httr2::resp_body_json(resp)
   use_sf <- !grepl("skipGeometry=true", resp$url, ignore.case = TRUE)
-
+  
   if (isTRUE(body[["numberReturned"]] == 0)) {
     return(data.frame())
   }
-
+  
   return_df <- sf::read_sf(httr2::resp_body_string(resp))
-
+  
   return_df <- coerce_num_cols(return_df, is_sf = TRUE)
   
   return_df <- coerce_time_cols(return_df, is_sf = TRUE)
   
   return_df <- coerce_qualifier_cols(return_df, is_sf = TRUE)
-
+  
   if ("altitude_accuracy" %in% names(return_df)) {
     return_df$altitude_accuracy <- as.character(return_df$altitude_accuracy)
   }
-
+  
   if (!use_sf) {
     return_df <- sf::st_drop_geometry(return_df)
     if ("AsGeoJSON(geometry)" %in% names(return_df)) {
       return_df <- return_df[, !names(return_df) %in% "AsGeoJSON(geometry)"]
     }
   }
-
+  
   return(return_df)
 }
 
@@ -74,24 +74,24 @@ get_resp_data <- function(resp) {
 #'
 next_req_url <- function(resp, req) {
   body <- httr2::resp_body_json(resp)
-
+  
   if (isTRUE(body[["code"]] == "InvalidQuery")) {
     message(body[["description"]])
     return(NULL)
   }
-
+  
   if (isTRUE(body[["numberReturned"]] == 0)) {
     return(NULL)
   }
-
+  
   log_rate_limit(resp)
   if ("links" %in% names(body)) {
     links <- body$links
     if (any(sapply(links, function(x) x$rel) == "next")) {
       next_index <- which(sapply(links, function(x) x$rel) == "next")
-
+      
       next_url <- links[[next_index]][["href"]]
-
+      
       return(httr2::req_url(req = req, url = next_url))
     }
   } else if (!is.null(body[["next"]])) {
@@ -105,9 +105,9 @@ next_req_url <- function(resp, req) {
 get_csv <- function(req, limit) {
   skip_geo <- grepl("skipGeometry=true", req$url, ignore.case = TRUE)
   resp <- httr2::req_perform(req)
-
+  
   log_rate_limit(resp)
-
+  
   if (httr2::resp_has_body(resp)) {
     return_list <- httr2::resp_body_string(resp)
     df <- data.table::fread(
@@ -119,7 +119,7 @@ get_csv <- function(req, limit) {
     df <- coerce_num_cols(df, is_sf = FALSE)
     
     df <- coerce_time_cols(df, is_sf = FALSE)
-
+    
     if (skip_geo) {
       df <- df[, names(df)[!names(df) %in% c("x", "y")]]
     } else {
@@ -128,7 +128,7 @@ get_csv <- function(req, limit) {
         sf::st_crs(df) <- 4269
       }
     }
-
+    
     if (nrow(df) == limit) {
       warning(
         "Missing data is probable. Use no_paging = FALSE to 
@@ -138,7 +138,7 @@ ensure all requested data is returned."
   } else {
     df <- data.frame()
   }
-
+  
   return(df)
 }
 
@@ -180,13 +180,13 @@ coerce_num_cols <- function(df, is_sf = FALSE) {
   if (length(included_num_cols) == 0) {
     return(df)
   }
-
+  
   check_df <- if (is_sf) {
     sf::st_drop_geometry(df[, included_num_cols, drop = FALSE])
   } else {
     df[, included_num_cols, drop = FALSE]
   }
-
+  
   if (!all(vapply(check_df, is.numeric, logical(1)))) {
     df[, included_num_cols] <- lapply(check_df, as.numeric)
   }
