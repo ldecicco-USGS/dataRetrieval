@@ -98,7 +98,8 @@ Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
 \item{monitoring_location_arguments}{A list of arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids.}
+monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "daily")}
+to get a list of all possible arguments available in this list.}
 
 \item{...}{Not used. Included to help differentiate official Water Data API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}

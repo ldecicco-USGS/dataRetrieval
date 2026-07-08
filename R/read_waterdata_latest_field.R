@@ -1,4 +1,4 @@
-#' Get latest USGS field measurement data
+#' Get Latest USGS Field Measurement Data
 #'
 #' @description `r get_description("latest-field-measurements")`
 #'
@@ -25,9 +25,14 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("latest-field-measurements", "latest_field_id")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param monitoring_location_arguments A list of arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "latest-field-measurements")`
+#' to get a list of all possible arguments available in this list.
 #'
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
+#' @seealso [make_monitoring_location_arguments()]
 #' @inherit read_waterdata_continuous details
 #'
 #' @examplesIf is_dataRetrieval_user()
@@ -48,6 +53,13 @@
 #' multi_site <- read_waterdata_latest_field_measurements(monitoring_location_id =  c("USGS-01435000",
 #'                                                                       "USGS-14202650"))
 #'
+#' dane <- read_waterdata_latest_field_measurements(
+#'   monitoring_location_arguments = list(
+#'      state_name = "Wisconsin",
+#'      county_name = "Dane County"
+#'   ),
+#'   time = "P30D")
+#'
 #' }
 read_waterdata_latest_field_measurements <- function(
   monitoring_location_id = NA_character_,
@@ -63,6 +75,9 @@ read_waterdata_latest_field_measurements <- function(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
+  monitoring_location_arguments = make_monitoring_location_arguments(
+    service = "latest-field-measurements"
+  ),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -75,6 +90,13 @@ read_waterdata_latest_field_measurements <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = monitoring_location_arguments,
+    service = service
+  )
+
   return_list <- get_ogc_data(args, output_id, service)
 
   return(return_list)

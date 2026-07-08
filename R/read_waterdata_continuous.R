@@ -33,7 +33,8 @@
 #' The default (`NA`) will return all columns of the data.
 #' @param monitoring_location_arguments A list of arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
-#' monitoring_location_ids.
+#' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "continuous")`
+#' to get a list of all possible arguments available in this list.
 #' @seealso [make_monitoring_location_arguments()]
 #' @inheritParams check_arguments_non_api
 #' @inheritParams check_arguments_api

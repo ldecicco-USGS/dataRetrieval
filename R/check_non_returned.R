@@ -1,4 +1,11 @@
-#' Check for arguments that can be queried but not returned
+#' Get Monitoring Location Arguments
+#'
+#' Many read_waterdata functions have a long list of arguments that can be used
+#' to find sites that have data. Users can use this function to create a list
+#' of possible arguments that can be used as input to the `monitoring_location_arguments`
+#' argument (found in many of the read_waterdata functions). This function
+#' also is used to check that user supplied available parameters to their queries
+#' when using the `monitoring_location_arguments` argument.
 #'
 #' @param service Endpoint to check arguments against. Possible values are
 #' "daily", "latest-continuous", "field-measurements", "latest-daily",
@@ -45,7 +52,7 @@
 #' @param data_gap_interval `r check_OGC_requests(endpoint = "daily", type = "queryables")$properties$data_gap_interval$description`
 #' @param \dots Not used. Used to make sure the user isn't passing in arguments that aren't available.
 #' @param check_arguments Logical. Used to decide if the arguments passed in are available or not. The
-#' default is `FALSE`. Using `TRUE` will make two calls to the API, so if you are concerted
+#' default is `FALSE`. Using `TRUE` will make two calls to the API, so if you are concerned
 #' with minimizing API calls, keep this value as `FALSE`. If you are concerned with
 #' making sure your calls are accepted by the service, set to `TRUE`.
 #' @export

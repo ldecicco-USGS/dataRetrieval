@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_non_returned.R
 \name{make_monitoring_location_arguments}
 \alias{make_monitoring_location_arguments}
-\title{Check for arguments that can be queried but not returned}
+\title{Get Monitoring Location Arguments}
 \usage{
 make_monitoring_location_arguments(
   service = c("daily"),
@@ -138,12 +138,17 @@ make_monitoring_location_arguments(
 \item{\dots}{Not used. Used to make sure the user isn't passing in arguments that aren't available.}
 
 \item{check_arguments}{Logical. Used to decide if the arguments passed in are available or not. The
-default is \code{FALSE}. Using \code{TRUE} will make two calls to the API, so if you are concerted
+default is \code{FALSE}. Using \code{TRUE} will make two calls to the API, so if you are concerned
 with minimizing API calls, keep this value as \code{FALSE}. If you are concerned with
 making sure your calls are accepted by the service, set to \code{TRUE}.}
 }
 \description{
-Check for arguments that can be queried but not returned
+Many read_waterdata functions have a long list of arguments that can be used
+to find sites that have data. Users can use this function to create a list
+of possible arguments that can be used as input to the \code{monitoring_location_arguments}
+argument (found in many of the read_waterdata functions). This function
+also is used to check that user supplied available parameters to their queries
+when using the \code{monitoring_location_arguments} argument.
 }
 \examples{
 
