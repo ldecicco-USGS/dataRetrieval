@@ -96,19 +96,23 @@ ratings_exsa <- read_waterdata_ratings(
       file_type = "exsa")
 
 head(ratings_exsa[["USGS-01104475.exsa.rdb"]]$ratings)
-ratings_exsa[["USGS-01104475.exsa.rdb"]]$metadata
+m1 <- ratings_exsa[["USGS-01104475.exsa.rdb"]]$metadata
+m1
 
 ratings_corr <- read_waterdata_ratings(
       monitoring_location_id = monitoring_location_id,
       file_type = "corr")
 
 head(ratings_corr[["USGS-01104460.corr.rdb"]]$ratings)
-ratings_corr[["USGS-01104460.corr.rdb"]]$metadata
+m2 <- ratings_corr[["USGS-01104460.corr.rdb"]]$metadata
+m2
 
 rating_2 <- read_waterdata_ratings(
       monitoring_location_id = monitoring_location_id,
       file_type = c("corr", "exsa"))
 names(rating_2)
+m3 <- rating_2$`USGS-01104460.exsa.rdb`$metadata
+rat_data <- rating_2$`USGS-01104460.exsa.rdb`$ratings
 
 bbox <- c(-95.00, 40.0, -92.0, 42)
 
@@ -118,7 +122,6 @@ length(bbox_query)
 recent_query <- read_waterdata_ratings(bbox = bbox,
                                        datetime = c(Sys.Date()-7, NA),
                                        download_and_parse = FALSE)
-length(recent_query)
 }
 \dontshow{\}) # examplesIf}
 }
