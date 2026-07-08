@@ -138,7 +138,7 @@ test_that("peak, rating curves, surface-water measurements", {
   expect_is(data$monitoring_location_id, "character")
 
   # Latest Surface meas:
-  latest_data <- read_waterdata_latest_field(
+  latest_data <- read_waterdata_latest_field_measurements(
     monitoring_location_id = siteNumbers
   )
   expect_is(data$monitoring_location_id, "character")

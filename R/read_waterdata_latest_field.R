@@ -1,4 +1,4 @@
-#' Get Latest USGS field Data
+#' Get latest USGS field measurement data
 #'
 #' @description `r get_description("latest-field-measurements")`
 #'
@@ -35,21 +35,21 @@
 #' \donttest{
 #' site <- "USGS-01435000"
 #'
-#' field_data_sf <- read_waterdata_latest_field(monitoring_location_id = site)
+#' field_data_sf <- read_waterdata_latest_field_measurements(monitoring_location_id = site)
 #'
-#' dv_data_trim <- read_waterdata_latest_field(monitoring_location_id = site,
+#' dv_data_trim <- read_waterdata_latest_field_measurements(monitoring_location_id = site,
 #'                           properties = c("monitoring_location_id",
 #'                                          "value",
 #'                                          "time"))
 #'
-#' field_data <- read_waterdata_latest_field(monitoring_location_id = site,
+#' field_data <- read_waterdata_latest_field_measurements(monitoring_location_id = site,
 #'                            skipGeometry = TRUE)
 #'
-#' multi_site <- read_waterdata_latest_field(monitoring_location_id =  c("USGS-01435000",
+#' multi_site <- read_waterdata_latest_field_measurements(monitoring_location_id =  c("USGS-01435000",
 #'                                                                       "USGS-14202650"))
 #'
 #' }
-read_waterdata_latest_field <- function(
+read_waterdata_latest_field_measurements <- function(
   monitoring_location_id = NA_character_,
   parameter_code = NA_character_,
   statistic_id = NA_character_,
