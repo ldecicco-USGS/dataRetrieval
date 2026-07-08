@@ -54,13 +54,14 @@ get_ogc_data <- function(args, output_id, service, base = "OGC") {
       return_list <- walk_pages(req)
     }
 
-    return_list <- deal_with_empty(return_list = return_list,
-                                   properties = args[["properties"]],
-                                   service = service,
-                                   skipGeometry = isTRUE(args[["skipGeometry"]]),
-                                   convertType = args[["convertType"]],
-                                   no_paging = no_paging, 
-                                   base = base
+    return_list <- deal_with_empty(
+      return_list = return_list,
+      properties = args[["properties"]],
+      service = service,
+      skipGeometry = isTRUE(args[["skipGeometry"]]),
+      convertType = args[["convertType"]],
+      no_paging = no_paging,
+      base = base
     )
 
     return_list <- rejigger_cols(return_list, args[["properties"]], output_id)
@@ -223,35 +224,11 @@ check_arguments_non_api <- function(
   chunk_size,
   ...
 ) {
-  if (!is.null(convertType)) {
-    if (!is.na(convertType) & !is.logical(convertType)) {
-      stop("convertType should be a logical TRUE/FALSE")
-    }
-  }
-
-  if (!is.null(no_paging)) {
-    if (!is.na(no_paging) & !is.logical(no_paging)) {
-      stop("no_paging should be a logical TRUE/FALSE")
-    }
-  }
-
-  if (!is.null(attach_request)) {
-    if (!is.na(attach_request) & !is.logical(attach_request)) {
-      stop("attach_request should be a logical TRUE/FALSE")
-    }
-  }
-
-  if (!is.null(limit)) {
-    if (!is.na(limit) & !is.numeric(limit)) {
-      stop("limit should be an integer")
-    }
-  }
-
-  if (!is.null(chunk_size)) {
-    if (!is.na(chunk_size) & !is.numeric(chunk_size)) {
-      stop("chunk_size should be an integer")
-    }
-  }
+  check_logical(convertType, "convertType")
+  check_logical(no_paging, "no_paging")
+  check_logical(attach_request, "attach_request")
+  check_integer(limit, "limit")
+  check_integer(chunk_size, "chunk_size")
 }
 
 #' Check other arguments
@@ -271,11 +248,7 @@ check_arguments_non_api <- function(
 #'
 #' @keywords internal
 check_arguments_api <- function(bbox, skipGeometry) {
-  if (!is.null(skipGeometry)) {
-    if (!is.na(skipGeometry) & !is.logical(skipGeometry)) {
-      stop("skipGeometry should be a logical TRUE/FALSE")
-    }
-  }
+  check_logical(skipGeometry, "skipGeometry")
 
   if (!is.null(bbox)) {
     if (!all(is.na(bbox))) {

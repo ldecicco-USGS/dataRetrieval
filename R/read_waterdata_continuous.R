@@ -31,8 +31,10 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("continuous", "continuous_id")`.
 #' The default (`NA`) will return all columns of the data.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
+#' @param monitoring_location_arguments A list of arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids.
+#' @seealso [make_monitoring_location_arguments()]
 #' @inheritParams check_arguments_non_api
 #' @inheritParams check_arguments_api
 #'
@@ -75,6 +77,12 @@
 #'                                                                      "USGS-14181500"),
 #'                                                parameter_code = c("00060", "72019"),
 #'                                                last_modified = "P7D")
+#'
+#' dane <- read_waterdata_continuous(monitoring_location_arguments = list(
+#'                                         state_name = "Wisconsin",
+#'                                         county_name = "Dane County"),
+#'                                   parameter_code = "00060",
+#'                                   time = "P1D")
 #'
 #' # how to split up request into roughly 3 year chunks
 #'
@@ -122,6 +130,9 @@ read_waterdata_continuous <- function(
   time = NA_character_,
   skipGeometry = TRUE,
   bbox = NA,
+  monitoring_location_arguments = make_monitoring_location_arguments(
+    service = "continuous"
+  ),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   limit = getOption("dataRetrieval.limit"),
@@ -134,6 +145,12 @@ read_waterdata_continuous <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = monitoring_location_arguments,
+    service = service
+  )
 
   return_list <- get_ogc_data(args, output_id, service)
 

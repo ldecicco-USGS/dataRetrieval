@@ -17,6 +17,8 @@ read_waterdata_continuous(
   time = NA_character_,
   skipGeometry = TRUE,
   bbox = NA,
+  monitoring_location_arguments = make_monitoring_location_arguments(service =
+    "continuous"),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   limit = getOption("dataRetrieval.limit"),
@@ -90,7 +92,11 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
+\item{monitoring_location_arguments}{A list of arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids.}
+
+\item{...}{Not used. Included to help differentiate official Water Data API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
@@ -170,6 +176,12 @@ multi_site2 <- read_waterdata_continuous(monitoring_location_id =  c("USGS-45160
                                                parameter_code = c("00060", "72019"),
                                                last_modified = "P7D")
 
+dane <- read_waterdata_continuous(monitoring_location_arguments = list(
+                                        state_name = "Wisconsin",
+                                        county_name = "Dane County"),
+                                  parameter_code = "00060",
+                                  time = "P1D")
+
 # how to split up request into roughly 3 year chunks
 
 site <- "USGS-0208458892"
@@ -204,4 +216,7 @@ time_df <- data.frame(start = time_chunks[-length(time_chunks)],
 
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=make_monitoring_location_arguments]{make_monitoring_location_arguments()}}
 }
