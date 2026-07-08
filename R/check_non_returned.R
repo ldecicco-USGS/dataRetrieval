@@ -1,5 +1,8 @@
 #' Check for arguments that can be queried but not returned
 #'
+#' @param service Endpoint to check arguments against. Possible values are
+#' "daily", "latest-continuous", "field-measurements", "latest-daily",
+#' "latest-field-measurements", "continuous", "peaks".
 #' @param agency_code `r check_OGC_requests(endpoint = "daily", type = "queryables")$properties$agency_code$description`
 #' @param agency_name `r check_OGC_requests(endpoint = "daily", type = "queryables")$properties$agency_name$description`
 #' @param monitoring_location_number `r check_OGC_requests(endpoint = "daily", type = "queryables")$properties$monitoring_location_number$description`
