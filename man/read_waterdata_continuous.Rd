@@ -176,11 +176,13 @@ multi_site2 <- read_waterdata_continuous(monitoring_location_id =  c("USGS-45160
                                                parameter_code = c("00060", "72019"),
                                                last_modified = "P7D")
 
-dane <- read_waterdata_continuous(monitoring_location_arguments = list(
-                                        state_name = "Wisconsin",
-                                        county_name = "Dane County"),
-                                  parameter_code = "00060",
-                                  time = "P1D")
+dane <- read_waterdata_continuous(
+  monitoring_location_arguments = list(
+     state_name = "Wisconsin",
+     county_name = "Dane County"
+  ),
+  parameter_code = "00060",
+  time = "P1D")
 
 # how to split up request into roughly 3 year chunks
 

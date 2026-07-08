@@ -51,6 +51,10 @@ make_monitoring_location_arguments(
 )
 }
 \arguments{
+\item{service}{Endpoint to check arguments against. Possible values are
+"daily", "latest-continuous", "field-measurements", "latest-daily",
+"latest-field-measurements", "continuous", "peaks".}
+
 \item{agency_code}{The agency that is reporting the data. Agency codes are fixed values assigned by the National Water Information System (NWIS). A list of agency codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/agency-codes/items}.}
 
 \item{agency_name}{The name of the agency that is reporting the data.}

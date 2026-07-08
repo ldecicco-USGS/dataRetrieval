@@ -36,8 +36,12 @@
 #' or whether to set those dates to `NA` (`FALSE`). Peaks with uncertain days
 #' are stored on the first of the month, and those with uncertain
 #' month stored on January 1. Default is `FALSE`.
+#' @param monitoring_location_arguments A list of arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
+#' @seealso [make_monitoring_location_arguments()]
 #'
 #' @inherit read_waterdata_continuous details
 #'
@@ -53,6 +57,13 @@
 #' dv_data_sf <- read_waterdata_peaks(
 #'                monitoring_location_id = wi_peaks$monitoring_location_id[1],
 #'                parameter_code = "00060")
+#'
+#' dane <- read_waterdata_peaks(
+#'   monitoring_location_arguments = list(
+#'       state_name = "Wisconsin",
+#'       county_name = "Dane County"
+#'   ),
+#'   parameter_code = "00060")
 #'
 #' incomplete_dates_not_allowed <- read_waterdata_peaks(
 #'                monitoring_location_id = "USGS-06334330",
@@ -83,6 +94,9 @@ read_waterdata_peaks <- function(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
+  monitoring_location_arguments = make_monitoring_location_arguments(
+    service = "peaks"
+  ),
   ...,
   allow_incomplete_dates = FALSE,
   convertType = getOption("dataRetrieval.convertType"),
@@ -96,6 +110,13 @@ read_waterdata_peaks <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = monitoring_location_arguments,
+    service = service
+  )
+
   args[["allow_incomplete_dates"]] <- NULL
   return_list <- get_ogc_data(args, output_id, service)
 

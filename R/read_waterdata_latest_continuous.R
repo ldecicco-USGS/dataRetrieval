@@ -64,6 +64,14 @@
 #'                                                parameter_code = c("00060", "72019"),
 #'                                                last_modified = "P7D")
 #'
+#' dane <- read_waterdata_latest_continuous(
+#'   monitoring_location_arguments = list(
+#'       state_name = "Wisconsin",
+#'       county_name = "Dane County"
+#'   ),
+#'   parameter_code = "00060",
+#'   time = "P1D")
+#'
 #' }
 read_waterdata_latest_continuous <- function(
   monitoring_location_id = NA_character_,
