@@ -56,19 +56,23 @@
 #'       file_type = "exsa")
 #'
 #' head(ratings_exsa[["USGS-01104475.exsa.rdb"]]$ratings)
-#' ratings_exsa[["USGS-01104475.exsa.rdb"]]$metadata
+#' m1 <- ratings_exsa[["USGS-01104475.exsa.rdb"]]$metadata
+#' m1
 #'
 #' ratings_corr <- read_waterdata_ratings(
 #'       monitoring_location_id = monitoring_location_id,
 #'       file_type = "corr")
 #'
 #' head(ratings_corr[["USGS-01104460.corr.rdb"]]$ratings)
-#' ratings_corr[["USGS-01104460.corr.rdb"]]$metadata
+#' m2 <- ratings_corr[["USGS-01104460.corr.rdb"]]$metadata
+#' m2
 #'
 #' rating_2 <- read_waterdata_ratings(
 #'       monitoring_location_id = monitoring_location_id,
 #'       file_type = c("corr", "exsa"))
 #' names(rating_2)
+#' m3 <- rating_2$`USGS-01104460.exsa.rdb`$metadata
+#' rat_data <- rating_2$`USGS-01104460.exsa.rdb`$ratings
 #'
 #' bbox <- c(-95.00, 40.0, -92.0, 42)
 #'
@@ -78,7 +82,6 @@
 #' recent_query <- read_waterdata_ratings(bbox = bbox,
 #'                                        datetime = c(Sys.Date()-7, NA),
 #'                                        download_and_parse = FALSE)
-#' length(recent_query)
 #'}
 read_waterdata_ratings <- function(
   monitoring_location_id = NA_character_,
@@ -154,7 +157,7 @@ read_waterdata_ratings <- function(
     basic_request()
 
   message("Requesting:\n", request$url)
-  
+
   resp <- httr2::req_perform(request)
   log_rate_limit(resp)
 
@@ -199,126 +202,96 @@ download_convert <- function(feature, file_path, file_type) {
   return(NULL)
 }
 
-# Parse rating comment metadata into a data frame
+# Parse a single key=value or key="value" token into a named list
+parse_kv_tokens <- function(line) {
+  kv_pat <- '([A-Za-z0-9_]+)\\s*=\\s*"([^"]*)"|([A-Za-z0-9_]+)\\s*=\\s*(\\S+)'
+  m <- gregexpr(kv_pat, line, perl = TRUE)
+  tokens <- regmatches(line, m)[[1]]
+  result <- list()
+  for (tok in tokens) {
+    key <- sub("^([A-Za-z0-9_]+)\\s*=.*", "\\1", tok, perl = TRUE)
+    val <- sub('^[A-Za-z0-9_]+\\s*=\\s*"?([^"]*)"?$', "\\1", tok, perl = TRUE)
+    result[[key]] <- val
+  }
+  result
+}
+
+
 parse_ratings_metadata <- function(ratings_df) {
   raw_comments <- comment(ratings_df)
 
   if (is.null(raw_comments)) {
-    return(data.frame(
-      header = character(),
-      value = character()
-    ))
+    return(data.frame())
   }
 
-  com <- data.frame(
-    line = raw_comments
-  )
+  # strip leading # // or //
+  lines <- sub("^#\\s*//?\\s*", "", raw_comments)
+  lines <- sub("^//\\s*", "", lines)
+  lines <- trimws(lines)
+  lines <- lines[lines != ""]
 
-  # remove whitespace
-  com$line <- sub("^#\\s*//?", "", com$line)
-  com$line <- sub("^//", "", com$line)
-  com$line <- gsub("\\s+", " ", trimws(com$line))
+  # collect WARNING lines
+  warn_idx <- grepl("^WARNING", lines)
+  warn_text <- trimws(sub("^WARNING\\s*", "", lines[warn_idx]))
+  warning_value <- paste(warn_text[warn_text != ""], collapse = " ")
+  lines <- lines[!warn_idx]
 
-  # concatenate warning info
-  warn_rows <- grepl("^WARNING", com$line)
-  warn_text <- sub("^WARNING\\s*", "", com$line[warn_rows])
-  warn_text <- gsub("\\s+", " ", trimws(warn_text))
-  warn_text <- warn_text[warn_text != ""]
+  # split each line into header and the rest
+  # header is the first all-caps+underscore token
+  header_pat <- "^([A-Z][A-Z0-9_]*)\\s*(.*)"
+  headers <- sub(header_pat, "\\1", lines, perl = TRUE)
+  bodies <- sub(header_pat, "\\2", lines, perl = TRUE)
 
-  warning_block <- if (length(warn_text) > 0) {
-    paste(warn_text, collapse = " ")
-  } else {
-    ""
-  }
+  # group lines by header, preserving order of first appearance
+  unique_headers <- unique(headers)
 
-  non_warn <- com[!warn_rows, , drop = FALSE]
+  result <- list(WARNING = warning_value)
+  i <- 1
+  for (hdr in unique_headers) {
+    idx <- which(headers == hdr)
+    body_lines <- bodies[idx]
 
-  # group the key-value pairs in the data
-  kv_pat <- '[A-Za-z0-9_]+\\s*=\\s*"[^"]*"|[A-Za-z0-9_]+\\s*=\\s*[^\\s]+'
-  kv_match <- regmatches(
-    non_warn$line,
-    gregexpr(kv_pat, non_warn$line, perl = TRUE)
-  )
-  has_kv <- sapply(kv_match, length) > 0
-  kv_flat <- unlist(kv_match, use.names = FALSE)
+    # parse each line's key=value pairs
+    parsed_rows <- lapply(body_lines, parse_kv_tokens)
 
-  pairs_df <- data.frame(
-    header = sub("^([A-Za-z0-9_]+).*", "\\1", kv_flat, perl = TRUE),
-    value = gsub(
-      '^"|"$',
-      "",
-      gsub(
-        "\\s+",
-        " ",
-        trimws(
-          sub("^[A-Za-z0-9_]+\\s*=\\s*", "", kv_flat, perl = TRUE)
+    # check if any line has key=value pairs; if not, treat as plain text
+    has_kv <- sapply(parsed_rows, length) > 0
+
+    if (any(has_kv)) {
+      p_rows <- unlist(parsed_rows)
+      if (anyDuplicated(names(p_rows))) {
+        columns <- unique(names(p_rows))
+        df <- data.frame(matrix(
+          NA_character_,
+          nrow = length(p_rows) / length(columns),
+          ncol = length(columns)
+        ))
+        names(df) <- columns
+        for (i in columns) {
+          df[[i]] <- p_rows[names(p_rows) %in% i]
+        }
+      } else {
+        df <- data.frame(t(p_rows))
+      }
+
+      if (nrow(df) == 1 && ncol(df) == 1) {
+        result[[hdr]] <- df[[1]]
+      } else {
+        result[[hdr]] <- df
+      }
+    } else {
+      if (substr(body_lines, start = 1, stop = 1) == "=") {
+        result[[hdr]] <- substr(body_lines, start = 2, stop = nchar(body_lines))
+      } else {
+        comment_label <- paste("Comment", i)
+        result[[comment_label]] <- paste(
+          trimws(c(hdr, body_lines)),
+          collapse = " "
         )
-      )
-    )
-  )
+        i <- i + 1
+      }
+    }
+  }
 
-  # handle data with colons
-  colon_pat <- "^[A-Z][A-Z _-]+:"
-  colon_rows <- grepl(colon_pat, non_warn$line)
-  colon_lines <- non_warn$line[colon_rows]
-
-  date_df <- data.frame(
-    header = gsub(
-      "\\s+",
-      " ",
-      trimws(
-        sub("^([A-Z][A-Z _-]+):.*$", "\\1", colon_lines, perl = TRUE)
-      )
-    ),
-    value = gsub(
-      "\\s+",
-      " ",
-      trimws(
-        sub("^[A-Z][A-Z _-]+:\\s*", "", colon_lines, perl = TRUE)
-      )
-    )
-  )
-
-  # parse any lines that don't fit other patterns
-  other_lines <- non_warn$line[!has_kv & !colon_rows]
-
-  other_df <- data.frame(
-    header = gsub(
-      "\\s+",
-      " ",
-      trimws(
-        sub("^([A-Z][A-Z _-]+).*$", "\\1", other_lines, perl = TRUE)
-      )
-    ),
-    value = gsub(
-      "\\s+",
-      " ",
-      trimws(
-        sub("^[A-Z][A-Z _-]+\\s*", "", other_lines, perl = TRUE)
-      )
-    )
-  )
-
-  # combine into one dataframe to be added to list object
-  final <- rbind(
-    data.frame(
-      header = "WARNING",
-      value = warning_block
-    ),
-    pairs_df,
-    date_df,
-    other_df
-  )
-
-  final$value <- gsub("[\\x00-\\x1F\\x7F]+", " ", final$value, perl = TRUE)
-  final$value <- gsub("\\s+", " ", trimws(final$value))
-  final$header <- gsub("\\s+", " ", trimws(final$header))
-
-  final <- final[!(final$header == "" & final$value == ""), , drop = FALSE]
-  final <- unique(final)
-  rownames(final) <- final$header
-  # final_t <- data.frame(t(final))
-  rownames(final) <- NULL
-
-  final
+  return(result)
 }
