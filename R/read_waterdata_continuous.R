@@ -8,7 +8,6 @@
 #' for new direct download functions that are expected to be available sometime
 #' in 2026.
 #'
-#' Geometry output is not supported in the continuous data API endpoint.
 #'
 #' @export
 #' @param monitoring_location_id `r get_ogc_params("continuous")$monitoring_location_id`
@@ -35,6 +34,7 @@
 #' @param \dots Not used. Included to help differentiate official Water Data API arguments
 #' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_non_api
+#' @inheritParams check_arguments_api
 #'
 #' @details
 #' You can also use a vector of length 2 for any time queries (such as time
@@ -120,6 +120,8 @@ read_waterdata_continuous <- function(
   value = NA,
   last_modified = NA_character_,
   time = NA_character_,
+  skipGeometry = TRUE,
+  bbox = NA,
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   limit = getOption("dataRetrieval.limit"),
@@ -132,7 +134,6 @@ read_waterdata_continuous <- function(
   rlang::check_dots_empty()
 
   args <- mget(names(formals()))
-  args[["skipGeometry"]] <- TRUE
 
   return_list <- get_ogc_data(args, output_id, service)
 

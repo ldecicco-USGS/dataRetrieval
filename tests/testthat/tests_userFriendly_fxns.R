@@ -123,11 +123,24 @@ test_that("peak, rating curves, surface-water measurements", {
     monitoring_location_id = siteNumber,
     file_type = "base"
   )
-  expect_gt(length(comment(data[[1]])), 1)
+  expect_type(data, "list")
+  expect_length(data, 1)
+
+  sub <- data[[1]]
+  expect_type(sub, "list")
+  expect_setequal(names(sub), c("ratings", "metadata"))
 
   # Surface meas:
   siteNumbers <- c("USGS-01594440", "USGS-040851325")
-  data <- read_waterdata_field_measurements(siteNumbers)
+  data <- read_waterdata_field_measurements(
+    monitoring_location_id = siteNumbers
+  )
+  expect_is(data$monitoring_location_id, "character")
+
+  # Latest Surface meas:
+  latest_data <- read_waterdata_latest_field_measurements(
+    monitoring_location_id = siteNumbers
+  )
   expect_is(data$monitoring_location_id, "character")
 
   siteINFO_USGS <- read_waterdata_monitoring_location(
