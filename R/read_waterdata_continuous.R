@@ -6,7 +6,7 @@
 #' a single request. If no "time" is specified, the service will return the
 #' last single year of data. If this is a bottleneck, please check back
 #' for new direct download functions that are expected to be available sometime
-#' in 2026.
+#' in 2027.
 #'
 #'
 #' @export

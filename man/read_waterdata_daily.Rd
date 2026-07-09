@@ -190,10 +190,11 @@ dv_data_no_request <- read_waterdata_daily(monitoring_location_id = site,
                               parameter_code = "00060",
                               time = c("2021-01-01", "2022-01-01"))
 
-dv_dane <- read_waterdata_daily(state_name = "Wisconsin",
-                                county_name = "Dane County",
-                                parameter_code = "00060",
-                                time = "P7D")
+dv_dane <- read_waterdata_daily(
+   state_name = "Wisconsin",
+   county_name = "Dane County",
+   parameter_code = "00060",
+   time = "P7D")
 
 }
 \dontshow{\}) # examplesIf}
