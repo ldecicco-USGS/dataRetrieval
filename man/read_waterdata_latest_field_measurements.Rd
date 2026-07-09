@@ -122,11 +122,6 @@ Setting to \code{NA} will eliminate site chunking, giving users full control.}
 \item{attach_request}{logical, defaults to TRUE.
 If set to \code{TRUE}, the full request sent to the Water Data API is attached
 as an attribute to the data set.}
-
-\item{monitoring_location_arguments}{A list of arguments that can be queried,
-but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "latest-field-measurements")}
-to get a list of all possible arguments available in this list.}
 }
 \description{
 Field measurements are physically measured values collected during a visit to the monitoring location. Field measurements consist of measurements of gage height and discharge, and readings of groundwater levels, and are primarily used as calibration readings for the automated sensors collecting continuous data. They are collected at a low frequency, and delivery of the data in WDFN may be delayed due to data processing time.

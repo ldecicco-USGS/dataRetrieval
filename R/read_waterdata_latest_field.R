@@ -25,10 +25,6 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("latest-field-measurements", "latest_field_id")`.
 #' The default (`NA`) will return all columns of the data.
-#' @param monitoring_location_arguments A list of arguments that can be queried,
-#' but are not returned. These are used as alternatives to specifying specific
-#' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "latest-field-measurements")`
-#' to get a list of all possible arguments available in this list.
 #' @param \dots Arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
 #' monitoring_location_ids. See `make_monitoring_location_arguments()`
