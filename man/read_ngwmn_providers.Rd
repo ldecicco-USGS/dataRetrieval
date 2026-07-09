@@ -29,6 +29,9 @@ Available options are:
 agency_name, agency_code, organization_type, state, link.
 The default (\code{NA}) will return all columns of the data.}
 
+\item{\dots}{Not used. Included to help differentiate official NGWMN API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
+
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
 vector and reorder the returned data frame.}

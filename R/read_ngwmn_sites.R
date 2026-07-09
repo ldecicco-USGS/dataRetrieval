@@ -68,7 +68,8 @@
 #' depth). Coordinates are assumed to be in crs 4326. The expected format is a numeric
 #' vector structured: c(xmin,ymin,xmax,ymax). Another way to think of it is c(Western-most longitude,
 #' Southern-most latitude, Eastern-most longitude, Northern-most longitude).
-#'
+#' @param \dots Not used. Included to help differentiate official NGWMN API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_non_api
 #' @examplesIf is_dataRetrieval_user()
 #'

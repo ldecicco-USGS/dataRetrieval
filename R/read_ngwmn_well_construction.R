@@ -13,6 +13,8 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("constructionObs", base = "NGWMN")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Not used. Included to help differentiate official NGWMN API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_non_api
 #'
 #' @examplesIf is_dataRetrieval_user()
@@ -43,10 +45,10 @@ read_ngwmn_well_construction <- function(
 ) {
   service <- "constructionObs"
   # Check for mandatory arguments:
-  if(all(is.na(monitoring_location_id))){
+  if (all(is.na(monitoring_location_id))) {
     stop("monitoring_location_id is a mandatory argument.")
   }
-  
+
   rlang::check_dots_empty()
   args <- mget(names(formals()))
 

@@ -65,6 +65,9 @@ Examples:
 
 Only features that have a \code{sample_time} that intersects the value of datetime are selected. If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.}
 
+\item{\dots}{Not used. Included to help differentiate official NGWMN API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
+
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
 vector and reorder the returned data frame.}

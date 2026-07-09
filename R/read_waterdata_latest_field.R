@@ -29,7 +29,8 @@
 #' but are not returned. These are used as alternatives to specifying specific
 #' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "latest-field-measurements")`
 #' to get a list of all possible arguments available in this list.
-#'
+#' @param \dots Not used. Included to help differentiate official Water Data API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #' @seealso [make_monitoring_location_arguments()]
