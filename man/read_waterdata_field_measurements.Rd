@@ -24,8 +24,6 @@ read_waterdata_field_measurements(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(service =
-    "field-measurements"),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -120,13 +118,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{monitoring_location_arguments}{A list of arguments that can be queried,
+\item{\dots}{Arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "field-measurements")}
-to get a list of all possible arguments available in this list.}
-
-\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+monitoring_location_ids. See \code{make_monitoring_location_arguments()}
+to get a list of all possible arguments available.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -214,10 +209,8 @@ surface_water <- read_waterdata_field_measurements(
                          parameter_code = "00060")
 
 dane <- read_waterdata_field_measurements(
-  monitoring_location_arguments = list(
-      state_name = "Wisconsin",
-      county_name = "Dane County"
-  ),
+  state_name = "Wisconsin",
+  county_name = "Dane County",
   parameter_code = "00060",
   time = "P30D")
 

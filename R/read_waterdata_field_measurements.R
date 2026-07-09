@@ -37,12 +37,10 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("field-measurements", "field_measurement_id")`.
 #' The default (`NA`) will return all columns of the data.
-#' @param monitoring_location_arguments A list of arguments that can be queried,
+#' @param \dots Arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
-#' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "field-measurements")`
-#' to get a list of all possible arguments available in this list.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
+#' monitoring_location_ids. See `make_monitoring_location_arguments()`
+#' to get a list of all possible arguments available.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #' @seealso [make_monitoring_location_arguments()]
@@ -89,10 +87,8 @@
 #'                          parameter_code = "00060")
 #'
 #' dane <- read_waterdata_field_measurements(
-#'   monitoring_location_arguments = list(
-#'       state_name = "Wisconsin",
-#'       county_name = "Dane County"
-#'   ),
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
 #'   parameter_code = "00060",
 #'   time = "P30D")
 #'
@@ -118,9 +114,6 @@ read_waterdata_field_measurements <- function(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(
-    service = "field-measurements"
-  ),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -130,13 +123,12 @@ read_waterdata_field_measurements <- function(
 ) {
   service <- "field-measurements"
   output_id <- "field_measurement_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
 
   args <- cleanup_arguments(
     args = args,
-    monitoring_location_arguments = monitoring_location_arguments,
+    monitoring_location_arguments = list(...),
     service = service
   )
 

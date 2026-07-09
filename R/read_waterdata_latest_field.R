@@ -29,8 +29,10 @@
 #' but are not returned. These are used as alternatives to specifying specific
 #' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "latest-field-measurements")`
 #' to get a list of all possible arguments available in this list.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
+#' @param \dots Arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. See `make_monitoring_location_arguments()`
+#' to get a list of all possible arguments available.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #' @seealso [make_monitoring_location_arguments()]
@@ -55,10 +57,8 @@
 #'                                                                       "USGS-14202650"))
 #'
 #' dane <- read_waterdata_latest_field_measurements(
-#'   monitoring_location_arguments = list(
-#'      state_name = "Wisconsin",
-#'      county_name = "Dane County"
-#'   ),
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
 #'   time = "P30D")
 #'
 #' }
@@ -76,9 +76,6 @@ read_waterdata_latest_field_measurements <- function(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(
-    service = "latest-field-measurements"
-  ),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -88,13 +85,12 @@ read_waterdata_latest_field_measurements <- function(
 ) {
   service <- "latest-field-measurements"
   output_id <- "latest_field_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
 
   args <- cleanup_arguments(
     args = args,
-    monitoring_location_arguments = monitoring_location_arguments,
+    monitoring_location_arguments = list(...),
     service = service
   )
 

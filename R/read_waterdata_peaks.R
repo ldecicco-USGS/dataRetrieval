@@ -36,12 +36,10 @@
 #' or whether to set those dates to `NA` (`FALSE`). Peaks with uncertain days
 #' are stored on the first of the month, and those with uncertain
 #' month stored on January 1. Default is `FALSE`.
-#' @param monitoring_location_arguments A list of arguments that can be queried,
+#' @param \dots Arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
-#' monitoring_location_ids. Run `make_monitoring_location_arguments(service = "peaks")`
-#' to get a list of all possible arguments available in this list.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
+#' monitoring_location_ids. See `make_monitoring_location_arguments()`
+#' to get a list of all possible arguments available.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #' @seealso [make_monitoring_location_arguments()]
@@ -62,10 +60,8 @@
 #'                parameter_code = "00060")
 #'
 #' dane <- read_waterdata_peaks(
-#'   monitoring_location_arguments = list(
-#'       state_name = "Wisconsin",
-#'       county_name = "Dane County"
-#'   ),
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
 #'   parameter_code = "00060")
 #'
 #' incomplete_dates_not_allowed <- read_waterdata_peaks(
@@ -97,9 +93,6 @@ read_waterdata_peaks <- function(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(
-    service = "peaks"
-  ),
   ...,
   allow_incomplete_dates = FALSE,
   convertType = getOption("dataRetrieval.convertType"),
@@ -110,13 +103,12 @@ read_waterdata_peaks <- function(
 ) {
   service <- "peaks"
   output_id <- "peak_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
 
   args <- cleanup_arguments(
     args = args,
-    monitoring_location_arguments = monitoring_location_arguments,
+    monitoring_location_arguments = list(...),
     service = service
   )
 

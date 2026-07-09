@@ -18,8 +18,6 @@ read_waterdata_latest_field_measurements(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(service =
-    "latest-field-measurements"),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -93,13 +91,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{monitoring_location_arguments}{A list of arguments that can be queried,
+\item{\dots}{Arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "latest-field-measurements")}
-to get a list of all possible arguments available in this list.}
-
-\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+monitoring_location_ids. See \code{make_monitoring_location_arguments()}
+to get a list of all possible arguments available.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -127,6 +122,11 @@ Setting to \code{NA} will eliminate site chunking, giving users full control.}
 \item{attach_request}{logical, defaults to TRUE.
 If set to \code{TRUE}, the full request sent to the Water Data API is attached
 as an attribute to the data set.}
+
+\item{monitoring_location_arguments}{A list of arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "latest-field-measurements")}
+to get a list of all possible arguments available in this list.}
 }
 \description{
 Field measurements are physically measured values collected during a visit to the monitoring location. Field measurements consist of measurements of gage height and discharge, and readings of groundwater levels, and are primarily used as calibration readings for the automated sensors collecting continuous data. They are collected at a low frequency, and delivery of the data in WDFN may be delayed due to data processing time.
@@ -167,10 +167,8 @@ multi_site <- read_waterdata_latest_field_measurements(monitoring_location_id = 
                                                                       "USGS-14202650"))
 
 dane <- read_waterdata_latest_field_measurements(
-  monitoring_location_arguments = list(
-     state_name = "Wisconsin",
-     county_name = "Dane County"
-  ),
+  state_name = "Wisconsin",
+  county_name = "Dane County",
   time = "P30D")
 
 }
