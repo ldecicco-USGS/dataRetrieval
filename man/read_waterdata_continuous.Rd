@@ -97,7 +97,7 @@ but are not returned. These are used as alternatives to specifying specific
 monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "continuous")}
 to get a list of all possible arguments available in this list.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
+\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
 
 \item{convertType}{logical, defaults to TRUE.

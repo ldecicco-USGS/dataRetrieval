@@ -18,7 +18,6 @@ read_waterdata_daily(
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
-  monitoring_location_arguments = make_monitoring_location_arguments(service = "daily"),
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
@@ -96,13 +95,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{monitoring_location_arguments}{A list of arguments that can be queried,
+\item{\dots}{Arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "daily")}
-to get a list of all possible arguments available in this list.}
-
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+monitoring_location_ids. See \code{make_monitoring_location_arguments()}
+to get a list of all possible arguments available.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -194,9 +190,8 @@ dv_data_no_request <- read_waterdata_daily(monitoring_location_id = site,
                               parameter_code = "00060",
                               time = c("2021-01-01", "2022-01-01"))
 
-dv_dane <- read_waterdata_daily(monitoring_location_arguments = list(
-                                      state_name = "Wisconsin",
-                                      county_name = "Dane County"),
+dv_dane <- read_waterdata_daily(state_name = "Wisconsin",
+                                county_name = "Dane County",
                                 parameter_code = "00060",
                                 time = "P7D")
 

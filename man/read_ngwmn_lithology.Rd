@@ -26,9 +26,6 @@ Available options are:
 agency_code, monitoring_location_number, monitoring_location_id, monitoring_location_obs_number, lithology_id, lithology_description, lithology_controlled_concept, lithology_depth_from, lithology_depth_to, lithology_depth_to_unit, lithology_depth_from_unit.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
-
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
 vector and reorder the returned data frame.}

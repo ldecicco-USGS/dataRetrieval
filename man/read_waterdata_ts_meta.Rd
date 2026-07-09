@@ -145,7 +145,7 @@ Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
 \item{end}{This field contains the same information as "end_utc", but in the local time of the monitoring location. It is retained for backwards compatibility, but will be removed in V1 of these APIs.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
+\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
 
 \item{limit}{numeric, The optional limit parameter is used to control the subset of the

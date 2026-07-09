@@ -34,6 +34,8 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("channel-measurements", "channel_measurements_id")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Not used. Included to help differentiate official Water Data API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #'

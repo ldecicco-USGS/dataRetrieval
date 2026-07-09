@@ -62,7 +62,7 @@
 #' make_monitoring_location_arguments(service = "field-measurements",
 #'                                    state_name = c("Ohio", "Wisconsin"))
 make_monitoring_location_arguments <- function(
-  service = c("daily"),
+  service = "daily",
   agency_code = NA_character_,
   agency_name = NA_character_,
   monitoring_location_number = NA_character_,
@@ -165,7 +165,7 @@ cleanup_arguments <- function(args, monitoring_location_arguments, service) {
   )
 
   args[["monitoring_location_arguments"]] <- NULL
-
+  args[["..."]] <- NULL
   args <- c(args, query_args)
 
   return(args)

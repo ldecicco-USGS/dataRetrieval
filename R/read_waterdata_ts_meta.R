@@ -45,6 +45,8 @@
 #' `r dataRetrieval:::get_properties_for_docs("time-series-metadata", "time_series_id")`.
 #' The default (`NA`) will return all columns of the data.
 #' @param time_series_id `r get_ogc_params("time-series-metadata")$id`
+#' @param \dots Not used. Included to help differentiate official Water Data API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #'

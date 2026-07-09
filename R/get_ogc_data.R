@@ -218,16 +218,13 @@ switch_properties_id <- function(properties, id) {
 #' the default for time series functions is
 #' `r getOption("dataRetrieval.site_chunk_size_data")`.
 #' Setting to `NA` will eliminate site chunking, giving users full control.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @keywords internal
 check_arguments_non_api <- function(
   convertType,
   no_paging,
   limit,
   attach_request,
-  chunk_size,
-  ...
+  chunk_size
 ) {
   check_logical(convertType, "convertType")
   check_logical(no_paging, "no_paging")

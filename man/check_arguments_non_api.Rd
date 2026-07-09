@@ -9,8 +9,7 @@ check_arguments_non_api(
   no_paging,
   limit,
   attach_request,
-  chunk_size,
-  ...
+  chunk_size
 )
 }
 \arguments{
@@ -40,9 +39,6 @@ is 250, while
 the default for time series functions is
 10.
 Setting to \code{NA} will eliminate site chunking, giving users full control.}
-
-\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
 }
 \description{
 Function to check types and create parameter descriptions.

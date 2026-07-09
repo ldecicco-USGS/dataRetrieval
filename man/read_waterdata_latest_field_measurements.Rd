@@ -98,9 +98,6 @@ but are not returned. These are used as alternatives to specifying specific
 monitoring_location_ids. Run \code{make_monitoring_location_arguments(service = "latest-field-measurements")}
 to get a list of all possible arguments available in this list.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
-
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
 vector and reorder the returned data frame.}
