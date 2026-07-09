@@ -8,7 +8,7 @@ Assessment Data Companion API service.
 what new optional arguments are available in many of the read_waterdata functions.
 * Added ability to use `...` in the Water Data functions for: daily, latest-continuous,
 field-measurements, latest-daily, latest-field-measurements, continuous, and peaks. 
-The "..." argument can now accept any parameter that is output from the new
+The "..." argument can now accept any parameter that is output from the
 make_monitoring_location_arguments function.
 * Added "q" argument to read_waterdata_monitoring_location. Full-text search across
 the most relevant text fields for this collection (e.g. site name, identifier,
