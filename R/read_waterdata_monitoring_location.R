@@ -51,6 +51,8 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("monitoring-locations", "monitoring_location_id")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Not used. Included to help differentiate official Water Data API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @param q Full-text search across the most relevant text fields for this collection
 #' (e.g. site name, identifier, number, state, county, and site type).
 #' Matching rules:

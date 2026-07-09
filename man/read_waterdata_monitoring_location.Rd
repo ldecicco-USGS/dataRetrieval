@@ -179,6 +179,9 @@ Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 each feature. The returning object will be a data frame with no spatial
 information. The default \code{NA} will not specify the argument in the request.}
 
+\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
+from more seldom used, optional dataRetrieval-specific arguments.}
+
 \item{limit}{numeric, The optional limit parameter is used to control the subset of the
 selected features that should be returned in each page. The maximum allowable
 limit is 50,000. It may be beneficial to set this number lower if your internet
