@@ -2,19 +2,12 @@ dataRetrieval 2.7.26
 ===================
 * Added suite of read_ngwmn to access new National Groundwater Monitoring
 Network API.
-* Added read_wateruse to access USGS's National Water Availability
-Assessment Data Companion API service.
+* Added read_wateruse to access USGS's National Water Availability Assessment Data Companion API service.
 * Created make_monitoring_location_arguments to help users understand 
 what new optional arguments are available in many of the read_waterdata functions.
-* Added ability to use `...` in the Water Data functions for: daily, latest-continuous,
-field-measurements, latest-daily, latest-field-measurements, continuous, and peaks. 
-The "..." argument can now accept any parameter that is output from the
-make_monitoring_location_arguments function.
-* Added "q" argument to read_waterdata_monitoring_location. Full-text search across
-the most relevant text fields for this collection (e.g. site name, identifier,
-number, state, county, and site type).
-* Added "skipGeometry" argument to read_waterdata_continuous. Previously geometry
-wasn't included with continuous data, but now is supported.
+* Added ability to use `...` in the Water Data functions for: daily, latest-continuous, field-measurements, latest-daily, latest-field-measurements, continuous, and peaks. The "..." argument can now accept any parameter that is output from the make_monitoring_location_arguments function.
+* Added "q" argument to read_waterdata_monitoring_location. Full-text search across the most relevant text fields for this collection (e.g. site name, identifier, number, state, county, and site type).
+* Added "skipGeometry" argument to read_waterdata_continuous. Previously geometry wasn't included with continuous data, but now is supported.
 
 dataRetrieval 2.7.25
 ===================
