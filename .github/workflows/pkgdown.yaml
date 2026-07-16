@@ -80,7 +80,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - name: Add extension
-        run: quarto add parmsam/quarto-subtitles
+        run: quarto add parmsam/quarto-subtitles --no-prompt
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
       - name: Upload artifact
