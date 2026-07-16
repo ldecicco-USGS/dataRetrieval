@@ -138,6 +138,7 @@ pages:
   variables:
     RETICULATE_PYTHON: /usr/bin/python3
   script:
+    - quarto add parmsam/quarto-subtitles
     - |
       Rscript -e '
         pkgdown::build_site(override = list(destination = "public"))

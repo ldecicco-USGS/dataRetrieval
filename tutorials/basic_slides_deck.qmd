@@ -8,8 +8,12 @@ format:
     toc: false
     slide-number: true
     logo: hex_logo.png
-    footer: <https://doi-usgs.github.io/dataRetrieval/>
     preview-links: auto
+    subtitles:
+      toggleKey: 't'
+      isVisible: true
+revealjs-plugins:
+  - subtitles
 title-slide-attributes: 
   data-background-image: combo_hex.png
   data-background-size: 15%
@@ -28,6 +32,8 @@ execute:
 params:
   run_python: true
 ---
+
+
 
 ```{r}
 #| echo: false
