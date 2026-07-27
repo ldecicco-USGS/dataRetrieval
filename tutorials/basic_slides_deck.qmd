@@ -9,11 +9,6 @@ format:
     slide-number: true
     logo: hex_logo.png
     preview-links: auto
-    subtitles:
-      toggleKey: 't'
-      isVisible: true
-revealjs-plugins:
-  - subtitles
 title-slide-attributes: 
   data-background-image: combo_hex.png
   data-background-size: 15%
