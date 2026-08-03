@@ -38,11 +38,11 @@
 #' month stored on January 1. Default is `FALSE`.
 #' @param \dots Arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
-#' monitoring_location_ids. See `make_monitoring_location_arguments()`
-#' to get a list of all possible arguments available.
+#' monitoring_location_ids. See `?get_monitoring_location_arguments`
+#' for available arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
-#' @seealso [make_monitoring_location_arguments()]
+#' @seealso [get_monitoring_location_arguments()]
 #'
 #' @inherit read_waterdata_continuous details
 #'
