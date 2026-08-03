@@ -106,8 +106,8 @@ Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
 \item{\dots}{Arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. See \code{make_monitoring_location_arguments()}
-to get a list of all possible arguments available.}
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{allow_incomplete_dates}{Specifically in the peaks data, exact peak dates
 are not always known. Sometimes peaks are known just for the year, sometimes
@@ -197,5 +197,5 @@ incomplete_dates_allowed$time
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=make_monitoring_location_arguments]{make_monitoring_location_arguments()}}
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

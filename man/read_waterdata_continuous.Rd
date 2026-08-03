@@ -92,8 +92,8 @@ Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
 \item{\dots}{Arguments that can be queried,
 but are not returned. These are used as alternatives to specifying specific
-monitoring_location_ids. See \code{make_monitoring_location_arguments()}
-to get a list of all possible arguments available.}
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -214,5 +214,5 @@ time_df <- data.frame(start = time_chunks[-length(time_chunks)],
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=make_monitoring_location_arguments]{make_monitoring_location_arguments()}}
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

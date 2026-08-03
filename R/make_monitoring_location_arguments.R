@@ -58,10 +58,10 @@
 #' @export
 #' @examples
 #'
-#' make_monitoring_location_arguments(service = "daily", agency_name = "USGS")
-#' make_monitoring_location_arguments(service = "field-measurements",
+#' get_monitoring_location_arguments(service = "daily", agency_name = "USGS")
+#' get_monitoring_location_arguments(service = "field-measurements",
 #'                                    state_name = c("Ohio", "Wisconsin"))
-make_monitoring_location_arguments <- function(
+get_monitoring_location_arguments <- function(
   service = "daily",
   agency_code = NA_character_,
   agency_name = NA_character_,
@@ -160,7 +160,7 @@ make_monitoring_location_arguments <- function(
 
 cleanup_arguments <- function(args, monitoring_location_arguments, service) {
   query_args <- do.call(
-    make_monitoring_location_arguments,
+    get_monitoring_location_arguments,
     c(monitoring_location_arguments, service = service)
   )
 
