@@ -44,10 +44,27 @@
 #' @param well_constructed_depth `r get_ogc_params("monitoring-locations")$well_constructed_depth`
 #' @param hole_constructed_depth `r get_ogc_params("monitoring-locations")$hole_constructed_depth`
 #' @param depth_source_code `r get_ogc_params("monitoring-locations")$depth_source_code`
+#' @param revision_note `r get_ogc_params("monitoring-locations")$revision_note`
+#' @param revision_created `r get_ogc_params("monitoring-locations")$revision_created`
+#' @param revision_modified `r get_ogc_params("monitoring-locations")$revision_modified`
 #' @param properties A vector of requested columns to be returned from the query.
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("monitoring-locations", "monitoring_location_id")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Not used. Included to help differentiate official Water Data API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
+#' @param q Full-text search across the most relevant text fields for this collection
+#' (e.g. site name, identifier, number, state, county, and site type).
+#' Matching rules:
+#' - Case-insensitive, with prefix matching (e.g. poud matches POUDRE).
+#' - Words separated by spaces are AND'd together (all must match).
+#' - Terms separated by commas are OR'd together (any may match).
+#' - Common abbreviations are expanded, so river also matches sites stored as RV (and vice versa).
+#' Examples are:
+#' q=poudre - sites whose name/identifier starts with or contains poudre
+#' q=colorado river - sites matching both colorado and river/rv
+#' q=poudre,cache creek - sites matching poudre OR (cache AND creek/ck)
+#'
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #' @examplesIf is_dataRetrieval_user()
@@ -80,6 +97,7 @@
 #' bbox_vals = c(-94.00, 35.0, -93.5, 35.5)
 #' multi_site <- read_waterdata_monitoring_location(bbox = bbox_vals)
 #'
+#' poudre <- read_waterdata_monitoring_location(q = "poudre")
 #'
 #' }
 read_waterdata_monitoring_location <- function(
@@ -123,7 +141,11 @@ read_waterdata_monitoring_location <- function(
   well_constructed_depth = NA_character_,
   hole_constructed_depth = NA_character_,
   depth_source_code = NA_character_,
+  revision_note = NA_character_,
+  revision_created = NA_character_,
+  revision_modified = NA_character_,
   properties = NA_character_,
+  q = NA_character_,
   bbox = NA,
   skipGeometry = NA,
   ...,

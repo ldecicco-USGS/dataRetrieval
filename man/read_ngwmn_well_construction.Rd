@@ -29,7 +29,7 @@ Available options are:
 agency_code, monitoring_location_number, monitoring_location_id, monitoring_location_obs_number, type, depth_from, depth_to, depth_from_unit, depth_to_unit, material, diameter, diameter_unit, hole_size, hole_size_unit.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
+\item{\dots}{Not used. Included to help differentiate official NGWMN API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
 
 \item{convertType}{logical, defaults to TRUE.

@@ -65,6 +65,10 @@ navbar:
     - text: How to Contribute
       href: articles/Contributing.html
   right:
+  - text: News
+    href: news/index.html
+  - icon: fa-gitlab fa-lg
+    href: https://code.usgs.gov/water/dataRetrieval
   - icon: fa-github fa-lg
     href: https://github.com/DOI-USGS/dataRetrieval
 reference:
@@ -79,7 +83,7 @@ reference:
       - read_waterdata_monitoring_location
       - read_waterdata_latest_continuous
       - read_waterdata_latest_daily
-      - read_waterdata_latest_field
+      - read_waterdata_latest_field_measurements
       - read_waterdata_field_measurements
       - read_waterdata_parameter_codes
       - read_waterdata_metadata
@@ -91,6 +95,7 @@ reference:
       - read_waterdata_peaks
       - summarize_waterdata_samples
       - check_waterdata_sample_params
+      - make_monitoring_location_arguments
   - title: National Water Information System (NWIS)
     desc:  Functions to retrieve (USGS) NWIS data. These will be slowly phased out and replaced with the read_waterdata family of functions.
     contents:

@@ -104,8 +104,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{allow_incomplete_dates}{Specifically in the peaks data, exact peak dates
 are not always known. Sometimes peaks are known just for the year, sometimes
@@ -176,6 +178,11 @@ dv_data_sf <- read_waterdata_peaks(
                monitoring_location_id = wi_peaks$monitoring_location_id[1],
                parameter_code = "00060")
 
+dane <- read_waterdata_peaks(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = "00060")
+
 incomplete_dates_not_allowed <- read_waterdata_peaks(
                monitoring_location_id = "USGS-06334330",
                parameter_code = "00060")
@@ -188,4 +195,7 @@ incomplete_dates_allowed$time
 
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

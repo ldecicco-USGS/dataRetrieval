@@ -74,7 +74,8 @@ jobs:
       - name: Build site
         run: |
           pkgdown::build_site(override = list(destination = "public")) |
-          file.copy(from = "./public/articles/logo.png",to = "./public/reference/logo.png")
+          file.copy(from = "./public/articles/logo.png",to = "./public/reference/logo.png") |
+          file.copy(from = "./public/articles/logo.png", to = "./public/news/logo.png")
         shell: Rscript {0}
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2

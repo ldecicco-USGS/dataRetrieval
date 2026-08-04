@@ -13,6 +13,8 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("providers", base = "NGWMN")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Not used. Included to help differentiate official NGWMN API arguments
+#' from more seldom used, optional dataRetrieval-specific arguments.
 #' @inheritParams check_arguments_non_api
 #'
 #' @examplesIf is_dataRetrieval_user()

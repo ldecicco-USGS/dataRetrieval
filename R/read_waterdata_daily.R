@@ -25,10 +25,13 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("daily", "daily_id")`.
 #' The default (`NA`) will return all columns of the data.
-#'
+#' @param \dots Arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. See `?get_monitoring_location_arguments`
+#' for available arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
-#'
+#' @seealso [get_monitoring_location_arguments()]
 #' @inherit read_waterdata_continuous details
 #'
 #' @examplesIf is_dataRetrieval_user()
@@ -73,6 +76,13 @@
 #' dv_data_no_request <- read_waterdata_daily(monitoring_location_id = site,
 #'                               parameter_code = "00060",
 #'                               time = c("2021-01-01", "2022-01-01"))
+#'
+#' dv_dane <- read_waterdata_daily(
+#'    state_name = "Wisconsin",
+#'    county_name = "Dane County",
+#'    parameter_code = "00060",
+#'    time = "P7D")
+#'
 #' }
 read_waterdata_daily <- function(
   monitoring_location_id = NA_character_,
@@ -97,9 +107,15 @@ read_waterdata_daily <- function(
 ) {
   service <- "daily"
   output_id <- "daily_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = list(...),
+    service = service
+  )
+
   return_list <- get_ogc_data(args, output_id, service, base = "OGC")
 
   return(return_list)

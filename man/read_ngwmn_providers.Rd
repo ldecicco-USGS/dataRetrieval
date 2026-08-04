@@ -29,7 +29,7 @@ Available options are:
 agency_name, agency_code, organization_type, state, link.
 The default (\code{NA}) will return all columns of the data.}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
+\item{\dots}{Not used. Included to help differentiate official NGWMN API arguments
 from more seldom used, optional dataRetrieval-specific arguments.}
 
 \item{convertType}{logical, defaults to TRUE.

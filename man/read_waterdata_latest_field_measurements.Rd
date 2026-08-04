@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_waterdata_latest_field.R
 \name{read_waterdata_latest_field_measurements}
 \alias{read_waterdata_latest_field_measurements}
-\title{Get latest USGS field measurement data}
+\title{Get Latest USGS Field Measurement Data}
 \usage{
 read_waterdata_latest_field_measurements(
   monitoring_location_id = NA_character_,
@@ -91,8 +91,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -159,6 +161,14 @@ field_data <- read_waterdata_latest_field_measurements(monitoring_location_id = 
 multi_site <- read_waterdata_latest_field_measurements(monitoring_location_id =  c("USGS-01435000",
                                                                       "USGS-14202650"))
 
+dane <- read_waterdata_latest_field_measurements(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  time = "P30D")
+
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

@@ -8,7 +8,6 @@ format:
     toc: false
     slide-number: true
     logo: hex_logo.png
-    footer: <https://doi-usgs.github.io/dataRetrieval/>
     preview-links: auto
 title-slide-attributes: 
   data-background-image: combo_hex.png
@@ -28,6 +27,8 @@ execute:
 params:
   run_python: true
 ---
+
+
 
 ```{r}
 #| echo: false

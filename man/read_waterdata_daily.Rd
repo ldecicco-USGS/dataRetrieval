@@ -95,8 +95,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -187,6 +189,16 @@ options("dataRetrieval.attach_request" = FALSE)
 dv_data_no_request <- read_waterdata_daily(monitoring_location_id = site,
                               parameter_code = "00060",
                               time = c("2021-01-01", "2022-01-01"))
+
+dv_dane <- read_waterdata_daily(
+   state_name = "Wisconsin",
+   county_name = "Dane County",
+   parameter_code = "00060",
+   time = "P7D")
+
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }
