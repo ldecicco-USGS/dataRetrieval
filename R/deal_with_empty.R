@@ -42,17 +42,7 @@ deal_with_empty <- function(
     return_list <- lapply(return_list, as.character)
     names(return_list) <- properties
 
-    single_params <- c(
-      "datetime",
-      "last_modified",
-      "begin",
-      "end",
-      "time",
-      "datetime",
-      "sample_time"
-    )
-
-    for (i in single_params) {
+    for (i in time_periods) {
       if (i %in% names(return_list)) {
         return_list[[i]] <- as.POSIXct(as.character(), origin = "1970-01-01")
       }
