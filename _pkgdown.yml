@@ -95,7 +95,7 @@ reference:
       - read_waterdata_peaks
       - summarize_waterdata_samples
       - check_waterdata_sample_params
-      - make_monitoring_location_arguments
+      - get_monitoring_location_arguments
   - title: National Water Information System (NWIS)
     desc:  Functions to retrieve (USGS) NWIS data. These will be slowly phased out and replaced with the read_waterdata family of functions.
     contents:
@@ -135,10 +135,6 @@ reference:
     contents:
       - findNLDI
       - get_nldi_sources
-  - title: National Water Availability Assessment Data
-    desc: Functions to get Water Use data
-    contents:
-      - read_wateruse
   - title: Import data
     desc: Functions to import different data formats
     contents:
