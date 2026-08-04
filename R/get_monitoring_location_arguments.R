@@ -2,10 +2,10 @@
 #'
 #' Many read_waterdata functions have a long list of arguments that can be used
 #' to find sites that have data. Users can use this function to create a list
-#' of possible arguments that can be used as input to the `monitoring_location_arguments`
+#' of possible arguments that can be used as input to the `get_monitoring_location_arguments`
 #' argument (found in many of the read_waterdata functions). This function
 #' also is used to check that user supplied available parameters to their queries
-#' when using the `monitoring_location_arguments` argument.
+#' when using the `get_monitoring_location_arguments` argument.
 #'
 #' @param service Endpoint to check arguments against. Possible values are
 #' "daily", "latest-continuous", "field-measurements", "latest-daily",
