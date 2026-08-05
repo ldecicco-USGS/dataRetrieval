@@ -50,7 +50,8 @@ read_ngwmn_sites(
 
 \item{altitude}{Elevation of the land surface at the site.}
 
-\item{national_aquifer_code}{Code for U.S. Pricinpal Aquifer, lookup \href{https://www.usgs.gov/mission-areas/water-resources/science/national-aquifer-code-reference-list}{here}. A list of values can be passed for this field, seperated by commas.}
+\item{national_aquifer_code}{Code for U.S. Principal Aquifer. A list of values
+can be passed for this field, separated by commas.}
 
 \item{national_aquifer_description}{Name for U.S. Principal Aquifer, lookup \href{https://www.usgs.gov/mission-areas/water-resources/science/national-aquifer-code-reference-list}{here}. A list of values can be passed for this field, seperated by commas.}
 
