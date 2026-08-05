@@ -454,17 +454,17 @@ readNWISstat <- function(
 #' County and state fields will be included as appropriate.
 #'
 #' @export
-readNWISuse <- function(stateCd,
-                        countyCd,
-                        years = "ALL",
-                        categories = "ALL",
-                        convertType = TRUE,
-                        transform = FALSE) {
-
-  .Deprecated(new = "read_waterdata_use",
-              package = "dataRetrieval", 
-              msg = "NWIS servers for water use have been decommission. New functions are being developed.")
+readNWISuse <- function(
+  stateCd,
+  countyCd,
+  years = "ALL",
+  categories = "ALL",
+  convertType = TRUE,
+  transform = FALSE
+) {
+  .Deprecated(
+    package = "dataRetrieval",
+    msg = "NWIS servers for water use have been decommission. New functions are being developed."
+  )
   return(NULL)
-
-
 }

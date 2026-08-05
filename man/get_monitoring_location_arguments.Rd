@@ -144,11 +144,10 @@ making sure your calls are accepted by the service, set to \code{TRUE}.}
 }
 \description{
 Many read_waterdata functions have a long list of arguments that can be used
-to find sites that have data. Users can use this function to create a list
-of possible arguments that can be used as input to the \code{monitoring_location_arguments}
-argument (found in many of the read_waterdata functions). This function
-also is used to check that user supplied available parameters to their queries
-when using the \code{monitoring_location_arguments} argument.
+to find sites that have data. Users can use this function as a reference
+of possible arguments that can be used as input.
+Additionally, this function is also used by other functions to check that
+the user supplied parameters are available to their queries
 }
 \examples{
 
