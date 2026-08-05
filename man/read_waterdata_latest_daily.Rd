@@ -41,7 +41,7 @@ Multiple statistic_ids can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, latest_daily_id, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
+geometry, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.
@@ -95,8 +95,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -171,6 +173,15 @@ multi_site <- read_waterdata_latest_daily(monitoring_location_id =  c("USGS-0149
                                                                       "USGS-01645000"),
                               parameter_code = c("00060", "00010"))
 
+dane <- read_waterdata_latest_daily(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = "00060",
+  time = "P7D")
+
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

@@ -123,11 +123,24 @@ test_that("peak, rating curves, surface-water measurements", {
     monitoring_location_id = siteNumber,
     file_type = "base"
   )
-  expect_gt(length(comment(data[[1]])), 1)
+  expect_type(data, "list")
+  expect_length(data, 1)
+
+  sub <- data[[1]]
+  expect_type(sub, "list")
+  expect_setequal(names(sub), c("ratings", "metadata"))
 
   # Surface meas:
   siteNumbers <- c("USGS-01594440", "USGS-040851325")
-  data <- read_waterdata_field_measurements(siteNumbers)
+  data <- read_waterdata_field_measurements(
+    monitoring_location_id = siteNumbers
+  )
+  expect_is(data$monitoring_location_id, "character")
+
+  # Latest Surface meas:
+  latest_data <- read_waterdata_latest_field_measurements(
+    monitoring_location_id = siteNumbers
+  )
   expect_is(data$monitoring_location_id, "character")
 
   siteINFO_USGS <- read_waterdata_monitoring_location(
@@ -169,13 +182,12 @@ test_that("peak, rating curves, surface-water measurements", {
   expect_equal(unique(gwl_1$monitoring_location_id), siteID)
 
   # No data:
-  stations <- "06011000"
-  expect_message(readNWISpeak(
-    stations,
-    startDate = "2024-08-01",
-    endDate = "2024-08-31",
-    convertType = FALSE
-  ))
+
+  no_data <- read_waterdata_peaks(
+    monitoring_location_id = "USGS-06011000",
+    time = c("2024-08-01", "2024-08-31")
+  )
+  expect_equal(nrow(no_data), 0)
 })
 
 test_that("read_waterdata_daily", {
@@ -260,45 +272,44 @@ test_that("read_waterdata_daily", {
   #                                                  "ICE, REGULATED, UNKNOWNREGULATION"))
 })
 
-test_that("WQP qw tests", {
-  testthat::skip_on_cran()
-  skip_on_ci()
-  # nameToUse <- "Specific conductance"
-  # pcodeToUse <- "00095"
-  #
-  # INFO_WQP <- readWQPqw(
-  #   "USGS-04024315",
-  #   pcodeToUse,
-  #   startDate = "",
-  #   endDate = "",
-  #   legacy = FALSE
-  # )
-  # expect_is(INFO_WQP$Activity_StartDateTime, "POSIXct")
-  #
-  # INFO2 <- readWQPqw(
-  #   "WIDNR_WQX-10032762",
-  #   nameToUse,
-  #   startDate = "",
-  #   endDate = "",
-  #   legacy = FALSE
-  # )
-  # expect_is(INFO2$Activity_StartDateTime, "POSIXct")
-  #
-  # df <- readWQPqw("USGS-04193500", parameterCd = "00665", legacy = FALSE)
-  # expect_true(nrow(df) > 0)
-  #
-  # df2 <- readWQPqw("USGS-05427718", parameterCd = "all")
-  # expect_true(nrow(df2) > 0)
-  #
-  # #Empty legacy:
-  # df3 <- readWQPqw(
-  #   siteNumbers = "USGS-385032115220501",
-  #   parameterCd = "all",
-  #   legacy = TRUE
-  # )
-  # expect_true(nrow(df3) == 0)
-})
-
+# test_that("WQP qw tests", {
+#   testthat::skip_on_cran()
+#   skip_on_ci()
+# nameToUse <- "Specific conductance"
+# pcodeToUse <- "00095"
+#
+# INFO_WQP <- readWQPqw(
+#   "USGS-04024315",
+#   pcodeToUse,
+#   startDate = "",
+#   endDate = "",
+#   legacy = FALSE
+# )
+# expect_is(INFO_WQP$Activity_StartDateTime, "POSIXct")
+#
+# INFO2 <- readWQPqw(
+#   "WIDNR_WQX-10032762",
+#   nameToUse,
+#   startDate = "",
+#   endDate = "",
+#   legacy = FALSE
+# )
+# expect_is(INFO2$Activity_StartDateTime, "POSIXct")
+#
+# df <- readWQPqw("USGS-04193500", parameterCd = "00665", legacy = FALSE)
+# expect_true(nrow(df) > 0)
+#
+# df2 <- readWQPqw("USGS-05427718", parameterCd = "all")
+# expect_true(nrow(df2) > 0)
+#
+# #Empty legacy:
+# df3 <- readWQPqw(
+#   siteNumbers = "USGS-385032115220501",
+#   parameterCd = "all",
+#   legacy = TRUE
+# )
+# expect_true(nrow(df3) == 0)
+# })
 
 context("state tests")
 test_that("state county tests", {

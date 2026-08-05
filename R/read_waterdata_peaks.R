@@ -22,6 +22,7 @@
 #' @param day `r get_ogc_params("peaks")$day`
 #' @param time_of_day `r get_ogc_params("peaks")$time_of_day`
 #' @param peak_since `r get_ogc_params("peaks")$peak_since`
+#' @param qualifier `r get_ogc_params("peaks")$qualifier`
 #' @param properties A vector of requested columns to be returned from the query.
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("peaks", "peak_id")`.
@@ -35,8 +36,13 @@
 #' or whether to set those dates to `NA` (`FALSE`). Peaks with uncertain days
 #' are stored on the first of the month, and those with uncertain
 #' month stored on January 1. Default is `FALSE`.
+#' @param \dots Arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. See `?get_monitoring_location_arguments`
+#' for available arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
+#' @seealso [get_monitoring_location_arguments()]
 #'
 #' @inherit read_waterdata_continuous details
 #'
@@ -52,6 +58,11 @@
 #' dv_data_sf <- read_waterdata_peaks(
 #'                monitoring_location_id = wi_peaks$monitoring_location_id[1],
 #'                parameter_code = "00060")
+#'
+#' dane <- read_waterdata_peaks(
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
+#'   parameter_code = "00060")
 #'
 #' incomplete_dates_not_allowed <- read_waterdata_peaks(
 #'                monitoring_location_id = "USGS-06334330",
@@ -78,6 +89,7 @@ read_waterdata_peaks <- function(
   day = NA_character_,
   time_of_day = NA_character_,
   peak_since = NA_character_,
+  qualifier = NA_character_,
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
@@ -91,9 +103,15 @@ read_waterdata_peaks <- function(
 ) {
   service <- "peaks"
   output_id <- "peak_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = list(...),
+    service = service
+  )
+
   args[["allow_incomplete_dates"]] <- NULL
   return_list <- get_ogc_data(args, output_id, service)
 

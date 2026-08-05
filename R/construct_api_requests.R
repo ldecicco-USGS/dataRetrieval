@@ -43,6 +43,7 @@ construct_api_requests <- function(
   output_id,
   ...,
   bbox = NA,
+  base = "OGC",
   convertType = getOption("dataRetrieval.convertType"),
   no_paging = getOption("dataRetrieval.no_paging"),
   chunk_size = getOption("dataRetrieval.site_chunk_size_data"),
@@ -92,13 +93,7 @@ construct_api_requests <- function(
   }
 
   single_params <- c(
-    "datetime",
-    "last_modified",
-    "begin",
-    "end",
-    "time",
-    "begin_utc",
-    "end_utc",
+    time_periods,
     "limit",
     "skipGeometry"
   )
@@ -159,7 +154,7 @@ construct_api_requests <- function(
 
   format_type <- ifelse(isTRUE(no_paging), "csv", "json")
 
-  baseURL <- setup_api(service, format = format_type)
+  baseURL <- setup_api(service, format = format_type, base = base)
   baseURL <- explode_query(baseURL, POST = FALSE, get_list, multi = "comma")
 
   if (all(!is.na(bbox))) {
@@ -235,6 +230,7 @@ construct_api_requests <- function(
 #' Setup the request for the OGC API requests
 #'
 #' @noRd
+#' @param base Character OGC or NGWMN
 #' @return httr2 request
 #' @examplesIf is_dataRetrieval_user()
 #'
@@ -242,9 +238,17 @@ construct_api_requests <- function(
 #' request <- dataRetrieval:::base_url()
 #' request
 #' }
-base_url <- function() {
-  httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |>
-    httr2::req_url_path_append(getOption("dataRetrieval.api_version"))
+base_url <- function(base = "OGC") {
+  match.arg(base, c("OGC", "NGWMN"))
+
+  if (base == "OGC") {
+    baseURL <- httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |>
+      httr2::req_url_path_append(getOption("dataRetrieval.api_version"))
+  } else {
+    baseURL <- httr2::request(
+      "https://api.waterdata.usgs.gov/ngwmn/ogcapi/"
+    )
+  }
 }
 
 #' Setup the request for a particular endpoint collection
@@ -257,8 +261,8 @@ base_url <- function() {
 #' request <- dataRetrieval:::setup_api("daily")
 #' request
 #' }
-setup_api <- function(service, format = "json") {
-  baseURL <- base_url() |>
+setup_api <- function(service, format = "json", base = "OGC") {
+  baseURL <- base_url(base) |>
     httr2::req_url_path_append("collections") |>
     httr2::req_url_path_append(service, "items") |>
     basic_request(format = format)
@@ -654,5 +658,7 @@ time_periods <- c(
   "begin",
   "end",
   "begin_utc",
-  "end_utc"
+  "end_utc",
+  "revision_created",
+  "revision_modified"
 )

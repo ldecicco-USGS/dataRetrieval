@@ -15,6 +15,8 @@ read_waterdata_continuous(
   value = NA,
   last_modified = NA_character_,
   time = NA_character_,
+  skipGeometry = TRUE,
+  bbox = NA,
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   limit = getOption("dataRetrieval.limit"),
@@ -34,7 +36,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, continuous_id, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
+geometry, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.
@@ -76,8 +78,22 @@ Only features that have a \code{time} that intersects the value of datetime are 
 
 See also Details below for more information.}
 
-\item{\dots}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{skipGeometry}{This parameter can be used to skip response geometries for
+each feature. The returning object will be a data frame with no spatial
+information. The default \code{NA} will not specify the argument in the request.}
+
+\item{bbox}{Only features that have a geometry that intersects the bounding
+box are selected.The bounding box is provided as four or six numbers, depending
+on whether the coordinate reference system includes a vertical axis (height or
+depth). Coordinates are assumed to be in crs 4326. The expected format is a numeric
+vector structured: c(xmin,ymin,xmax,ymax).
+Another way to think of it is c(Western-most longitude,
+Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
+
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{convertType}{logical, defaults to TRUE.
 If \code{TRUE}, the function will convert the data to dates, any qualifiers to string
@@ -113,9 +129,7 @@ Currently, the services only allow up to 3 years of data to be requested with
 a single request. If no "time" is specified, the service will return the
 last single year of data. If this is a bottleneck, please check back
 for new direct download functions that are expected to be available sometime
-in 2026.
-
-Geometry output is not supported in the continuous data API endpoint.
+in 2027.
 }
 \details{
 You can also use a vector of length 2 for any time queries (such as time
@@ -158,6 +172,12 @@ multi_site2 <- read_waterdata_continuous(monitoring_location_id =  c("USGS-45160
                                                parameter_code = c("00060", "72019"),
                                                last_modified = "P7D")
 
+dane <- read_waterdata_continuous(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = "00060",
+  time = "P1D")
+
 # how to split up request into roughly 3 year chunks
 
 site <- "USGS-0208458892"
@@ -192,4 +212,7 @@ time_df <- data.frame(start = time_chunks[-length(time_chunks)],
 
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

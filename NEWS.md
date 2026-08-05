@@ -1,3 +1,13 @@
+dataRetrieval 2.7.26
+===================
+* Added suite of read_ngwmn to access new National Groundwater Monitoring
+Network API.
+* Created get_monitoring_location_arguments to help users understand 
+what new optional arguments are available in many of the read_waterdata functions.
+* Added ability to use `...` in the Water Data functions for: daily, latest-continuous, field-measurements, latest-daily, latest-field-measurements, continuous, and peaks. The "..." argument can now accept any parameter that is output from the make_monitoring_location_arguments function.
+* Added "q" argument to read_waterdata_monitoring_location. Full-text search across the most relevant text fields for this collection (e.g. site name, identifier, number, state, county, and site type).
+* Added "skipGeometry" argument to read_waterdata_continuous. Previously geometry wasn't included with continuous data, but now is supported.
+
 dataRetrieval 2.7.25
 ===================
 * Added read_waterdata_ratings to access USGS rating curves with
@@ -32,25 +42,25 @@ return full period of record.
 
 dataRetrieval 2.7.23
 ===================
-* Added data.table to Imports
+
 * Added read_waterdata_stats_por and read_waterdata_stats_daterange to access USGS daily data statistics.
-* Updated vignettes, examples, and README to reflect new stats functions.
-* Added tests for read_waterdata_stats functions
+* Added read_waterdata_field_meta, read_waterdata_combine_meta, and read_waterdata_channel
+* Added read_ngwmn_water_levels, read_ngwmn_sites, read_ngwmn_providers, read_ngwmn_well_construction, read_ngwmn_lithology
+* Removed readNWISgwl, readNWISmeas, and readNGWMN as services have been turned off
+* Added data.table to Imports
 * Updated next_req_url to allow paging through /statistics API output
 * Added deprecation message to readNWISstat function
-* Specify "UTC" attribute for returned time
+* Improved time documentation for waterdata functions
+* Specify "UTC" attribute for returned time for waterdata functinos
 * Added options("dataRetrieval.attach_request" = TRUE) as default to attach the 
 request object as an attribute to the returned data frames. Setting 
 options("dataRetrieval.attach_request" = FALSE) will return a data frame without
 the request attribute
-* Improved time documentation
 * Improved error handling in WQP functions
-* Added read_waterdata_field_meta, read_waterdata_combine_meta, 
-and read_waterdata_channel
-* Removed readNWISgwl and readNWISmeas as services have been turned off
 * Updated CQL2 templates to allow HUC queries specifically to use a wildcard
 to get multiple inclusive HUCs.
 * Add deprecation message to readNGWMN functions. read_ngwmn will be coming soon.
+
 
 
 dataRetrieval 2.7.22

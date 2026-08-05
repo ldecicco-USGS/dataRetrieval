@@ -18,6 +18,7 @@ read_waterdata_peaks(
   day = NA_character_,
   time_of_day = NA_character_,
   peak_since = NA_character_,
+  qualifier = NA_character_,
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
@@ -41,7 +42,7 @@ Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, time_series_id, monitoring_location_id, parameter_code, peak_id, unit_of_measure, value, last_modified, time, water_year, year, month, day, time_of_day, peak_since.
+geometry, time_series_id, monitoring_location_id, parameter_code, unit_of_measure, value, last_modified, time, water_year, year, month, day, time_of_day, peak_since, qualifier.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.}
@@ -76,6 +77,8 @@ See also Details below for more information.}
 
 \item{peak_since}{If not null, this record represents the peak value for the parameter code since the year contained in "peak_since".}
 
+\item{qualifier}{This field indicates any qualifiers associated with an observation, for instance if a sensor may have been impacted by ice or if values were estimated.}
+
 \item{skipGeometry}{This parameter can be used to skip response geometries for
 each feature. The returning object will be a data frame with no spatial
 information. The default \code{NA} will not specify the argument in the request.}
@@ -101,8 +104,10 @@ vector structured: c(xmin,ymin,xmax,ymax).
 Another way to think of it is c(Western-most longitude,
 Southern-most latitude, Eastern-most longitude, Northern-most longitude).}
 
-\item{...}{Not used. Included to help differentiate official Water Data API arguments
-from more seldom used, optional dataRetrieval-specific arguments.}
+\item{\dots}{Arguments that can be queried,
+but are not returned. These are used as alternatives to specifying specific
+monitoring_location_ids. See \code{?get_monitoring_location_arguments}
+for available arguments.}
 
 \item{allow_incomplete_dates}{Specifically in the peaks data, exact peak dates
 are not always known. Sometimes peaks are known just for the year, sometimes
@@ -173,6 +178,11 @@ dv_data_sf <- read_waterdata_peaks(
                monitoring_location_id = wi_peaks$monitoring_location_id[1],
                parameter_code = "00060")
 
+dane <- read_waterdata_peaks(
+  state_name = "Wisconsin",
+  county_name = "Dane County",
+  parameter_code = "00060")
+
 incomplete_dates_not_allowed <- read_waterdata_peaks(
                monitoring_location_id = "USGS-06334330",
                parameter_code = "00060")
@@ -185,4 +195,7 @@ incomplete_dates_allowed$time
 
 }
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=get_monitoring_location_arguments]{get_monitoring_location_arguments()}}
 }

@@ -77,9 +77,9 @@ API_USGS_PAT = "my_super_secret_token"
 ```
 You can use `usethis::edit_r_environ()` to edit find and open your .Renviron file. You will need to restart R for that variable to be recognized. You should not add this file to git projects or generally share your API key. Anyone else using your API key will count against the number of requests available to you!
 
-## Contextual Query Language Support
+## Common Query Language Support
 
-Supports [Contextual Query Language](https://www.loc.gov/standards/sru/cql/) (CQL2) syntax for flexible queries. See the `read_waterdata` section below to learn how to make specific and powerful CQL2 queries.
+Supports [Common Query Language](https://www.ogc.org/standards/cql2/) (CQL2) syntax for flexible queries. See the `read_waterdata` section below to learn how to make specific and powerful CQL2 queries.
 
 ## Simple Features
 

@@ -164,7 +164,7 @@ test_that("General NWIS retrievals working", {
   expect_equal(names(rating_curve), "USGS-01594440.base.rdb")
 
   state_rating_list <- read_waterdata_ratings(
-    datetime = c(Sys.Date() - 1, NA),
+    datetime = c(Sys.Date() - 1, as.Date(NA)),
     download_and_parse = FALSE
   )
 

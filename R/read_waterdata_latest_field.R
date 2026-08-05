@@ -1,29 +1,29 @@
-#' Get Latest USGS Daily Data
+#' Get Latest USGS Field Measurement Data
 #'
-#' @description `r get_description("latest-daily")`
+#' @description `r get_description("latest-field-measurements")`
 #'
 #' @export
-#' @param monitoring_location_id `r get_ogc_params("latest-daily")$monitoring_location_id`
+#' @param monitoring_location_id `r get_ogc_params("latest-field-measurements")$monitoring_location_id`
 #' Multiple monitoring_location_ids can be requested as a character vector.
-#' @param parameter_code `r get_ogc_params("latest-daily")$parameter_code`
+#' @param parameter_code `r get_ogc_params("latest-field-measurements")$parameter_code`
 #' Multiple parameter_codes can be requested as a character vector.
-#' @param statistic_id `r get_ogc_params("latest-daily")$statistic_id`
+#' @param statistic_id `r get_ogc_params("latest-field-measurements")$statistic_id`
 #' Multiple statistic_ids can be requested as a character vector.
-#' @param time `r get_ogc_params("latest-daily")$time`
+#' @param time `r get_ogc_params("latest-field-measurements")$time`
 #'
 #' See also Details below for more information.
-#' @param value `r get_ogc_params("latest-daily")$value`
-#' @param unit_of_measure `r get_ogc_params("latest-daily")$unit_of_measure`
-#' @param approval_status `r get_ogc_params("latest-daily")$approval_status`
-#' @param last_modified `r get_ogc_params("latest-daily")$last_modified`
+#' @param value `r get_ogc_params("latest-field-measurements")$value`
+#' @param unit_of_measure `r get_ogc_params("latest-field-measurements")$unit_of_measure`
+#' @param approval_status `r get_ogc_params("latest-field-measurements")$approval_status`
+#' @param last_modified `r get_ogc_params("latest-field-measurements")$last_modified`
 #'
 #' See also Details below for more information.
-#' @param time_series_id `r get_ogc_params("latest-daily")$time_series_id`
+#' @param time_series_id `r get_ogc_params("latest-field-measurements")$time_series_id`
 #' Multiple time_series_ids can be requested as a character vector.
-#' @param qualifier `r get_ogc_params("latest-daily")$qualifier`
+#' @param qualifier `r get_ogc_params("latest-field-measurements")$qualifier`
 #' @param properties A vector of requested columns to be returned from the query.
 #' Available options are:
-#' `r dataRetrieval:::get_properties_for_docs("latest-daily", "latest_daily_id")`.
+#' `r dataRetrieval:::get_properties_for_docs("latest-field-measurements", "latest_field_id")`.
 #' The default (`NA`) will return all columns of the data.
 #' @param \dots Arguments that can be queried,
 #' but are not returned. These are used as alternatives to specifying specific
@@ -37,37 +37,28 @@
 #' @examplesIf is_dataRetrieval_user()
 #'
 #' \donttest{
-#' site <- "USGS-02238500"
-#' pcode <- "00060"
-#' dv_data_sf <- read_waterdata_latest_daily(monitoring_location_id = site,
-#'                               parameter_code = pcode)
+#' site <- "USGS-01435000"
 #'
-#' dv_data_last_modified <- read_waterdata_latest_daily(monitoring_location_id = site,
-#'                               parameter_code = pcode,
-#'                               last_modified = "P7D")
+#' field_data_sf <- read_waterdata_latest_field_measurements(monitoring_location_id = site)
 #'
-#' dv_data_trim <- read_waterdata_latest_daily(monitoring_location_id = site,
-#'                           parameter_code = pcode,
+#' dv_data_trim <- read_waterdata_latest_field_measurements(monitoring_location_id = site,
 #'                           properties = c("monitoring_location_id",
 #'                                          "value",
 #'                                          "time"))
 #'
-#' dv_data <- read_waterdata_latest_daily(monitoring_location_id = site,
-#'                            parameter_code = pcode,
+#' field_data <- read_waterdata_latest_field_measurements(monitoring_location_id = site,
 #'                            skipGeometry = TRUE)
 #'
-#' multi_site <- read_waterdata_latest_daily(monitoring_location_id =  c("USGS-01491000",
-#'                                                                       "USGS-01645000"),
-#'                               parameter_code = c("00060", "00010"))
+#' multi_site <- read_waterdata_latest_field_measurements(monitoring_location_id =  c("USGS-01435000",
+#'                                                                       "USGS-14202650"))
 #'
-#' dane <- read_waterdata_latest_daily(
+#' dane <- read_waterdata_latest_field_measurements(
 #'   state_name = "Wisconsin",
 #'   county_name = "Dane County",
-#'   parameter_code = "00060",
-#'   time = "P7D")
+#'   time = "P30D")
 #'
 #' }
-read_waterdata_latest_daily <- function(
+read_waterdata_latest_field_measurements <- function(
   monitoring_location_id = NA_character_,
   parameter_code = NA_character_,
   statistic_id = NA_character_,
@@ -88,8 +79,8 @@ read_waterdata_latest_daily <- function(
   chunk_size = getOption("dataRetrieval.site_chunk_size_meta"),
   attach_request = getOption("dataRetrieval.attach_request")
 ) {
-  service <- "latest-daily"
-  output_id <- "latest_daily_id"
+  service <- "latest-field-measurements"
+  output_id <- "latest_field_id"
 
   args <- mget(names(formals()))
 

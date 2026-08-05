@@ -37,8 +37,13 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("field-measurements", "field_measurement_id")`.
 #' The default (`NA`) will return all columns of the data.
+#' @param \dots Arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. See `?get_monitoring_location_arguments`
+#' for available arguments.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
+#' @seealso [get_monitoring_location_arguments()]
 #'
 #' @inherit read_waterdata_continuous details
 #'
@@ -81,6 +86,12 @@
 #'                          time = "2024-07-01T00:00:00Z/..",
 #'                          parameter_code = "00060")
 #'
+#' dane <- read_waterdata_field_measurements(
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
+#'   parameter_code = "00060",
+#'   time = "P30D")
+#'
 #'
 #' }
 read_waterdata_field_measurements <- function(
@@ -112,9 +123,15 @@ read_waterdata_field_measurements <- function(
 ) {
   service <- "field-measurements"
   output_id <- "field_measurement_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = list(...),
+    service = service
+  )
+
   return_list <- get_ogc_data(args, output_id, service)
 
   return(return_list)

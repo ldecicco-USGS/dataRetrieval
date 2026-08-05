@@ -32,6 +32,13 @@
 #' }
 #'
 importNGWMN <- function(input, asDateTime = FALSE, tz = "UTC") {
+  
+  .Deprecated(
+    new = "read_ngwmn_water_level",
+    package = "dataRetrieval",
+    msg = "Updated NGWMN APIs will use read_ngwmn set of functions."
+  )
+  
   if (tz != "") {
     tz <- match.arg(tz, OlsonNames())
   } else {

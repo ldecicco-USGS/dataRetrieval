@@ -6,9 +6,8 @@
 #' a single request. If no "time" is specified, the service will return the
 #' last single year of data. If this is a bottleneck, please check back
 #' for new direct download functions that are expected to be available sometime
-#' in 2026.
+#' in 2027.
 #'
-#' Geometry output is not supported in the continuous data API endpoint.
 #'
 #' @export
 #' @param monitoring_location_id `r get_ogc_params("continuous")$monitoring_location_id`
@@ -32,9 +31,13 @@
 #' Available options are:
 #' `r dataRetrieval:::get_properties_for_docs("continuous", "continuous_id")`.
 #' The default (`NA`) will return all columns of the data.
-#' @param \dots Not used. Included to help differentiate official Water Data API arguments
-#' from more seldom used, optional dataRetrieval-specific arguments.
+#' @param \dots Arguments that can be queried,
+#' but are not returned. These are used as alternatives to specifying specific
+#' monitoring_location_ids. See `?get_monitoring_location_arguments`
+#' for available arguments.
+#' @seealso [get_monitoring_location_arguments()]
 #' @inheritParams check_arguments_non_api
+#' @inheritParams check_arguments_api
 #'
 #' @details
 #' You can also use a vector of length 2 for any time queries (such as time
@@ -75,6 +78,12 @@
 #'                                                                      "USGS-14181500"),
 #'                                                parameter_code = c("00060", "72019"),
 #'                                                last_modified = "P7D")
+#'
+#' dane <- read_waterdata_continuous(
+#'   state_name = "Wisconsin",
+#'   county_name = "Dane County",
+#'   parameter_code = "00060",
+#'   time = "P1D")
 #'
 #' # how to split up request into roughly 3 year chunks
 #'
@@ -120,6 +129,8 @@ read_waterdata_continuous <- function(
   value = NA,
   last_modified = NA_character_,
   time = NA_character_,
+  skipGeometry = TRUE,
+  bbox = NA,
   ...,
   convertType = getOption("dataRetrieval.convertType"),
   limit = getOption("dataRetrieval.limit"),
@@ -129,10 +140,14 @@ read_waterdata_continuous <- function(
 ) {
   service <- "continuous"
   output_id <- "continuous_id"
-  rlang::check_dots_empty()
 
   args <- mget(names(formals()))
-  args[["skipGeometry"]] <- TRUE
+
+  args <- cleanup_arguments(
+    args = args,
+    monitoring_location_arguments = list(...),
+    service = service
+  )
 
   return_list <- get_ogc_data(args, output_id, service)
 

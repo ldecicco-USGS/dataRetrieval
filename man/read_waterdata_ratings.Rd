@@ -57,7 +57,13 @@ and return a list of data frames with rating curve data (\code{TRUE}), or to ret
 just a list of available rating curve files (\code{FALSE}). Default is \code{TRUE}.}
 }
 \value{
-List of data frames which contain the requested rating curves.
+List of named lists, one per requested rating file. Each element
+contains:
+\describe{
+\item{ratings}{Data frame of the rating curve.}
+\item{metadata}{Data frame of header/value pairs parsed from the comment
+attribute of the ratings file.}
+}
 }
 \description{
 Reads current rating table for an active USGS streamgages. More information
@@ -89,20 +95,24 @@ ratings_exsa <- read_waterdata_ratings(
       monitoring_location_id = monitoring_location_id,
       file_type = "exsa")
 
-head(ratings_exsa[["USGS-01104475.exsa.rdb"]])
-comment(ratings_exsa[["USGS-01104475.exsa.rdb"]])[1:15]
+head(ratings_exsa[["USGS-01104475.exsa.rdb"]]$ratings)
+m1 <- ratings_exsa[["USGS-01104475.exsa.rdb"]]$metadata
+m1
 
 ratings_corr <- read_waterdata_ratings(
       monitoring_location_id = monitoring_location_id,
       file_type = "corr")
 
-head(ratings_corr[["USGS-01104460.corr.rdb"]])
-comment(ratings_corr[["USGS-01104460.corr.rdb"]])[1:15]
+head(ratings_corr[["USGS-01104460.corr.rdb"]]$ratings)
+m2 <- ratings_corr[["USGS-01104460.corr.rdb"]]$metadata
+m2
 
 rating_2 <- read_waterdata_ratings(
       monitoring_location_id = monitoring_location_id,
       file_type = c("corr", "exsa"))
 names(rating_2)
+m3 <- rating_2$`USGS-01104460.exsa.rdb`$metadata
+rat_data <- rating_2$`USGS-01104460.exsa.rdb`$ratings
 
 bbox <- c(-95.00, 40.0, -92.0, 42)
 
@@ -112,7 +122,6 @@ length(bbox_query)
 recent_query <- read_waterdata_ratings(bbox = bbox,
                                        datetime = c(Sys.Date()-7, NA),
                                        download_and_parse = FALSE)
-length(recent_query)
 }
 \dontshow{\}) # examplesIf}
 }

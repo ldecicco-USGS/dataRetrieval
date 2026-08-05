@@ -6,6 +6,7 @@
 #' as "daily", "monitoring-locations", "time-series-metadata"
 #' @param skipGeometry A logical for whether to return geometry
 #' @param convertType A logical for whether to convert value to numeric
+#' @param base character, either "OGC" or "NGWMN" depending on data.
 #'
 #' @return data.frame
 #' @noRd
@@ -25,20 +26,23 @@ deal_with_empty <- function(
   service,
   skipGeometry,
   convertType,
-  no_paging = FALSE
+  no_paging = FALSE,
+  base = "OGC"
 ) {
   if (nrow(return_list) == 0) {
     if (all(is.na(properties))) {
-      schema <- check_OGC_requests(endpoint = service, type = "schema")
+      schema <- check_OGC_requests(
+        endpoint = service,
+        type = "schema",
+        base = base
+      )
       properties <- names(schema$properties)
     }
     return_list <- data.frame(matrix(nrow = 0, ncol = length(properties)))
     return_list <- lapply(return_list, as.character)
     names(return_list) <- properties
 
-    single_params <- c("datetime", "last_modified", "begin", "end", "time")
-
-    for (i in single_params) {
+    for (i in time_periods) {
       if (i %in% names(return_list)) {
         return_list[[i]] <- as.POSIXct(as.character(), origin = "1970-01-01")
       }
