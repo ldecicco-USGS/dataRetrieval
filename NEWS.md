@@ -1,5 +1,6 @@
 dataRetrieval 2.7.26
 ===================
+* Switching to v1 of the Water Data APIs.
 * Added suite of read_ngwmn to access new National Groundwater Monitoring
 Network API.
 * Created get_monitoring_location_arguments to help users understand 
