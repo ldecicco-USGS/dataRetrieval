@@ -30,7 +30,11 @@ test_that("Unit value data returns correct types", {
   expect_equal(
     grep(
       x = attr(recent_uv, "request")[["url"]],
-      pattern = "https://api.waterdata.usgs.gov/ogcapi/v0/collections/continuous"
+      pattern = paste0(
+        "https://api.waterdata.usgs.gov/ogcapi/",
+        getOption("dataRetrieval.api_version"),
+        "/collections/continuous"
+      )
     ),
     1
   )
@@ -38,7 +42,11 @@ test_that("Unit value data returns correct types", {
   expect_equal(
     grep(
       x = attr(spreadOver120, "request")[["url"]],
-      pattern = "https://api.waterdata.usgs.gov/ogcapi/v0/collections/continuous"
+      pattern = paste0(
+        "https://api.waterdata.usgs.gov/ogcapi/",
+        getOption("dataRetrieval.api_version"),
+        "/collections/continuous"
+      )
     ),
     1
   )
