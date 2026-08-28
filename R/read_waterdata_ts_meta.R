@@ -65,8 +65,8 @@
 #'                             parameter_code = c("00060", "00010"),
 #'                             properties = c("monitoring_location_id",
 #'                                            "parameter_code",
-#'                                            "begin_utc",
-#'                                            "end_utc",
+#'                                            "begin",
+#'                                            "end",
 #'                                            "time_series_id"),
 #'                             skipGeometry = TRUE)
 #'

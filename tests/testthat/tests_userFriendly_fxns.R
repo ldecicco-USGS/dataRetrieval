@@ -165,7 +165,8 @@ test_that("peak, rating curves, surface-water measurements", {
   Meas07227500.ex <- read_waterdata_field_measurements(
     monitoring_location_id = "USGS-07227500"
   )
-  expect_is(Meas07227500.ex$time, "POSIXct")
+
+  expect_is(Meas07227500.ex$time, "Date")
 
   expect_equal(
     nrow(read_waterdata_ts_meta(

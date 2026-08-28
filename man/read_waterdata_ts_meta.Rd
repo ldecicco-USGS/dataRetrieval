@@ -207,8 +207,8 @@ meta_multi <- read_waterdata_ts_meta(monitoring_location_id =  c("USGS-01491000"
                             parameter_code = c("00060", "00010"),
                             properties = c("monitoring_location_id",
                                            "parameter_code",
-                                           "begin_utc",
-                                           "end_utc",
+                                           "begin",
+                                           "end",
                                            "time_series_id"),
                             skipGeometry = TRUE)
 
