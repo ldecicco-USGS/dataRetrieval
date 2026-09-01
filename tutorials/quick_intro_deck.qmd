@@ -303,7 +303,7 @@ Biggest changes:
 
 2. Save it in a safe place (KeePass or other password management tool)
 
-3. Add it to your .Renviorn file as API_USGS_PAT. 
+3. Add it to your .Renviron file as API_USGS_PAT. 
 
 4. Restart R 
 
