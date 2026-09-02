@@ -290,7 +290,7 @@ Sys.getenv("API_USGS_PAT")
 ```
 
 ::: {.callout-note collapse="true"}
-Your .Renviorn file should never be pushed to a public repository.
+Your .Renviron file should never be pushed to a public repository.
 :::
 
 ### Python
