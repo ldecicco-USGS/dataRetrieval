@@ -11,8 +11,7 @@
 #' pcodes <- c("00070", "00075", "00430", "52642")
 #' \donttest{
 #' all_new <- read_waterdata_parameter_codes(parameter_code = pcodes)
-#' ref_list <- check_waterdata_sample_params("reference-list",
-#'                                           parm_cd = pcodes)
+#' ref_list <- check_waterdata_sample_params("reference-list")
 #' ref_list_sm <- ref_list[ref_list$parm_cd %in% pcodes, ]
 #'
 #' }
