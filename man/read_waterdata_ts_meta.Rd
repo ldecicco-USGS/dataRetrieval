@@ -70,16 +70,12 @@ Only features that have a \code{last_modified} that intersects the value of date
 
 See also Details below for more information.}
 
-\item{begin_utc}{Deprecated in v1. Use "begin" instead.
-#'
-See also Details below for more information.}
+\item{begin_utc}{Deprecated in v1. Use "begin" instead.}
 
-\item{end_utc}{Deprecated in v1. Use "end" instead.
+\item{end_utc}{Deprecated in v1. Use "end" instead.}
 
-See also Details below for more information.}
-
-\item{hydrologic_unit_code}{Deprecated in v1. Use \code{read_waterdata_combined_meta} for
-similar functionality.}
+\item{hydrologic_unit_code}{Deprecated in v1. Use
+\code{read_waterdata_combined_meta} for similar functionality.}
 
 \item{state_name}{Deprecated in v1. Use \code{read_waterdata_combined_meta} for
 similar functionality.}

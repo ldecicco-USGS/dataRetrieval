@@ -18,16 +18,6 @@
 #' @param last_modified `r get_ogc_params("time-series-metadata")$last_modified`
 #'
 #' See also Details below for more information.
-#' @param begin_utc Deprecated in v1. Use "begin" instead.
-#' #'
-#' See also Details below for more information.
-#' @param end_utc Deprecated in v1. Use "end" instead.
-#'
-#' See also Details below for more information.
-#' @param hydrologic_unit_code Deprecated in v1. Use `read_waterdata_combined_meta` for
-#' similar functionality.
-#' @param state_name Deprecated in v1. Use `read_waterdata_combined_meta` for
-#' similar functionality.
 #' @param thresholds `r get_ogc_params("time-series-metadata")$thresholds`
 #' @param unit_of_measure `r get_ogc_params("time-series-metadata")$unit_of_measure`
 #' @param primary
@@ -49,6 +39,12 @@
 #' @param time_series_id `r get_ogc_params("time-series-metadata")$id`
 #' @param \dots Not used. Included to help differentiate official Water Data API arguments
 #' from more seldom used, optional dataRetrieval-specific arguments.
+#' @param begin_utc Deprecated in v1. Use "begin" instead.
+#' @param end_utc Deprecated in v1. Use "end" instead.
+#' @param state_name Deprecated in v1. Use `read_waterdata_combined_meta` for
+#' similar functionality.
+#' @param hydrologic_unit_code Deprecated in v1. Use
+#' `read_waterdata_combined_meta` for similar functionality.
 #' @inheritParams check_arguments_api
 #' @inheritParams check_arguments_non_api
 #'
