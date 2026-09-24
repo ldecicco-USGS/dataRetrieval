@@ -1093,7 +1093,7 @@ leaflet(
   data = latest_discharge |>
     sf::st_transform(crs = leaflet_crs)
 ) |>
-  addProviderTiles("CartoDB.Positron") |>
+  addProviderTiles("Esri.WorldGrayCanvas") |>
   addCircleMarkers(
     popup = paste(
       latest_discharge$monitoring_location_id,
@@ -1124,7 +1124,7 @@ leaflet(
 latest_discharge.set_crs(crs="WGS84").explore(
     marker_kwds=dict(radius=7),
     style_kwds=dict(opacity=1, fillOpacity=1),
-    tiles="CartoDB.Positron",
+    tiles="Esri.WorldGrayCanvas",
     column="value",
     cmap="viridis",
     zoom_start=10,
