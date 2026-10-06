@@ -97,7 +97,7 @@ reference:
       - check_waterdata_sample_params
       - get_monitoring_location_arguments
   - title: RETIRED FUNCTIONS - Discontinue Using!
-    desc:  USGS WaterServices will be taken offline February 22nd, 2027. These functions will be removed after that date:
+    desc:  These functions will be removed after Feburary 22, 2027
     contents:
       - readNWISdv
       - readNWISuv
