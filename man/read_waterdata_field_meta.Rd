@@ -28,7 +28,7 @@ read_waterdata_field_meta(
 
 Multiple monitoring_location_ids can be requested as a character vector.}
 
-\item{parameter_code}{Parameter codes are 5-digit codes used to identify the constituent measured and the units of measure. A complete list of parameter codes and associated groupings can be found at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/parameter-codes/items}.
+\item{parameter_code}{Parameter codes are 5-digit codes used to identify the constituent measured and the units of measure. A complete list of parameter codes and associated groupings can be found at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/parameter-codes/items}.
 
 Multiple parameter_codes can be requested as a character vector.}
 
@@ -83,7 +83,7 @@ See also Details below for more information.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, field_measurement_id, reading_type, monitoring_location_id, parameter_code, parameter_name, parameter_description, begin, end, last_modified.
+geometry, field_measurement_id, reading_type, monitoring_location_id, parameter_code, parameter_name, parameter_description, begin, end, last_modified, sublocation_identifier.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{skipGeometry}{This parameter can be used to skip response geometries for
