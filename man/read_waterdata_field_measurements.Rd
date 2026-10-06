@@ -21,6 +21,7 @@ read_waterdata_field_measurements(
   measuring_agency = NA_character_,
   control_condition = NA_character_,
   measurement_rated = NA_character_,
+  sublocation_identifier = NA_character_,
   skipGeometry = NA,
   time = NA_character_,
   bbox = NA,
@@ -92,6 +93,8 @@ What and where the control of flow is for the gage pool.}
 
 Rated measurement based on the hydrologic/hydraulic conditions in which the measurement was made
 (excellent (2 percent), good (5 percent), fair (8 percent), or poor (more than 8 percent).                                                        percent)}
+
+\item{sublocation_identifier}{An optional human-readable identifier used to specify where measurements are recorded at a monitoring location.}
 
 \item{skipGeometry}{This parameter can be used to skip response geometries for
 each feature. The returning object will be a data frame with no spatial
