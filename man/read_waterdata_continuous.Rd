@@ -30,13 +30,13 @@ read_waterdata_continuous(
 
 Multiple monitoring_location_ids can be requested as a character vector.}
 
-\item{parameter_code}{Parameter codes are 5-digit codes used to identify the constituent measured and the units of measure. A complete list of parameter codes and associated groupings can be found at \url{https://api.waterdata.usgs.gov/ogcapi/v0/collections/parameter-codes/items}.
+\item{parameter_code}{Parameter codes are 5-digit codes used to identify the constituent measured and the units of measure. A complete list of parameter codes and associated groupings can be found at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/parameter-codes/items}.
 
 Multiple parameter_codes can be requested as a character vector.}
 
 \item{properties}{A vector of requested columns to be returned from the query.
 Available options are:
-geometry, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified.
+geometry, time_series_id, monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier, last_modified, method_category.
 The default (\code{NA}) will return all columns of the data.}
 
 \item{time_series_id}{A unique identifier representing a single time series. This corresponds to the \code{id} field in the \code{time-series-metadata} endpoint.
