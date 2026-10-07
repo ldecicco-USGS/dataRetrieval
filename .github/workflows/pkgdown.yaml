@@ -67,8 +67,10 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           export API_USGS_PAT
+          python -c "
           from os import environ
           print(environ.get("API_USGS_PAT") is None)
+          "
       - name: Create public directory
         run: |
           mkdir public
