@@ -65,10 +65,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-                  run: |
-          python -m pip install --upgrade pip
-          export API_USGS_PAT
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          export API_USGS_PAT
+          from os import environ
+          print(environ.get("API_USGS_PAT") is None)
       - name: Create public directory
         run: |
           mkdir public
