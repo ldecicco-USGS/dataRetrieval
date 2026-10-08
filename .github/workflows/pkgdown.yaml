@@ -3,8 +3,6 @@
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 name: pkgdown
 
@@ -87,7 +85,6 @@ jobs:
           path: ./public
   # Deployment job
   deploy:
-    if: github.repository == 'DOI-USGS/dataRetrieval'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
