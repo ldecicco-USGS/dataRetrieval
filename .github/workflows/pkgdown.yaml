@@ -22,6 +22,7 @@ concurrency:
 
 jobs:
   pkgdown:
+    if: github.repository == 'DOI-USGS/dataRetrieval'
     runs-on: ubuntu-latest
     # Only restrict concurrency for non-PR jobs
     environment: CI_config
@@ -86,6 +87,7 @@ jobs:
           path: ./public
   # Deployment job
   deploy:
+    if: github.repository == 'DOI-USGS/dataRetrieval'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
