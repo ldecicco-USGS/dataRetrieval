@@ -114,6 +114,10 @@ read_waterdata_continuous_por <- function(
 
   features <- do.call(search_stac, search_features)
 
+  if (length(features) > site_limits) {
+    stop("Unique monitoring_location_id exceed site_limits")
+  }
+
   con_1 <- initial_connection()
   on.exit(DBI::dbDisconnect(con_1))
 
