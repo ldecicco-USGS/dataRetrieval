@@ -100,7 +100,7 @@ read_waterdata_daily_por <- function(
 ) {
   rlang::check_dots_empty()
 
-  ts_meta <- read_waterdata_combined_meta(
+  search_features <- add_non_stac_search(
     monitoring_location_id = monitoring_location_id,
     county_name = county_name,
     state_name = state_name,
@@ -108,26 +108,22 @@ read_waterdata_daily_por <- function(
     bbox = bbox,
     hydrologic_unit_code = hydrologic_unit_code,
     site_type_code = site_type_code,
-    id = time_series_id,
+    time_series_id = time_series_id,
     parameter_code = parameter_code,
     statistic_id = statistic_id,
-    data_type = "Daily values"
+    start_time = start_time,
+    end_time = end_time,
+    approval_status = approval_status,
+    data_type = "Daily values",
+    collection = "daily",
+    site_limits = site_limits
   )
 
-  if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
+  features <- do.call(search_stac, search_features)
+
+  if (length(features) > site_limits) {
     stop("Unique monitoring_location_id exceed site_limits")
   }
-
-  search_features <- list(
-    monitoring_location_id = unique(ts_meta$monitoring_location_id),
-    collections = "daily",
-    limit = site_limits,
-    chunk_size = 50
-  )
-
-  search_features <- search_features[!is.na(search_features)]
-
-  features <- suppressMessages(do.call(search_stac, search_features))
 
   con_1 <- initial_connection()
   on.exit(DBI::dbDisconnect(con_1))

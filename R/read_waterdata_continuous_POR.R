@@ -89,12 +89,12 @@ read_waterdata_continuous_por <- function(
   end_time = NA_character_,
   approval_status = NA_character_,
   ...,
-  site_limits = 1000,
+  site_limits = 100,
   memory_MB_limit = 1000 #Stop if expected results exceed approximately 1 GB
 ) {
   rlang::check_dots_empty()
 
-  ts_meta <- read_waterdata_combined_meta(
+  search_features <- add_non_stac_search(
     monitoring_location_id = monitoring_location_id,
     county_name = county_name,
     state_name = state_name,
@@ -102,23 +102,15 @@ read_waterdata_continuous_por <- function(
     bbox = bbox,
     hydrologic_unit_code = hydrologic_unit_code,
     site_type_code = site_type_code,
-    id = time_series_id,
+    time_series_id = time_series_id,
     parameter_code = parameter_code,
-    data_type = "Continuous values"
+    start_time = start_time,
+    end_time = end_time,
+    approval_status = approval_status,
+    data_type = "Continuous values",
+    collection = "continuous",
+    site_limits = site_limits
   )
-
-  if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
-    stop("Unique monitoring_location_id exceed site_limits")
-  }
-
-  search_features <- list(
-    monitoring_location_id = unique(ts_meta$monitoring_location_id),
-    collections = "continuous",
-    limit = site_limits,
-    chunk_size = 50
-  )
-
-  search_features <- search_features[!is.na(search_features)]
 
   features <- do.call(search_stac, search_features)
 

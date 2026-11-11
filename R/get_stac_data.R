@@ -143,3 +143,72 @@ EXTRA_HTTP_HEADERS MAP {
   }
   return(con)
 }
+
+
+add_non_stac_search <- function(
+  monitoring_location_id = NA_character_,
+  county_name = NA_character_,
+  state_name = NA_character_,
+  site_type = NA_character_,
+  site_type_code = NA_character_,
+  hydrologic_unit_code = NA_character_,
+  bbox = NA,
+  time_series_id = NA_character_,
+  parameter_code = NA_character_,
+  start_time = NA_character_,
+  end_time = NA_character_,
+  approval_status = NA_character_,
+  statistic_id = NA_character_,
+  site_limits = 1000,
+  data_type = NA_character_,
+  collection = NA_character_
+) {
+  if (
+    any(
+      any(!is.na(parameter_code)),
+      !is.na(start_time),
+      !is.na(end_time),
+      any(!is.na(approval_status)),
+      any(!is.na(statistic_id))
+    )
+  ) {
+    ts_meta <- read_waterdata_combined_meta(
+      monitoring_location_id = monitoring_location_id,
+      county_name = county_name,
+      state_name = state_name,
+      site_type = site_type,
+      bbox = bbox,
+      hydrologic_unit_code = hydrologic_unit_code,
+      site_type_code = site_type_code,
+      id = time_series_id,
+      parameter_code = parameter_code,
+      statistic_id = statistic_id,
+      data_type = data_type
+    )
+
+    search_features <- list(
+      monitoring_location_id = unique(ts_meta$monitoring_location_id),
+      collections = collection,
+      limit = site_limits,
+      chunk_size = 50
+    )
+
+    if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
+      stop("Unique monitoring_location_id exceed site_limits")
+    }
+  } else {
+    search_features <- list(
+      monitoring_location_id = monitoring_location_id,
+      county_name = county_name,
+      state_name = state_name,
+      site_type = site_type,
+      bbox = bbox,
+      hydrologic_unit_code = hydrologic_unit_code,
+      site_type_code = site_type_code,
+      collections = collection
+    )
+  }
+
+  search_features <- search_features[!is.na(search_features)]
+  return(search_features)
+}
