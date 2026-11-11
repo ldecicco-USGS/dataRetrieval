@@ -120,7 +120,7 @@ read_waterdata_continuous_por <- function(
 
   search_features <- search_features[!is.na(search_features)]
 
-  features <- suppressMessages(do.call(search_stac, search_features))
+  features <- do.call(search_stac, search_features)
 
   con_1 <- initial_connection()
   on.exit(DBI::dbDisconnect(con_1))

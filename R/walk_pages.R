@@ -85,6 +85,7 @@ next_req_url <- function(resp, req) {
   }
 
   log_rate_limit(resp)
+
   if ("links" %in% names(body)) {
     links <- body$links
     if (any(sapply(links, function(x) x$rel) == "next")) {
@@ -195,8 +196,8 @@ coerce_num_cols <- function(df, is_sf = FALSE) {
 }
 
 log_rate_limit <- function(resp) {
-  if (Sys.getenv("API_USGS_PAT") != "") {
-    header_info <- httr2::resp_headers(resp)
+  header_info <- httr2::resp_headers(resp)
+  if ("x-ratelimit-remaining" %in% names(header_info)) {
     message(
       "Remaining requests this hour:",
       header_info$`x-ratelimit-remaining`,

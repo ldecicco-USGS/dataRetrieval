@@ -169,7 +169,7 @@ search_stac <- function(
 
     request <- request |>
       httr2::req_url_query(limit = limit) |>
-      basic_request()
+      basic_request(token = "STAC")
 
     message("Requesting:\n", request$url)
 

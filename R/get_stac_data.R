@@ -125,7 +125,7 @@ get_all_hrefs <- function(x) {
 initial_connection <- function() {
   con <- DBI::dbConnect(duckdb::duckdb(shared_home = TRUE))
 
-  token <- Sys.getenv("API_USGS_PAT")
+  token <- Sys.getenv("STAC_USGS_PAT")
   if (token != "") {
     DBI::dbExecute(con, "INSTALL httpfs; LOAD httpfs;")
     extra_headers <- paste0(
@@ -134,7 +134,7 @@ SECRET http_headers (
 TYPE http,
 EXTRA_HTTP_HEADERS MAP {
   'X-Api-Key': '",
-      Sys.getenv("API_USGS_PAT"),
+      Sys.getenv("STAC_USGS_PAT"),
       "'
 });"
     )

@@ -615,6 +615,8 @@ error_body <- function(resp) {
 #' user agents, and the X-Api-Key token if available.
 #'
 #' @param url_base httr2 request
+#' @param format Default is "json"
+#' @param token Either OGC or STAC depending on which token to use.
 #' @return list
 #' @noRd
 #' @examplesIf is_dataRetrieval_user()
@@ -627,7 +629,7 @@ error_body <- function(resp) {
 #' collect_request
 #' }
 #'
-basic_request <- function(url_base, format = "json") {
+basic_request <- function(url_base, format = "json", token = "OGC") {
   req <- url_base |>
     httr2::req_user_agent(default_ua()) |>
     httr2::req_headers(`Accept-Encoding` = c("compress", "gzip")) |>
@@ -636,13 +638,20 @@ basic_request <- function(url_base, format = "json") {
     httr2::req_retry(max_tries = 3, retry_on_failure = TRUE) |>
     httr2::req_timeout(seconds = 180)
 
-  req <- add_api_token(req)
+  req <- add_api_token(req, token = token)
 
   return(req)
 }
 
-add_api_token <- function(req) {
-  token <- Sys.getenv("API_USGS_PAT")
+add_api_token <- function(req, token = "OGC") {
+  match.arg(token, c("OGC", "STAC"), several.ok = FALSE)
+
+  if (token == "OGC") {
+    token <- Sys.getenv("API_USGS_PAT")
+  } else {
+    token <- Sys.getenv("STAC_USGS_PAT")
+  }
+
   if (token != "") {
     req <- req |>
       httr2::req_headers_redacted(`X-Api-Key` = token)

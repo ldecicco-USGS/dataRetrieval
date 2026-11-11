@@ -16,14 +16,16 @@
 #'
 #' @examples
 #' \donttest{
-#' # nwisData <- readNWISdv("04085427", "00060", "2022-01-01", "2022-06-30")
-#' # nwisData <- addWaterYear(nwisData)
+#' dv <- read_waterdata_daily(monitoring_location_id = "USGS-04085427",
+#'                            parameter_code = "00060",
+#'                            time = c("2022-01-01", "2022-06-30"))
+#' dv <- addWaterYear(dv)
+#' dv$water_year[1:5]
 #'
-#' # wqpData <- readWQPqw("USGS-01594440", "01075", "", "")
-#' # wqpData <- addWaterYear(wqpData)
 #' }
 addWaterYear <- function(rawData) {
   allowedDateColNames <- c(
+    "time",
     "dateTime",
     "Date",
     "ActivityStartDate",
@@ -32,6 +34,7 @@ addWaterYear <- function(rawData) {
     "Activity_EndDate"
   )
   allowedWYColNames <- c(
+    "water_year",
     "waterYear",
     "waterYear",
     "ActivityStartWaterYear",
