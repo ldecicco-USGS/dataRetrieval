@@ -16,6 +16,8 @@
 #' depth).
 #' @param custom_filter Custom STAC filter. Default is NA. Uses CQL2 formatting.
 #' @return list of features available in the STAC service.
+#' @param chunk_size Number of monitoring_location_ids to chunk requests into.
+#' The default for functions is 50.
 #' @export
 #' @examplesIf is_dataRetrieval_user()
 #'

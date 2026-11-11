@@ -18,7 +18,7 @@ read_waterdata_continuous_por(
   end_time = NA_character_,
   approval_status = NA_character_,
   ...,
-  site_limits = 1000,
+  site_limits = 100,
   memory_MB_limit = 1000
 )
 }

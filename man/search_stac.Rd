@@ -26,6 +26,9 @@ depth).}
 \item{limit}{description}
 
 \item{custom_filter}{Custom STAC filter. Default is NA. Uses CQL2 formatting.}
+
+\item{chunk_size}{Number of monitoring_location_ids to chunk requests into.
+The default for functions is 50.}
 }
 \value{
 list of features available in the STAC service.
