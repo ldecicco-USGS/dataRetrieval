@@ -169,7 +169,8 @@ add_non_stac_search <- function(
       !is.na(start_time),
       !is.na(end_time),
       any(!is.na(approval_status)),
-      any(!is.na(statistic_id))
+      any(!is.na(statistic_id)),
+      any(!is.na(time_series_id))
     )
   ) {
     ts_meta <- read_waterdata_combined_meta(
