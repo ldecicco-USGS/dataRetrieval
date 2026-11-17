@@ -139,6 +139,7 @@ read_waterdata_continuous_por <- function(
   check_memory(df_out, memory_MB_limit)
 
   df_out_loaded <- df_out |> dplyr::collect()
+  df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)
 
   # Continuous data will have overlap between historical and hot:
   df_out_loaded <- fix_continuous_overlap(df_out_loaded)

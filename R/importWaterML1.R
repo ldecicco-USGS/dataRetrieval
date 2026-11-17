@@ -41,54 +41,8 @@
 #'
 #' @seealso [renameNWISColumns()]
 #' @export
-#' @examplesIf is_dataRetrieval_user()
-#' site_id <- "02177000"
-#' startDate <- "2012-09-01"
-#' endDate <- "2012-10-01"
-#' offering <- "00003"
-#' property <- "00060"
-#' obs_url <- constructNWISURL(site_id, property, startDate, endDate, "dv")
-#' \donttest{
-#' data <- importWaterML1(obs_url, asDateTime = TRUE)
+#' @examples
 #'
-#'
-#' unitDataURL <- constructNWISURL(
-#'   site_id, property,
-#'   "2013-11-03", "2013-11-03", "uv"
-#' )
-#' unitData <- importWaterML1(unitDataURL, TRUE)
-#'
-#' # Two sites, two pcodes, one site has two data descriptors:
-#' siteNumber <- c("01480015", "04085427")
-#' obs_url <- constructNWISURL(
-#'   siteNumber, c("00060", "00010"),
-#'   startDate, endDate, "dv"
-#' )
-#' data <- importWaterML1(obs_url)
-#' data$dateTime <- as.Date(data$dateTime)
-#' data <- renameNWISColumns(data)
-#' names(attributes(data))
-#' attr(data, "url")
-#' attr(data, "disclaimer")
-#'
-#' inactiveSite <- "05212700"
-#' inactiveSite <- constructNWISURL(inactiveSite, "00060",
-#'                                  "2014-01-01", "2014-01-10", "dv")
-#' inactiveSite <- importWaterML1(inactiveSite)
-#'
-#' inactiveAndAcitive <- c("07334200", "05212700")
-#' inactiveAndAcitive <- constructNWISURL(inactiveAndAcitive,
-#'                          "00060", "2014-01-01", "2014-01-10", "dv")
-#' inactiveAndAcitive <- importWaterML1(inactiveAndAcitive)
-#'
-#' # Timezone change with specified local timezone:
-#' tzURL <- constructNWISURL("04027000", c("00300", "63680"),
-#'                           "2011-11-05", "2011-11-07", "uv")
-#' tzIssue <- importWaterML1(tzURL,
-#'   asDateTime = TRUE, tz = "America/Chicago"
-#' )
-#'
-#' }
 #' filePath <- system.file("extdata", package = "dataRetrieval")
 #' fileName <- "WaterML1Example.xml"
 #' fullPath <- file.path(filePath, fileName)
