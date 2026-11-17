@@ -48,16 +48,14 @@ deal_with_empty <- function(
       }
     }
 
+    for (i in numeric_columns) {
+      if (i %in% names(return_list)) {
+        return_list[[i]] <- as.numeric()
+      }
+    }
+
     if (convertType && service == "daily") {
       return_list$time <- as.Date(as.character())
-    }
-
-    if (convertType && "value" %in% names(return_list)) {
-      return_list$value <- as.numeric()
-    }
-
-    if (convertType && "contributing_drainage_area" %in% names(return_list)) {
-      return_list$contributing_drainage_area <- as.numeric()
     }
 
     return_list <- data.frame(return_list)

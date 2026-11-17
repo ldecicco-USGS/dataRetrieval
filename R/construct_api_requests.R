@@ -671,3 +671,12 @@ time_periods <- c(
   "revision_created",
   "revision_modified"
 )
+
+numeric_columns <- c(
+  "value",
+  "drainage_area",
+  "contributing_drainage_area",
+  "altitude",
+  "hole_constructed_depth",
+  "well_constructed_depth"
+)

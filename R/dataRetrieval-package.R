@@ -211,13 +211,8 @@ NULL
 #   property_list[[service]] <- dataRetrieval:::get_properties_for_docs(service)
 # }
 #
-# num_cols <- c("value", "contributing_drainage_area", "drainage_area",
-#               #"altitude_accuracy",
-#               "well_construction_depth",
-#               "hole_construction_depth", "channel_flow", "channel_width",
-#               "channel_area", "channel_velocity", "channel_location_distance")
 #
 # save(countyCd, stateCd, parameterCdFile, pCodeToName,
-#      offsetLibrary, num_cols, property_list,
+#      offsetLibrary, property_list,
 #      file = "R/sysdata.rda", compress = "xz")
 # nolint end

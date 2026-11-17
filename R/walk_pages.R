@@ -178,7 +178,7 @@ coerce_time_cols <- function(df, is_sf = FALSE) {
 }
 
 coerce_num_cols <- function(df, is_sf = FALSE) {
-  included_num_cols <- names(df)[names(df) %in% num_cols]
+  included_num_cols <- names(df)[names(df) %in% numeric_columns]
   if (length(included_num_cols) == 0) {
     return(df)
   }
