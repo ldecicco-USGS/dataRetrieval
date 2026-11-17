@@ -152,7 +152,7 @@ search_stac <- function(
       all_filters <- all_filters[!is.na(all_filters)]
       filters <- paste0(all_filters, collapse = " AND ")
 
-      if (length(like_filters) > 0) {
+      if (all(like_filters != "")) {
         filters <- paste0(filters, " OR ", like_filters)
       }
 

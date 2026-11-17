@@ -14,11 +14,15 @@
 #'
 #' df <- dataRetrieval:::deal_with_empty(data.frame(NULL),
 #'                                       properties = c("time", "value"),
-#'                                       service = "daily")
+#'                                       service = "daily",
+#'                                       convertType = TRUE,
+#'                                       skipGeometry = FALSE)
 #'
 #' df2 <- dataRetrieval:::deal_with_empty(data.frame(NULL),
 #'                                       properties = NA,
-#'                                       service = "daily")
+#'                                       service = "daily",
+#'                                       convertType = TRUE,
+#'                                       skipGeometry = TRUE)
 #'
 deal_with_empty <- function(
   return_list,
