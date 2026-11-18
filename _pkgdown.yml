@@ -143,6 +143,7 @@ reference:
       - initial_connection
       - open_stac
       - fix_continuous_overlap
+      - log_stac_limit
   - title: Helper functions
     contents:
       - create_WQP_bib
