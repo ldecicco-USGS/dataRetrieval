@@ -35,11 +35,11 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@473c68190595b311a74f208fba61a8d8c0d4c247
 
-      - uses: r-lib/actions/setup-r@473c68190595b311a74f208fba61a8d8c0d4c247
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@473c68190595b311a74f208fba61a8d8c0d4c247
+      - uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
         with:
           extra-packages: |
             any::pkgdown

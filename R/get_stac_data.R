@@ -49,7 +49,7 @@
 #'                       con = con_2)
 #' head(data_tbl)
 #' log_stac_limit()
-#' 
+#'
 #' DBI::dbDisconnect(con_2)
 #'
 #'
@@ -175,6 +175,10 @@ add_non_stac_search <- function(
       any(!is.na(time_series_id))
     )
   ) {
+    if (length(unique(monitoring_location_id)) > site_limits) {
+      stop("Unique monitoring_location_id exceed site_limits")
+    }
+
     ts_meta <- read_waterdata_combined_meta(
       monitoring_location_id = monitoring_location_id,
       county_name = county_name,
@@ -189,16 +193,20 @@ add_non_stac_search <- function(
       data_type = data_type
     )
 
+    if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
+      stop("Unique monitoring_location_id exceed site_limits")
+    }
+
+    if (nrow(ts_meta) == 0) {
+      stop("No monitoring locations were found with the specified criteria.")
+    }
+
     search_features <- list(
       monitoring_location_id = unique(ts_meta$monitoring_location_id),
       collections = collection,
       limit = site_limits,
       chunk_size = 50
     )
-
-    if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
-      stop("Unique monitoring_location_id exceed site_limits")
-    }
   } else {
     search_features <- list(
       monitoring_location_id = monitoring_location_id,
