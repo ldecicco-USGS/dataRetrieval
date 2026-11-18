@@ -112,7 +112,7 @@ get_all_hrefs <- function(x) {
 
 #' Initialize connection using duckdb and USGS API token
 #'
-#' Uses DBI and duckdb to establish a connection with a API_USGS_PAT X-Api-Key.
+#' Uses DBI and duckdb to establish a connection with a STAC_USGS_PAT X-Api-Key.
 #'
 #' @export
 #' @return Database connection
