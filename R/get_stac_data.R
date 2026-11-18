@@ -31,7 +31,7 @@
 #'    dplyr::collect()
 #'
 #' summarize_data
-#'
+#' log_stac_limit()
 #' DBI::dbDisconnect(con_1)
 #'
 #' #########################################################
@@ -48,6 +48,8 @@
 #' data_tbl <- open_stac(features = local_path,
 #'                       con = con_2)
 #' head(data_tbl)
+#' log_stac_limit()
+#' 
 #' DBI::dbDisconnect(con_2)
 #'
 #'

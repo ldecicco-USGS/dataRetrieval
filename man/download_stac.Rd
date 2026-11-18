@@ -47,10 +47,13 @@ file_out_dir <- tempdir()
 features_2_sites <- search_stac(
     monitoring_location_id = monitoring_location_id,
     collections = c("daily", "continuous"))
+
 files_out <- download_stac(
     features = features_2_sites,
     file_directory = file_out_dir)
+
 files_out
+log_stac_limit()
 
 file_out_dane <- tempdir()
 dane_county_features <- search_stac(
@@ -60,10 +63,13 @@ dane_county_features <- search_stac(
     collections = "daily",
     end_datetime = c("2026-10-01", NA)
 )
+log_stac_limit()
 
 files_out_county <- download_stac(
   features = dane_county_features,
   file_directory = file_out_dane)
+
+log_stac_limit()
 
 }
 \dontshow{\}) # examplesIf}

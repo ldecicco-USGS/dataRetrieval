@@ -42,7 +42,7 @@ summarize_data <- data_tbl |>
    dplyr::collect()
 
 summarize_data
-
+log_stac_limit()
 DBI::dbDisconnect(con_1)
 
 #########################################################
@@ -59,6 +59,8 @@ con_2 <- initial_connection()
 data_tbl <- open_stac(features = local_path,
                       con = con_2)
 head(data_tbl)
+log_stac_limit()
+
 DBI::dbDisconnect(con_2)
 
 
