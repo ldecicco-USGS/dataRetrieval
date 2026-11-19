@@ -134,7 +134,7 @@ reference:
       - importWaterML2
       - importWQP
   - title: STAC Functions
-    desc:  Retrieva full period of record data
+    desc:  Retrieve full period of record data
     contents:
       - read_waterdata_daily_por
       - read_waterdata_continuous_por
