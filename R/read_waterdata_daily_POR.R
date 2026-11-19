@@ -143,7 +143,9 @@ read_waterdata_daily_por <- function(
     statistic_id = statistic_id
   )
 
-  check_memory(df_out, memory_MB_limit)
+  if (length(features) > 1000) {
+    check_memory(df_out, memory_MB_limit)
+  }
 
   df_out_loaded <- df_out |> dplyr::collect()
   df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)

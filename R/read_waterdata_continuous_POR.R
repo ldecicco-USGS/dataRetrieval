@@ -136,7 +136,9 @@ read_waterdata_continuous_por <- function(
     statistic_id = NA_character_
   )
 
-  check_memory(df_out, memory_MB_limit)
+  if (length(features) > 2) {
+    check_memory(df_out, memory_MB_limit)
+  }
 
   df_out_loaded <- df_out |> dplyr::collect()
   df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)
