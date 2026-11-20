@@ -208,8 +208,9 @@ get_stac_features <- function(resp) {
 #' @param output_returned Output of this function is either a vector of file
 #' paths that point to each individual file ("targets"), or the subfolder of
 #' partitioned parquet files ("partition_folder")
-#' @param showWarnings Logical, whether to show a warning or not if the
+#' @param showWarnings Logical, whether to show a warning if the
 #' file_directory already has subdirectory of the requested collection.
+#' @param overwrite Logical, whether to overwrite local files
 #' @export
 #' @details
 #' Downloaded files are structured as partitioned parquet files.
@@ -258,8 +259,8 @@ download_stac <- function(
   features,
   file_directory = tempdir(),
   output_returned = c("partition_folder"),
-  # file_structure = c("partitioned", "original"),
-  showWarnings = TRUE
+  showWarnings = TRUE,
+  overwrite = TRUE
 ) {
   match.arg(output_returned, c("partition_folder", "targets"))
   multiple_files <- length(features) > 1
@@ -307,13 +308,16 @@ download_stac <- function(
         partition_path,
         paste0("part-", partition_index, ".parquet")
       )
-      partition_index <- partition_index + 1
 
-      message("Downloading ", id, ": ", collection)
+      if (overwrite | !file.exists(path_to_save)) {
+        partition_index <- partition_index + 1
 
-      resp <- httr2::request(urls[i]) |>
-        basic_request() |>
-        httr2::req_perform(path = path_to_save)
+        message("Downloading ", id, ": ", collection)
+
+        resp <- httr2::request(urls[i]) |>
+          basic_request() |>
+          httr2::req_perform(path = path_to_save)
+      }
 
       if (output_returned == "targets") {
         paths_out <- c(paths_out, path_to_save)

@@ -10,7 +10,7 @@ initial_connection()
 Database connection
 }
 \description{
-Uses DBI and duckdb to establish a connection with a API_USGS_PAT X-Api-Key.
+Uses DBI and duckdb to establish a connection with a STAC_USGS_PAT X-Api-Key.
 }
 \examples{
 \dontshow{if (is_dataRetrieval_user()) withAutoprint(\{ # examplesIf}
