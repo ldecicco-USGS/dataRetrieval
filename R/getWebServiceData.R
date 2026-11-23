@@ -44,7 +44,9 @@ getWebServiceData <- function(obs_url, ...) {
   if (!is.null(obs_url$body)) {
     url_method <- "POST"
   }
-  message(url_method, ": ", obs_url$url)
+  if (isTRUE(getOption("dataRetrieval.verbose"))) {
+    message(url_method, ": ", obs_url$url)
+  }
   returnedList <- httr2::req_perform(obs_url)
 
   good <- check_non_200s(returnedList)

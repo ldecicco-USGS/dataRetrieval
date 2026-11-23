@@ -1,6 +1,8 @@
 dataRetrieval 2.7.28
 ===================
 * Introduction of STAC service.
+* Added ability to turn off retrieval messages with `options("dataRetrieval.verbose" = FALSE)`
+* 
 
 dataRetrieval 2.7.27
 ===================

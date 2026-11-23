@@ -198,10 +198,12 @@ coerce_num_cols <- function(df, is_sf = FALSE) {
 log_rate_limit <- function(resp) {
   header_info <- httr2::resp_headers(resp)
   if ("x-ratelimit-remaining" %in% names(header_info)) {
-    message(
-      "Remaining requests this hour:",
-      header_info$`x-ratelimit-remaining`,
-      " "
-    )
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message(
+        "Remaining requests this hour:",
+        header_info$`x-ratelimit-remaining`,
+        " "
+      )
+    }
   }
 }

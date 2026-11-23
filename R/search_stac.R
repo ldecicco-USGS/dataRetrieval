@@ -173,7 +173,9 @@ search_stac <- function(
       httr2::req_url_query(limit = limit) |>
       basic_request(token = "STAC")
 
-    message("Requesting:\n", request$url)
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message("Requesting:\n", request$url)
+    }
 
     resps <- httr2::req_perform_iterative(
       request,

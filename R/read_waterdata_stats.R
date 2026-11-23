@@ -202,8 +202,9 @@ get_statistics_data <- function(args, service) {
   base_request <- construct_statistics_request(service = service)
 
   full_request <- explode_query(base_request, POST = FALSE, x = args)
-
-  message("Requesting:\n", full_request$url)
+  if (isTRUE(getOption("dataRetrieval.verbose"))) {
+    message("Requesting:\n", full_request$url)
+  }
 
   return_list <- data.table::as.data.table(walk_pages(full_request))
 

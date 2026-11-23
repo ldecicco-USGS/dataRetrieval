@@ -15,6 +15,7 @@ pkg.env <- new.env()
   options("dataRetrieval.site_chunk_size_meta" = 250)
   options("dataRetrieval.site_chunk_size_data" = 10)
   options("dataRetrieval.limit" = 50000)
+  options("dataRetrieval.verbose" = TRUE)
 
   services <- c(
     "server",

@@ -65,7 +65,7 @@ wu1 <- read_wateruse(model = "wu-public-supply-wd",
                      location = "stateCd:RI",
                      startdate = "2020-01",
                      timeres = "monthly")
-                               
+
 wu2 <- read_wateruse(model = "wu-thermoelectric",
                      variable = c('tecufgw', 'tecufsw', 'tecuftot',
                                   'tewdfgw', 'tewdfsw', 'tewdftot',
@@ -85,7 +85,7 @@ wu4 <- read_wateruse(model = "wu-irrigation-wd",
                      location = "huc2:04",
                      startdate = "2015",
                      timeres = "annualcy")
-         
+
 wu5 <- read_wateruse(model = "wu-public-supply-cu",
                      variable = "pscutot",
                      location = "stateCd:WI",

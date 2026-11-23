@@ -21,10 +21,12 @@ log_stac_limit <- function() {
 
   header_info <- httr2::resp_headers(resp)
   if ("x-ratelimit-remaining" %in% names(header_info)) {
-    message(
-      "Remaining STAC search requests this hour:",
-      header_info$`x-ratelimit-remaining`
-    )
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message(
+        "Remaining STAC search requests this hour:",
+        header_info$`x-ratelimit-remaining`
+      )
+    }
   }
 
   features <- httr2::resp_body_json(resp)[["features"]]
@@ -35,10 +37,12 @@ log_stac_limit <- function() {
 
   header2_info <- httr2::resp_headers(resp2)
   if ("x-ratelimit-remaining" %in% names(header2_info)) {
-    message(
-      "Remaining STAC files requests this hour:",
-      header2_info$`x-ratelimit-remaining`
-    )
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message(
+        "Remaining STAC files requests this hour:",
+        header2_info$`x-ratelimit-remaining`
+      )
+    }
   }
   invisible(NULL)
 }

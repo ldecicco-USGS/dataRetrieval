@@ -150,7 +150,10 @@ download_convert <- function(feature, file_path, file_type) {
 
   if (any(sapply(file_type, function(x) grepl(x, url)))) {
     full_file_path <- file.path(file_path, id)
-    message("Requesting: \n", url)
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message("Requesting: \n", url)
+    }
+
     resp <- httr2::req_perform(req, path = full_file_path)
     rating <- importRDB1(full_file_path)
     return(list(

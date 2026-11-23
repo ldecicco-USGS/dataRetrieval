@@ -67,8 +67,8 @@ cql <- '{
 }'
 
 wl_data <- read_ngwmn(service = "waterLevelObs",
-                      monitoring_location_id = c("USGS-272838082142201", 
-                                                 "USGS-404159100494601", 
+                      monitoring_location_id = c("USGS-272838082142201",
+                                                 "USGS-404159100494601",
                                                  "USGS-401216080362703"),
                       CQL = cql)
 

@@ -163,63 +163,37 @@ add_non_stac_search <- function(
   statistic_id = NA_character_,
   site_limits = 1000,
   data_type = NA_character_,
-  collection = NA_character_
+  collection = NA_character_,
+  ...
 ) {
-  if (
-    any(
-      any(!is.na(parameter_code)),
-      !is.na(start_time),
-      !is.na(end_time),
-      any(!is.na(approval_status)),
-      any(!is.na(statistic_id)),
-      any(!is.na(time_series_id))
-    )
-  ) {
-    if (length(unique(monitoring_location_id)) > site_limits) {
-      stop("Unique monitoring_location_id exceed site_limits")
-    }
+  ts_meta <- read_waterdata_combined_meta(
+    monitoring_location_id = monitoring_location_id,
+    county_name = county_name,
+    state_name = state_name,
+    site_type = site_type,
+    bbox = bbox,
+    hydrologic_unit_code = hydrologic_unit_code,
+    site_type_code = site_type_code,
+    id = time_series_id,
+    parameter_code = parameter_code,
+    statistic_id = statistic_id,
+    data_type = data_type
+  )
 
-    ts_meta <- read_waterdata_combined_meta(
-      monitoring_location_id = monitoring_location_id,
-      county_name = county_name,
-      state_name = state_name,
-      site_type = site_type,
-      bbox = bbox,
-      hydrologic_unit_code = hydrologic_unit_code,
-      site_type_code = site_type_code,
-      id = time_series_id,
-      parameter_code = parameter_code,
-      statistic_id = statistic_id,
-      data_type = data_type
-    )
-
-    if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
-      stop("Unique monitoring_location_id exceed site_limits")
-    }
-
-    if (nrow(ts_meta) == 0) {
-      stop("No monitoring locations were found with the specified criteria.")
-    }
-
-    search_features <- list(
-      monitoring_location_id = unique(ts_meta$monitoring_location_id),
-      collections = collection,
-      limit = site_limits,
-      chunk_size = 50
-    )
-  } else {
-    search_features <- list(
-      monitoring_location_id = monitoring_location_id,
-      county_name = county_name,
-      state_name = state_name,
-      site_type = site_type,
-      bbox = bbox,
-      hydrologic_unit_code = hydrologic_unit_code,
-      site_type_code = site_type_code,
-      collections = collection
-    )
+  if (length(unique(ts_meta$monitoring_location_id)) > site_limits) {
+    stop("Unique monitoring_location_id exceed site_limits")
   }
 
-  search_features <- search_features[!is.na(search_features)]
+  if (nrow(ts_meta) == 0) {
+    stop("No monitoring locations were found with the specified criteria.")
+  }
+
+  search_features <- list(
+    monitoring_location_id = unique(ts_meta$monitoring_location_id),
+    collections = collection,
+    limit = site_limits,
+    chunk_size = 50
+  )
+
   return(search_features)
 }

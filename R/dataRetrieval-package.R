@@ -8,6 +8,12 @@
     token_message <- "\nConsider adding an API_USGS_PAT for new USGS functions.
 See: https://api.waterdata.usgs.gov/signup"
   }
+
+  if (Sys.getenv("STAC_USGS_PAT") == "") {
+    token_message <- "\nConsider adding an STAC_USGS_PAT for new USGS functions.
+See: https://api.waterdata.usgs.gov/signup"
+  }
+
   packageStartupMessage(
     "dataRetrieval ",
     dataRetrieval_version,

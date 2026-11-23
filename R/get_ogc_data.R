@@ -46,7 +46,9 @@ get_ogc_data <- function(args, output_id, service, base = "OGC") {
 
     no_paging <- grepl("f=csv", req$url)
 
-    message("Requesting:\n", req$url)
+    if (isTRUE(getOption("dataRetrieval.verbose"))) {
+      message("Requesting:\n", req$url)
+    }
 
     if (no_paging) {
       return_list <- get_csv(req, limit = args[["limit"]])

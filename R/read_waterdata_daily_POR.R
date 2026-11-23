@@ -108,7 +108,7 @@ read_waterdata_daily_por <- function(
   df_out_loaded <- get_stac_data(
     args,
     data_type = data_type,
-    collection = collection,
+    collections = collection,
     site_limits = site_limits,
     memory_MB_limit = memory_MB_limit
   )
