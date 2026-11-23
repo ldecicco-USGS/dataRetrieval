@@ -100,55 +100,18 @@ read_waterdata_daily_por <- function(
 ) {
   rlang::check_dots_empty()
 
-  search_features <- add_non_stac_search(
-    monitoring_location_id = monitoring_location_id,
-    county_name = county_name,
-    state_name = state_name,
-    site_type = site_type,
-    bbox = bbox,
-    hydrologic_unit_code = hydrologic_unit_code,
-    site_type_code = site_type_code,
-    time_series_id = time_series_id,
-    parameter_code = parameter_code,
-    statistic_id = statistic_id,
-    start_time = start_time,
-    end_time = end_time,
-    approval_status = approval_status,
-    data_type = "Daily values",
-    collection = "daily",
-    site_limits = site_limits
+  data_type <- "Daily values"
+  collection <- "daily"
+
+  args <- mget(names(formals()))
+
+  df_out_loaded <- get_stac_data(
+    args,
+    data_type = data_type,
+    collection = collection,
+    site_limits = site_limits,
+    memory_MB_limit = memory_MB_limit
   )
-
-  features <- do.call(search_stac, search_features)
-
-  if (length(features) > site_limits) {
-    stop("Unique monitoring_location_id exceed site_limits")
-  }
-
-  con_1 <- initial_connection()
-  on.exit(DBI::dbDisconnect(con_1))
-
-  df_out <- open_stac(
-    features = features,
-    con = con_1
-  )
-
-  df_out <- filter_stac(
-    df_out = df_out,
-    parameter_code = parameter_code,
-    time_series_id = time_series_id,
-    start_time = start_time,
-    end_time = end_time,
-    approval_status = approval_status,
-    statistic_id = statistic_id
-  )
-
-  if (length(features) > 1000) {
-    check_memory(df_out, memory_MB_limit)
-  }
-
-  df_out_loaded <- df_out |> dplyr::collect()
-  df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)
 
   return(df_out_loaded)
 }
