@@ -221,9 +221,8 @@ fix_continuous_overlap <- function(df) {
 }
 
 
-check_memory <- function(count_out, memory_MB_limit, ncol) {
-  n_rows_expected <- count_out |> dplyr::collect()
-  memory_size_bytes <- as.numeric(n_rows_expected$total_rows) * ncol * 8
+check_memory <- function(n_rows_expected, memory_MB_limit, ncol) {
+  memory_size_bytes <- as.numeric(n_rows_expected) * ncol * 8
   memory_size_megabytes <- memory_size_bytes / (1024^2) # Convert bytes to megabytes
 
   if (memory_size_megabytes > memory_MB_limit) {

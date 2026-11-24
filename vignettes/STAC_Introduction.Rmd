@@ -101,7 +101,7 @@ wisconsin_data <- read_waterdata_continuous_por(
 ```
 Estimated memory size of the dataset:5925.91 MB
 
-Error in check_memory(data_tbl, memory_MB_limit, ncol = ncol(df_out)) : 
+Error in check_memory(data_tbl$total_rows, memory_MB_limit, ncol = ncol(df_out)) : 
   Increase the memory_MB_limit parameter to allow this query to be loaded.
 ```
 

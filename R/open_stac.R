@@ -20,6 +20,7 @@
 #' data_tbl <- open_stac(features = features,
 #'                       con = con_1)
 #' head(data_tbl)
+#' dplyr::count(data_tbl)
 #'
 #' summarize_data <- data_tbl |>
 #'    dplyr::mutate(value = as.numeric(value)) |>
@@ -104,7 +105,7 @@ open_stac <- function(
 #' con_1 <- initial_connection()
 #' data_tbl <- count_data(features = features,
 #'                       con = con_1)
-#' data_tbl
+#' data_tbl |> dplyr::collect()
 #' log_stac_limit()
 #' DBI::dbDisconnect(con_1)
 #'

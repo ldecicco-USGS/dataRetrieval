@@ -49,9 +49,10 @@ get_stac_data <- function(
   )
 
   if (length(features) > ifelse(data_type == "Continuous values", 10, 1000)) {
-    data_tbl <- count_data(features = features, con = con_1)
+    data_tbl <- count_data(features = features, con = con_1) |>
+      dplyr::collect()
 
-    check_memory(data_tbl, memory_MB_limit, ncol = ncol(df_out))
+    check_memory(data_tbl$total_rows, memory_MB_limit, ncol = ncol(df_out))
   }
 
   split_args[["non_stac_args"]][["df_out"]] <- df_out
