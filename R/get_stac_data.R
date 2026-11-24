@@ -48,13 +48,15 @@ get_stac_data <- function(
     con = con_1
   )
 
+  if (length(features) > ifelse(data_type == "Continuous values", 10, 1000)) {
+    data_tbl <- count_data(features = features, con = con_1)
+
+    check_memory(data_tbl, memory_MB_limit, ncol = ncol(df_out))
+  }
+
   split_args[["non_stac_args"]][["df_out"]] <- df_out
 
   df_out <- do.call(filter_stac, split_args[["non_stac_args"]])
-
-  if (length(features) > ifelse(data_type == "continuous", 10, 1000)) {
-    check_memory(df_out, memory_MB_limit)
-  }
 
   df_out_loaded <- df_out |> dplyr::collect()
   df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)

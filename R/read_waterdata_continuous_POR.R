@@ -221,15 +221,15 @@ fix_continuous_overlap <- function(df) {
 }
 
 
-check_memory <- function(df_out, memory_MB_limit) {
-  n_rows_expected <- dplyr::count(df_out) |> dplyr::collect()
-  memory_size_bytes <- as.numeric(n_rows_expected$n) * ncol(df_out) * 8
+check_memory <- function(count_out, memory_MB_limit, ncol) {
+  n_rows_expected <- count_out |> dplyr::collect()
+  memory_size_bytes <- as.numeric(n_rows_expected$total_rows) * ncol * 8
   memory_size_megabytes <- memory_size_bytes / (1024^2) # Convert bytes to megabytes
 
   if (memory_size_megabytes > memory_MB_limit) {
     message(
       "Estimated memory size of the dataset:",
-      memory_size_megabytes,
+      round(memory_size_megabytes, 2),
       "MB\n"
     )
     stop(

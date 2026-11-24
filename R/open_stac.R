@@ -82,6 +82,80 @@ open_stac <- function(
   return(data_con)
 }
 
+
+#' Get a count of rows to be returned
+#'
+#' @param features return from search_stac
+#' @param con Connection
+#'
+#' @export
+#' @examplesIf is_dataRetrieval_user()
+#'
+#' \donttest{
+#'
+#' monitoring_location_id <- c("USGS-01435000", "USGS-05406360")
+#'
+#' features <- search_stac(
+#'     monitoring_location_id = monitoring_location_id,
+#'     collections = c("continuous"))
+#'
+#' ###################################################
+#' # No download, no load: Returns lazy table
+#' con_1 <- initial_connection()
+#' data_tbl <- count_data(features = features,
+#'                       con = con_1)
+#' data_tbl
+#' log_stac_limit()
+#' DBI::dbDisconnect(con_1)
+#'
+#' #########################################################
+#' # Download data locally, no load: Returns lazy table
+#' raw_data_store <- file.path(tempdir(), "test_1")
+#' dir.create(raw_data_store, showWarnings = FALSE)
+#'
+#' local_path <- download_stac(
+#'   features = features,
+#'   file_directory = raw_data_store)
+#'
+#' con_2 <- initial_connection()
+#'
+#' data_tbl <- count_data(features = local_path,
+#'                       con = con_2)
+#' data_tbl
+#' DBI::dbDisconnect(con_2)
+#'
+#'
+#' }
+count_data <- function(con, features) {
+  if (is.list(features)) {
+    assets <- sapply(features, function(x) x[["assets"]])
+    urls <- get_all_hrefs(assets)
+    path_to_data <- dplyr::sql(sprintf(
+      "SELECT 
+      SUM(num_rows) AS total_rows
+      FROM parquet_file_metadata([%s])",
+      paste(sprintf("'%s'", urls), collapse = ", ")
+    ))
+  } else {
+    # Check if files exist
+    if (file.exists(features)) {
+      path_to_data <- dplyr::sql(sprintf(
+        "SELECT
+        SUM(num_rows) AS total_rows
+        FROM parquet_file_metadata('%s/**/*.parquet')",
+        features
+      ))
+    } else {
+      stop("Unknown features.")
+    }
+  }
+
+  data_con <- dplyr::tbl(con, path_to_data)
+
+  return(data_con)
+}
+
+
 clean_stac_cols <- function(x) {
   if ("value" %in% names(x)) {
     x$value <- as.numeric(x$value)

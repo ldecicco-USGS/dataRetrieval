@@ -1,0 +1,122 @@
+---
+title: "Introducing STAC functions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introducing STAC functions}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+
+library(duckdb)
+library(dplyr)
+```
+
+A new data warehouse contains continuous and daily time series data as cloud-native Parquet files indexed via the USGS' Water Data SpatioTemporal Asset Catalog (STAC) API. This new pathway makes it fast and easy to discover and download large amounts of water data.
+
+The most authoritative, up-to-date version of a record can be retrieved from the OGC API services. OGC data are retrieved in the original "read_waterdata" functions. However, if you need lots of data, the new STAC functions are for you!
+
+There are two main pathways to take advantage of this new STAC service:
+
+1. **Classic workflow**: functions that return all requested data into your R environment. Because it's so easy to request a LOT of data, care is needed to prevent running out of memory.
+
+2. **Flexible workflow**: functions that give users search, download, and open STAC data.
+
+Before you start exploring the new functions, we recommend requesting a **NEW** USGS API token from here: <https://api.waterdata.usgs.gov/signup/>, and saving it as "STAC_USGS_PAT" in your .Renviorn (perhaps using `usethis::edit_r_environ()`).
+
+```
+STAC_USGS_PAT = "my_new_token"
+```
+The request limits for STAC are much higher than OGC. However, the STAC requests will drain your OGC limits quickly. This is why having separate tokens for each service is recommended.
+
+
+# Classic Workflow
+
+The new functions are `read_waterdata_continous_por` and `read_waterdata_daily_por`. The "por" stands for period of record. These functions are especially efficient when you want data spanning the full period of record. These functions are for users who want to pull a "reasonable" amount of data into their R environment. 
+
+
+## read_waterdata_continuous_por
+
+Possibly the best use-case for these new STAC function is for a user who wants the full period of record continuous data for a single site. Using the original OGC functions, this required looping many requests because the OGC continuous service limits requests to a 3 year period. In one test, it took 35 minutes to download all the data for a site that had nearly 30 years of continuous sensor data of 8 parameter codes. Using the STAC function, it took ~6 seconds. Here we wrap the call with `system.time` to show how long it took to retrieve the data:
+
+```{r continous, eval=TRUE}
+library(dataRetrieval)
+
+system.time({
+  df <- read_waterdata_continuous_por(
+    monitoring_location_id = "USGS-0208458892"
+)
+})
+
+nrow(df)
+
+```
+
+Over 3 million rows in seconds - not too bad!
+
+There are more arguments that give you additional flexibility to query your data. Keep in mind that there's A LOT of continuous data, and it becomes really easy to request more data than R can load into memory. 
+
+We built into the function two arguments that will limit your ability to accidentally ask for a ridiculous amount of data. `site_limits` and `memory_MB_limit`.
+
+The `site_limits` argument is set as a default of 100 sites for the continuous data. If the STAC search determines that there will be more than the `site_limits`, it will not even attempt to 
+
+The `memory_MB_limit` argument set it as a default as 1000 (so, approximately 1 GB of data returned). If you request more than that, the function will error. You can bump up the `memory_MB_limit` if you are confident in your computer's memory. 
+
+Here is an example of a request that will fail because the number of sites exceeds the `site_limit` default:
+
+```{r showError, eval=FALSE}
+dane_data <- read_waterdata_continuous_por(
+    state_name = "Wisconsin"
+)
+```
+
+```
+Error in get_stac_data(args, data_type = data_type, collections = collection,  : 
+  Unique monitoring_location_id exceed site_limits
+```
+
+
+This is fewer sites, but still a LOT of data. This example should fail due to exceeding the `memory_MB_limit`: 
+
+```{r showAnotherError, eval=FALSE}
+wisconsin_data <- read_waterdata_continuous_por(
+    state_name = "Wisconsin",
+    county_name = "Dane County",
+    parameter_code = "00060",
+    site_type = "Stream",
+    site_limits = 300
+)
+
+```
+
+```
+Estimated memory size of the dataset:5925.91 MB
+
+Error in check_memory(data_tbl, memory_MB_limit, ncol = ncol(df_out)) : 
+  Increase the memory_MB_limit parameter to allow this query to be loaded.
+```
+
+## read_waterdata_daily_por
+
+Similar to the continuous data, we can now retrieve daily data quicker using the `read_waterdata_daily_por` function. As an example, we could request all the daily data for a single HUC. 
+
+```{r hucDaily, eval=FALSE}
+df_huc <- read_waterdata_daily_por(
+    hydrologic_unit_code = "07090002",
+    parameter_code = "00060"
+)
+```
+
+## Further Considerations
+
+# Flexible Workflow
+
