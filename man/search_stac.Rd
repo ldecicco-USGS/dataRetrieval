@@ -5,6 +5,28 @@
 \title{Search STAC services}
 \usage{
 search_stac(
+  monitoring_location_id = NA_character_,
+  agency_code = NA_character_,
+  agency_name = NA_character_,
+  monitoring_location_number = NA_character_,
+  monitoring_location_name = NA_character_,
+  district_code = NA_character_,
+  country_code = NA_character_,
+  country_name = NA_character_,
+  state_code = NA_character_,
+  state_name = NA_character_,
+  county_code = NA_character_,
+  county_name = NA_character_,
+  site_type_code = NA_character_,
+  site_type = NA_character_,
+  hydrologic_unit_code = NA_character_,
+  basin_code = NA_character_,
+  altitude = NA_character_,
+  drainage_area = NA_character_,
+  contributing_drainage_area = NA_character_,
+  aquifer_code = NA_character_,
+  national_aquifer_code = NA_character_,
+  aquifer_type_code = NA_character_,
   ...,
   collections = c("daily", "continuous", "ratings"),
   bbox = NA,
@@ -14,7 +36,70 @@ search_stac(
 )
 }
 \arguments{
-\item{\dots}{filter arguments to filter on}
+\item{monitoring_location_id}{Agency-prefixed site ID (e.g. USGS-01451500)
+Multiple monitoring_location_ids can be requested as a character vector.}
+
+\item{agency_code}{The agency that is reporting the data. Agency codes are fixed values assigned by the National Water Information System (NWIS). A list of agency codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/agency-codes/items}.}
+
+\item{agency_name}{The name of the agency that is reporting the data.
+Not available for the "ratings" collection}
+
+\item{monitoring_location_number}{Each monitoring location in the USGS data base has a unique 8- to 15-digit identification number.}
+
+\item{monitoring_location_name}{This is the official name of the monitoring location in the database. For well information this can be a district-assigned local number.
+Not available for the "ratings" collection}
+
+\item{district_code}{The Water Science Centers (WSCs) across the United States use the FIPS state code as the district code. In some case, monitoring locations and samples may be managed by a water science center that is adjacent to the state in which the monitoring location actually resides. For example a monitoring location may have a district code of 30 which translates to Montana, but the state code could be 56 for Wyoming because that is where the monitoring location actually is located.
+Not available for the "ratings" collection}
+
+\item{country_code}{The code for the country in which the monitoring location is located.
+Not available for the "ratings" collection}
+
+\item{country_name}{The name of the country in which the monitoring location is located.
+Not available for the "ratings" collection}
+
+\item{state_code}{State code. A \href{https://www2.census.gov/geo/docs/reference/state.txt}{two-digit ANSI code} (formerly FIPS code) as defined by the American National Standards Institute, to define States and equivalents. A three-digit ANSI code is used to define counties and county equivalents. \href{https://www.census.gov/library/reference/code-lists/ansi.html#states}{A lookup table is available.} The only countries with political subdivisions other than the US are Mexico and Canada. The Mexican states have US state codes ranging from 81-86 and Canadian provinces have state codes ranging from 90-98.}
+
+\item{state_name}{The name of the state or state equivalent in which the monitoring location is located.
+Not available for the "ratings" collection}
+
+\item{county_code}{The code for the county or county equivalent (parish, borough, etc.) in which the monitoring location is located. A list of codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/counties/items}.
+Not available for the "ratings" collection}
+
+\item{county_name}{The name of the county or county equivalent (parish, borough, etc.) in which the monitoring location is located. [A list of codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/counties/items}.
+Not available for the "ratings" collection}
+
+\item{site_type_code}{A code describing the hydrologic setting of the monitoring location. A list of codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/site-types/items}.
+Not available for the "ratings" collection}
+
+\item{site_type}{A description of the hydrologic setting of the monitoring location. A list of codes is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/site-types/items}.
+Not available for the "ratings" collection}
+
+\item{hydrologic_unit_code}{The hydrologic unit code (HUC) for the monitoring location. Supports prefix matching — querying with a shorter HUC (e.g. "04") matches all locations within that hydrologic region.
+Not available for the "ratings" collection}
+
+\item{basin_code}{The Basin Code or "drainage basin code" is a two-digit code that further subdivides the 8-digit hydrologic-unit code. The drainage basin code is defined by the USGS State Office where the monitoring location is located.
+Not available for the "ratings" collection}
+
+\item{altitude}{Altitude of the monitoring location referenced to the specified Vertical Datum.
+Not available for the "ratings" collection}
+
+\item{drainage_area}{The area enclosed by a topographic divide from which direct surface runoff from precipitation normally drains by gravity into the stream above that point.
+Not available for the "ratings" collection}
+
+\item{contributing_drainage_area}{The contributing drainage area of a lake, stream, wetland, or estuary monitoring location, in square miles. This item should be present only if the contributing area is different from the total drainage area. This situation can occur when part of the drainage area consists of very porous soil or depressions that either allow all runoff to enter the groundwater or traps the water in ponds so that rainfall does not contribute to runoff. A transbasin diversion can also affect the total drainage area.
+Not available for the "ratings" collection}
+
+\item{aquifer_code}{Local aquifers in the USGS water resources data base are identified by a geohydrologic unit code (a three-digit number related to the age of the formation, followed by a 4 or 5 character abbreviation for the geologic unit or aquifer name).
+Not available for the "ratings" collection}
+
+\item{national_aquifer_code}{National aquifers are the principal aquifers or aquifer systems in the United States, defined as regionally extensive aquifers or aquifer systems that have the potential to be used as a source of potable water. Not all groundwater monitoring locations can be associated with a National Aquifer. Such monitoring locations will not be retrieved using this search criteria. A list of National aquifer codes and names is available at \url{https://api.waterdata.usgs.gov/ogcapi/v1/collections/national-aquifer-codes/items}.
+Not available for the "ratings" collection}
+
+\item{aquifer_type_code}{Describes the confinement status of an aquifer at the monitoring location. A confined aquifer is an aquifer below the land surface that is saturated with water. A water table--or unconfined--aquifer is an aquifer whose upper water surface (water table) is at atmospheric pressure, and thus is able to rise and fall.
+Not available for the "ratings" collection}
+
+\item{\dots}{Additional arguments.}
 
 \item{collections}{Could be "daily", "continuous", "ratings".}
 

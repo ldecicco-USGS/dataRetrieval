@@ -24,6 +24,11 @@ available, it will also contain a description.
 \donttest{
 ml <- dataRetrieval::get_ogc_params("monitoring-locations")
 ml$national_aquifer_code
+
+daily_stac <- dataRetrieval::get_ogc_params(
+  service = "daily",
+  base = "STAC")
+daily_stac[["national_aquifer_code"]]
 }
 \dontshow{\}) # examplesIf}
 }

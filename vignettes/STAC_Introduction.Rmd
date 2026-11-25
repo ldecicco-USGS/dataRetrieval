@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE
 )
-
+library(dataRetrieval)
 library(duckdb)
 library(dplyr)
 ```
@@ -51,7 +51,7 @@ The new functions are `read_waterdata_continous_por` and `read_waterdata_daily_p
 
 Possibly the best use-case for these new STAC function is for a user who wants the full period of record continuous data for a single site. Using the original OGC functions, this required looping many requests since the OGC continuous service limits requests to a 3 year period. In one test, it took 35 minutes to download all the data for a site that had nearly 30 years of continuous sensor data of 8 parameter codes. Using the STAC function, it took ~6 seconds. Here we wrap the call with `system.time` to show how long it took to retrieve the data:
 
-```{r continous, eval=TRUE}
+```{r continous, eval=FALSE}
 library(dataRetrieval)
 
 system.time({
@@ -59,9 +59,11 @@ system.time({
     monitoring_location_id = "USGS-0208458892"
 )
 })
+#> user  system elapsed 
+#> 4.21    0.69    6.74 
 
 nrow(df)
-
+#> [1] 3104851
 ```
 
 Over 3 million rows in seconds - not too bad!
@@ -131,13 +133,14 @@ If you are asking for large amounts of data, consider using the flexible workflo
 
 If you need to fill in more recent data, consider querying the OGC data on "last_modified".
 
-```{r OGCfill}
+```{r OGCfill, eval=FALSE}
 df <- read_waterdata_continuous_por(
   monitoring_location_id = "USGS-01435000",
   parameter_code = "00060")
 
 latest_modified <- max(df$last_modified)
 latest_modified
+#> [1] "2026-11-24 05:26:19 UTC"
 
 df_new <- read_waterdata_continuous(
   monitoring_location_id = "USGS-01435000",
@@ -148,19 +151,45 @@ df_new <- read_waterdata_continuous(
 )
 
 range(df_new$time)
+#> [1] "2026-11-24 05:30:00 UTC" "2026-11-25 18:15:00 UTC"
 
 df_all <- df |> 
   dplyr::bind_rows(df_new)
 
 range(df_all$time)
-
+#> [1] "1987-04-01 05:15:00 UTC" "2026-11-25 18:15:00 UTC"
 ```
 
 # Flexible Workflow
 
-What if you are asking for TONS of data? There are 3 main functions that allow you to search, (optionally) download, and then lazy load the data. This gives you 
+What if you are asking for TONS of data? There are 3 main functions that allow you to search, (optionally) download, and then lazy load the data. What does it mean "lazy load the data"? A connection is established to the data files (either pointed at a local download or the files in the cloud) using duckDB. We will show a few examples of how the data can be explored with this connection without needing to load the entire dataset into memory. 
 
 ## Search -> Get 
+
+The function `search_stac` let's us search the STAC. Available arguments are similar to those found in `read_waterdata_monitoring_location`. In this example, we're querying for all the daily STAC data available for Dane County, Wisconsin:
+
+```{r search1}
+features_county <- search_stac(
+    county_name = "Dane County",
+    state_name = "Wisconsin",
+    site_type = "Stream",
+    collections = "daily"
+)
+```
+
+The result of this function is a list with all the information that the next set of functions need to access the raw STAC files.
+
+Next, we can use that list to create a connection to the data in the cloud with the `open_stac` function. First, we need to create a connection. The function `initial_connection` establishes the connection and adds your `STAC_USGS_PAT` token to the request headers. It is important to remember to close your connection when you are done using `DBI::dbDisconnect`.
+
+```{r}
+con_1 <- initial_connection()
+
+data_tbl <- open_stac(features = features_county,
+                      con = con_1)
+
+```
+
+`data_tbl` is now a "lazy tibble". This mean you can use it as an input of any `dplyr` type commands. The full query is not sent until you `dplyr::collect()` the data. Before 
 
 ## Search -> Download -> Get
 

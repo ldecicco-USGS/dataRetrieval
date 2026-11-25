@@ -7,7 +7,49 @@
 #' interested in is stored, rather than providing you the data directly as a
 #'  result of your query.
 #'
-#' @param \dots filter arguments to filter on
+#' @param monitoring_location_id `r get_ogc_params("continuous", base = "STAC")[["monitoring_location_id"]]`
+#' Multiple monitoring_location_ids can be requested as a character vector.
+#' @param agency_code `r get_ogc_params("continuous", base = "STAC")[["agency_code"]]`
+
+#' @param agency_name `r get_ogc_params("continuous", base = "STAC")[["agency_name"]]`
+#' Not available for the "ratings" collection
+#' @param monitoring_location_number `r get_ogc_params("continuous", base = "STAC")[["monitoring_location_number"]]`
+#' @param monitoring_location_name `r get_ogc_params("continuous", base = "STAC")[["monitoring_location_name"]]`
+#' Not available for the "ratings" collection
+#' @param district_code `r get_ogc_params("continuous", base = "STAC")[["district_code"]]`
+#' Not available for the "ratings" collection
+#' @param state_name `r get_ogc_params("continuous", base = "STAC")[["state_name"]]`
+#' Not available for the "ratings" collection
+#' @param county_code `r get_ogc_params("continuous", base = "STAC")[["county_code"]]`
+#' Not available for the "ratings" collection
+#' @param county_name `r get_ogc_params("continuous", base = "STAC")[["county_name"]]`
+#' Not available for the "ratings" collection
+#' @param country_code `r get_ogc_params("continuous", base = "STAC")[["country_code"]]`
+#' Not available for the "ratings" collection
+#' @param country_name `r get_ogc_params("continuous", base = "STAC")[["country_name"]]`
+#' Not available for the "ratings" collection
+#' @param state_code `r get_ogc_params("continuous", base = "STAC")[["state_code"]]`
+#' @param site_type_code `r get_ogc_params("continuous", base = "STAC")[["site_type_code"]]`
+#' Not available for the "ratings" collection
+#' @param site_type `r get_ogc_params("continuous", base = "STAC")[["site_type"]]`
+#' Not available for the "ratings" collection
+#' @param hydrologic_unit_code `r get_ogc_params("continuous", base = "STAC")[["hydrologic_unit_code"]]`
+#' Not available for the "ratings" collection
+#' @param basin_code `r get_ogc_params("continuous", base = "STAC")[["basin_code"]]`
+#' Not available for the "ratings" collection
+#' @param altitude `r get_ogc_params("continuous", base = "STAC")[["altitude"]]`
+#' Not available for the "ratings" collection
+#' @param drainage_area `r get_ogc_params("continuous", base = "STAC")[["drainage_area"]]`
+#' Not available for the "ratings" collection
+#' @param contributing_drainage_area `r get_ogc_params("continuous", base = "STAC")[["contributing_drainage_area"]]`
+#' Not available for the "ratings" collection
+#' @param aquifer_code `r get_ogc_params("continuous", base = "STAC")[["aquifer_code"]]`
+#' Not available for the "ratings" collection
+#' @param national_aquifer_code `r get_ogc_params("continuous", base = "STAC")[["national_aquifer_code"]]`
+#' Not available for the "ratings" collection
+#' @param aquifer_type_code `r get_ogc_params("continuous", base = "STAC")[["aquifer_type_code"]]`
+#' Not available for the "ratings" collection
+#' @param \dots Additional arguments.
 #' @param collections Could be "daily", "continuous", "ratings".
 #' @param limit description
 #' @param bbox Only features that have a geometry that intersects the bounding
@@ -60,6 +102,28 @@
 #'
 #'}
 search_stac <- function(
+  monitoring_location_id = NA_character_,
+  agency_code = NA_character_,
+  agency_name = NA_character_,
+  monitoring_location_number = NA_character_,
+  monitoring_location_name = NA_character_,
+  district_code = NA_character_,
+  country_code = NA_character_,
+  country_name = NA_character_,
+  state_code = NA_character_,
+  state_name = NA_character_,
+  county_code = NA_character_,
+  county_name = NA_character_,
+  site_type_code = NA_character_,
+  site_type = NA_character_,
+  hydrologic_unit_code = NA_character_,
+  basin_code = NA_character_,
+  altitude = NA_character_,
+  drainage_area = NA_character_,
+  contributing_drainage_area = NA_character_,
+  aquifer_code = NA_character_,
+  national_aquifer_code = NA_character_,
+  aquifer_type_code = NA_character_,
   ...,
   collections = c("daily", "continuous", "ratings"),
   bbox = NA,
@@ -73,7 +137,19 @@ search_stac <- function(
     several.ok = TRUE
   )
 
-  filter_args <- list(...)
+  filter_args <- mget(names(formals()))
+
+  filter_args <- filter_args[
+    !names(filter_args) %in%
+      c("collections", "limit", "chunk_size", "custom_filter", "...", "bbox")
+  ]
+
+  additional_args <- list(...)
+  filter_args <- filter_args[!is.na(filter_args)]
+  additional_args <- additional_args[!is.na(additional_args)]
+  if (length(additional_args) > 0) {
+    filter_args <- c(filter_args, additional_args)
+  }
 
   if (
     !is.na(chunk_size) &
@@ -87,13 +163,37 @@ search_stac <- function(
     rl <- lapply(ml_splits, function(x) {
       do.call(
         search_stac,
-        list(
-          monitoring_location_id = x,
-          collections = collections,
-          bbox = bbox,
-          limit = limit,
-          custom_filter = custom_filter,
-          chunk_size = chunk_size
+        c(
+          list(
+            monitoring_location_id = x,
+            agency_code = agency_code,
+            agency_name = agency_name,
+            monitoring_location_number = monitoring_location_number,
+            monitoring_location_name = monitoring_location_name,
+            district_code = district_code,
+            country_code = country_code,
+            country_name = country_name,
+            state_code = state_code,
+            state_name = state_name,
+            county_code = county_code,
+            county_name = county_name,
+            site_type_code = site_type_code,
+            site_type = site_type,
+            hydrologic_unit_code = hydrologic_unit_code,
+            basin_code = basin_code,
+            altitude = altitude,
+            drainage_area = drainage_area,
+            contributing_drainage_area = contributing_drainage_area,
+            aquifer_code = aquifer_code,
+            national_aquifer_code = national_aquifer_code,
+            aquifer_type_code = aquifer_type_code,
+            collections = collections,
+            bbox = bbox,
+            limit = limit,
+            custom_filter = custom_filter,
+            chunk_size = chunk_size
+          ),
+          additional_args
         )
       )
     })
@@ -103,8 +203,7 @@ search_stac <- function(
     return_list <- unlist(rl_filtered, recursive = FALSE)
     return(return_list)
   } else {
-    request <- httr2::request("https://api.waterdata.usgs.gov/stac") |>
-      httr2::req_url_path_append(getOption("dataRetrieval.api_version_stac")) |>
+    request <- base_url(base = "STAC") |>
       httr2::req_url_path_append("search")
 
     if (!all(is.na(collections))) {

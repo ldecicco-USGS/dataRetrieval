@@ -239,15 +239,18 @@ construct_api_requests <- function(
 #' request
 #' }
 base_url <- function(base = "OGC") {
-  match.arg(base, c("OGC", "NGWMN"))
+  match.arg(base, c("OGC", "NGWMN", "STAC"))
 
   if (base == "OGC") {
     baseURL <- httr2::request("https://api.waterdata.usgs.gov/ogcapi/") |>
       httr2::req_url_path_append(getOption("dataRetrieval.api_version"))
-  } else {
+  } else if (base == "NGWMN") {
     baseURL <- httr2::request(
       "https://api.waterdata.usgs.gov/ngwmn/ogcapi/"
     )
+  } else {
+    baseURL <- httr2::request("https://api.waterdata.usgs.gov/stac/") |>
+      httr2::req_url_path_append(getOption("dataRetrieval.api_version_stac"))
   }
 }
 

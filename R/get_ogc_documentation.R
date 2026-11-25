@@ -67,22 +67,37 @@ get_collection <- function(base = "OGC") {
 #' \donttest{
 #' ml <- dataRetrieval::get_ogc_params("monitoring-locations")
 #' ml$national_aquifer_code
+#'
+#' daily_stac <- dataRetrieval::get_ogc_params(
+#'   service = "daily",
+#'   base = "STAC")
+#' daily_stac[["national_aquifer_code"]]
 #' }
 #'
 get_ogc_params <- function(service, base = "OGC") {
   check_queryables_req <- base_url(base) |>
     httr2::req_url_path_append("collections") |>
     httr2::req_url_path_append(service) |>
-    httr2::req_url_path_append("schema") |>
     basic_request()
+
+  if (base == "STAC") {
+    check_queryables_req <- check_queryables_req |>
+      httr2::req_url_path_append("queryables")
+  } else {
+    check_queryables_req <- check_queryables_req |>
+      httr2::req_url_path_append("schema")
+  }
 
   query_ret <- httr2::req_perform(check_queryables_req) |>
     httr2::resp_body_json()
 
-  if (base == "OGC") {
-    params <- sapply(query_ret$properties, function(x) x[["description"]])
-  } else if (base == "NGWMN") {
+  if (base == "NGWMN") {
     params <- query_ret$properties
+  } else if (base == "OGC") {
+    params <- sapply(query_ret$properties, function(x) x[["description"]])
+  } else {
+    params <- sapply(query_ret$properties, function(x) x[["description"]])
+    names(params) <- names(query_ret$properties)
   }
 
   params
