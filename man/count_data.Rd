@@ -30,7 +30,7 @@ features <- search_stac(
 con_1 <- initial_connection()
 data_tbl <- count_data(features = features,
                       con = con_1)
-data_tbl
+data_tbl |> dplyr::collect()
 log_stac_limit()
 DBI::dbDisconnect(con_1)
 

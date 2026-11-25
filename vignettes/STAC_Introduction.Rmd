@@ -25,6 +25,9 @@ A new data warehouse contains continuous and daily time series data as cloud-nat
 
 The most authoritative, up-to-date version of a record can be retrieved from the OGC API services. OGC data are retrieved in the original "read_waterdata" functions. However, if you need lots of data, the new STAC functions are for you!
 
+The files on the STAC system do not necessarily have the latest available data. They get updated frequently, but there's no promise of when the files get refreshed. If needed, you can fill in more recent data using OGC data. 
+
+
 There are two main pathways to take advantage of this new STAC service:
 
 1. **Classic workflow**: functions that return all requested data into your R environment. Because it's so easy to request a LOT of data, care is needed to prevent running out of memory.
@@ -46,7 +49,7 @@ The new functions are `read_waterdata_continous_por` and `read_waterdata_daily_p
 
 ## read_waterdata_continuous_por
 
-Possibly the best use-case for these new STAC function is for a user who wants the full period of record continuous data for a single site. Using the original OGC functions, this required looping many requests because the OGC continuous service limits requests to a 3 year period. In one test, it took 35 minutes to download all the data for a site that had nearly 30 years of continuous sensor data of 8 parameter codes. Using the STAC function, it took ~6 seconds. Here we wrap the call with `system.time` to show how long it took to retrieve the data:
+Possibly the best use-case for these new STAC function is for a user who wants the full period of record continuous data for a single site. Using the original OGC functions, this required looping many requests since the OGC continuous service limits requests to a 3 year period. In one test, it took 35 minutes to download all the data for a site that had nearly 30 years of continuous sensor data of 8 parameter codes. Using the STAC function, it took ~6 seconds. Here we wrap the call with `system.time` to show how long it took to retrieve the data:
 
 ```{r continous, eval=TRUE}
 library(dataRetrieval)
@@ -84,7 +87,6 @@ Error in get_stac_data(args, data_type = data_type, collections = collection,  :
   Unique monitoring_location_id exceed site_limits
 ```
 
-
 This is fewer sites, but still a LOT of data. This example should fail due to exceeding the `memory_MB_limit`: 
 
 ```{r showAnotherError, eval=FALSE}
@@ -107,16 +109,67 @@ Error in check_memory(data_tbl$total_rows, memory_MB_limit, ncol = ncol(df_out))
 
 ## read_waterdata_daily_por
 
-Similar to the continuous data, we can now retrieve daily data quicker using the `read_waterdata_daily_por` function. As an example, we could request all the daily data for a single HUC. 
+Similar to the continuous data, we can now retrieve period of record daily data quicker using the `read_waterdata_daily_por` function. As an example, we could request all the daily data for a single HUC. 
 
 ```{r hucDaily, eval=FALSE}
 df_huc <- read_waterdata_daily_por(
     hydrologic_unit_code = "07090002",
     parameter_code = "00060"
 )
+nrow(df_huc)
+```
+
+```
+472717
 ```
 
 ## Further Considerations
 
+Each time you run one of the "por" functions, the code will go to the STAC service, find the files you need, access and load the data into memory. Under the hood, it's using (duckDB)[https://duckdb.org/docs/2.0/clients/r/overview].
+
+If you are asking for large amounts of data, consider using the flexible workflow shown below.
+
+If you need to fill in more recent data, consider querying the OGC data on "last_modified".
+
+```{r OGCfill}
+df <- read_waterdata_continuous_por(
+  monitoring_location_id = "USGS-01435000",
+  parameter_code = "00060")
+
+latest_modified <- max(df$last_modified)
+latest_modified
+
+df_new <- read_waterdata_continuous(
+  monitoring_location_id = "USGS-01435000",
+  parameter_code = "00060",
+  # get everything modified after "latest_modified"
+  # here we do that by adding a second:
+  last_modified = c(latest_modified + 1, NA) 
+)
+
+range(df_new$time)
+
+df_all <- df |> 
+  dplyr::bind_rows(df_new)
+
+range(df_all$time)
+
+```
+
 # Flexible Workflow
+
+What if you are asking for TONS of data? There are 3 main functions that allow you to search, (optionally) download, and then lazy load the data. This gives you 
+
+## Search -> Get 
+
+## Search -> Download -> Get
+
+## Further Considerations
+
+### Updating "Hot" Continuous Data
+
+### Re-partition Examples
+
+### Target Workflow
+
 

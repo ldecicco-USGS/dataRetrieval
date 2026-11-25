@@ -31,6 +31,7 @@ con_1 <- initial_connection()
 data_tbl <- open_stac(features = features,
                       con = con_1)
 head(data_tbl)
+dplyr::count(data_tbl)
 
 summarize_data <- data_tbl |>
    dplyr::mutate(value = as.numeric(value)) |>

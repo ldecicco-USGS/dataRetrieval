@@ -61,6 +61,7 @@ get_stac_data <- function(
 
   df_out_loaded <- df_out |> dplyr::collect()
   df_out_loaded$qualifier <- as.character(df_out_loaded$qualifier)
+  df_out_loaded$value <- as.numeric(df_out_loaded$value)
 
   log_stac_limit()
 
