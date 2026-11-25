@@ -164,7 +164,7 @@ range(df_all$time)
 
 What if you are asking for TONS of data? There are 3 main functions that allow you to search, (optionally) download, and then lazy load the data. What does it mean "lazy load the data"? A connection is established to the data files (either pointed at a local download or the files in the cloud) using duckDB. We will show a few examples of how the data can be explored with this connection without needing to load the entire dataset into memory. 
 
-## Search -> Get 
+## Search -> Open Lazy Tibble
 
 The function `search_stac` let's us search the STAC. Available arguments are similar to those found in `read_waterdata_monitoring_location`. In this example, we're querying for all the daily STAC data available for Dane County, Wisconsin:
 
@@ -181,7 +181,7 @@ The result of this function is a list with all the information that the next set
 
 Next, we can use that list to create a connection to the data in the cloud with the `open_stac` function. First, we need to create a connection. The function `initial_connection` establishes the connection and adds your `STAC_USGS_PAT` token to the request headers. It is important to remember to close your connection when you are done using `DBI::dbDisconnect`.
 
-```{r}
+```{r openCon, eval=FALSE}
 con_1 <- initial_connection()
 
 data_tbl <- open_stac(features = features_county,
@@ -189,9 +189,372 @@ data_tbl <- open_stac(features = features_county,
 
 ```
 
-`data_tbl` is now a "lazy tibble". This mean you can use it as an input of any `dplyr` type commands. The full query is not sent until you `dplyr::collect()` the data. Before 
+`data_tbl` is now a "lazy tibble". This mean you can use it as an input of any `dplyr` type commands. The full query is not sent until you `dplyr::collect()` the data. Before you run `dplyr::collect`, you can get some interesting information from the lazy tibble, all without loading the full dataset into memory:
 
-## Search -> Download -> Get
+```{r lazytibble, eval=FALSE}
+data_tbl
+```
+
+```
+# A query:  ?? x 10
+# Database: DuckDB 2.0.0 [Windows 10 x64:R 4.6.1/:memory:]
+   time_series_id            monitoring_location_id parameter_code
+   <chr>                     <chr>                  <chr>         
+ 1 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 2 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 3 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 4 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 5 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 6 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 7 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 8 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+ 9 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+10 5f9940b7927840d3ac520226… USGS-430639089185701   00045         
+# ℹ more rows
+# ℹ 7 more variables: statistic_id <chr>, time <date>,
+#   value <chr>, unit_of_measure <chr>, approval_status <chr>,
+#   qualifier <list>, last_modified <dttm>
+# ℹ Use `print(n = ...)` to see more rows
+```
+
+```{r lazytibble2, eval=FALSE}
+data_tbl |> 
+  dplyr::summarise(
+    min_date = min(time, na.rm = TRUE),
+    mean_val = mean(as.numeric(value), na.rm = TRUE),
+    count = dplyr::n(),
+    .by = c(monitoring_location_id, parameter_code) 
+  )
+
+```
+
+```
+# A query:  ?? x 5
+# Database: DuckDB 2.0.0 [Windows 10 x64:R 4.6.1/:memory:]
+   monitoring_location_id parameter_code min_date   mean_val count
+   <chr>                  <chr>          <date>        <dbl> <dbl>
+ 1 USGS-05427850          00060          2001-12-27  85.2     9097
+ 2 USGS-05427850          00665          2008-10-01   0.0919  6207
+ 3 USGS-05428600          00010          2017-11-03   5.18     621
+ 4 USGS-05406479          00300          2009-10-02  11.0     9137
+ 5 USGS-054279465         80154          2009-06-19  14.5     5217
+ 6 USGS-05427930          00530          2012-07-05  18.2     4835
+ 7 USGS-05427927          00631          2012-06-23   8.81    4848
+ 8 USGS-05427927          91060          2012-06-23  10.2     4848
+ 9 USGS-05429120          00045          2025-06-19   0.0910   523
+10 USGS-05406500          00300          1986-02-14  11.1     4639
+# ℹ more rows
+# ℹ Use `print(n = ...)` to see more rows
+```
+If we want to perform that entire summary and load the summary into memory:
+
+```{r nonlazy, eval=FALSE}
+data_summary <- data_tbl |> 
+  dplyr::summarise(
+    min_date = min(time, na.rm = TRUE),
+    mean_val = mean(as.numeric(value), na.rm = TRUE),
+    count = dplyr::n(),
+    .by = c(monitoring_location_id, parameter_code) 
+  ) |> 
+  dplyr::collect()
+```
+
+If you needed a subset of the data:
+
+```{r getsub, eval=FALSE}
+df_subset <- data_tbl |> 
+  dplyr::filter(
+    monitoring_location_id %in% c("USGS-05427945",
+                                  "USGS-05406483")
+  ) |> 
+  dplyr::collect()
+
+```
+
+Or, if you were confident that your computer could load all the data into R:
+
+```{r loadall, eval=FALSE}
+df <- data_tbl |> dplyr::collect()
+
+```
+
+There are many cool things to explore with a lazy tibble. Once you are done with your analysis, close the connection:
+
+```{r close, eval=FALSE}
+DBI::dbDisconnect(con_1)
+```
+
+## Search -> Download
+
+The workflow above hit the data in the cloud - and every time you explored the data, some-to-many requests are generated. There are a variety of reasons you would prefer to have your data local. You can use the function `download_stac` to copy all of the STAC files from the `search_stac` function. The files are downloaded in a HIVE partitioned set of parquet files. The partitioning is done by monitoring_location_id. 
+
+Let's download all the continuous data that is available in the New York City area:
+
+```{r nyc_download, eval=FALSE}
+features_nyc <- search_stac(
+    county_name = c("New York County",
+                    "Kings County",
+                    "Queens County",
+                    "Bronx County",
+                    "Richmond County"),
+    state_name = "New York",
+    collections = "continuous"
+)
+
+dir.create("nyc", showWarnings = FALSE)
+
+download_path <- download_stac(
+  features = features_nyc,
+  file_directory = "nyc", 
+  output_returned = "partition_folder"
+)
+
+download_path
+#> "nyc/continuous"
+```
+
+Inside the download folder, there is one subfolder per collection ("continuous" in this case). Within that, each monitoring location gets its own `monitoring_location_id=<id>` folder holding that site's parquet file(s). This is the Hive partitioning layout, where the folder names carry the partition key and value:
+
+```
+nyc/
+└── continuous/
+    ├── monitoring_location_id=USGS-01302020/
+    │   └── historical.parquet
+    ├── monitoring_location_id=USGS-01372043/
+    │   ├── historical.parquet
+    │   └── current.parquet
+    ├── monitoring_location_id=USGS-01376307/
+    │   └── historical.parquet
+    └── ...
+```
+
+If you download more than one collection (for example `collections = c("daily", "continuous")`), each collection gets its own sibling folder:
+
+```
+nyc/
+├── continuous/
+│   ├── monitoring_location_id=USGS-01302020/
+│   │   └── historical.parquet
+│   └── ...
+└── daily/
+    ├── monitoring_location_id=USGS-01302020/
+    │   └── data.parquet
+    └── ...
+```
+
+Because the partition key is encoded in the folder names, duckDB (and Arrow) can skip folders that don't match a filter on `monitoring_location_id`, so only the relevant files are read.
+
+Now that the 
+
+### Lazy Tibble
+
+The `open_stac` function works the same way on local files as it does on the cloud files shown earlier. Instead of the list returned by `search_stac`, pass it the path returned by `download_stac`. Nothing is loaded into memory until you call `dplyr::collect()`.
+
+```{r openLocal, eval=FALSE}
+con_nyc <- initial_connection()
+
+nyc_tbl <- open_stac(
+  features = download_path,
+  con = con_nyc
+)
+
+nyc_tbl
+```
+
+
+```
+# A query:  ?? x 11
+# Database: DuckDB 2.0.0 [Windows 10 x64:R 4.6.1/:memory:]
+   time_series_id   monitoring_location_id parameter_code statistic_id
+   <chr>            <chr>                  <chr>          <chr>       
+ 1 dafdaa4075e34bc… USGS-01302020          00065          00011       
+ 2 a394ba8aa6d1441… USGS-01302020          63680          00011       
+ 3 c946acb1602d4ef… USGS-01302020          00010          00011       
+ 4 254fc69aca7c437… USGS-01302020          90860          00011       
+ 5 18c38102a1e04f8… USGS-01302020          00400          00011       
+ 6 de944b462bcf48d… USGS-01302020          00095          00011       
+ 7 e5eb268f449c49d… USGS-01302020          00300          00011       
+ 8 7c1f90fe567b4cd… USGS-01302020          00060          00011       
+ 9 7c1f90fe567b4cd… USGS-01302020          00060          00011       
+10 c946acb1602d4ef… USGS-01302020          00010          00011       
+# ℹ more rows
+# ℹ 7 more variables: time <dttm>, value <chr>,
+#   unit_of_measure <chr>, approval_status <chr>, qualifier <list>,
+#   last_modified <dttm>, method_category <chr>
+# ℹ Use `print(n = ...)` to see more rows
+```
+
+
+Use `dplyr` verbs to filter and summarize. The query runs in duckDB against the local parquet files:
+
+```{r openLocalQuery, eval=FALSE}
+nyc_summary <- nyc_tbl |>
+  dplyr::filter(
+    monitoring_location_id == "USGS-01302020",
+    parameter_code == "00060"
+  ) |>
+  dplyr::mutate(value = as.numeric(value)) |>
+  dplyr::summarise(
+    min_val = min(value, na.rm = TRUE),
+    mean_val = mean(value, na.rm = TRUE),
+    max_val = max(value, na.rm = TRUE),
+    count = dplyr::n()
+  ) |>
+  dplyr::collect()
+```
+
+To bring a subset into R as a data frame:
+
+```{r openLocalCollect, eval=FALSE}
+df_site <- nyc_tbl |>
+  dplyr::filter(
+    monitoring_location_id == "USGS-01302020",
+    parameter_code == "00060"
+  ) |>
+  dplyr::collect()
+```
+
+Close the connection when you are done:
+
+```{r closeLocal, eval=FALSE}
+DBI::dbDisconnect(con_nyc)
+```
+
+### duckDB SQL
+
+If you prefer SQL to `dplyr`, you can send raw SQL strings to duckDB with `DBI::dbGetQuery` (returns a data frame) and `DBI::dbExecute` (runs a statement and returns the number of affected rows). DuckDB's `read_parquet` function reads the downloaded files directly, and the `**` wildcard matches every partition folder.
+
+```{r sqlCon, eval=FALSE}
+con_sql <- initial_connection()
+
+# Count the rows in the downloaded files:
+DBI::dbGetQuery(
+  con_sql,
+  "SELECT COUNT(*) AS n_rows
+   FROM read_parquet('nyc/continuous/**/*.parquet')"
+)
+```
+
+A summary by site and parameter code, computed in duckDB. Only the summary table is loaded into R:
+
+```{r sqlSummary, eval=FALSE}
+sql_summary <- DBI::dbGetQuery(
+  con_sql,
+  "SELECT
+     monitoring_location_id,
+     parameter_code,
+     MIN(time) AS start_time,
+     MAX(time) AS end_time,
+     COUNT(*) AS n_obs,
+     AVG(TRY_CAST(value AS DOUBLE)) AS mean_val
+   FROM read_parquet('nyc/continuous/**/*.parquet')
+   GROUP BY monitoring_location_id, parameter_code
+   ORDER BY monitoring_location_id, parameter_code"
+)
+```
+
+`value` is stored as text, so `TRY_CAST(value AS DOUBLE)` converts it and returns `NULL` for anything that can't be converted. To pass values into a query safely, use `?` placeholders and the `params` argument rather than pasting strings together:
+
+```{r sqlParams, eval=FALSE}
+df_site <- DBI::dbGetQuery(
+  con_sql,
+  "SELECT *
+   FROM read_parquet('nyc/continuous/**/*.parquet')
+   WHERE monitoring_location_id = ?
+     AND parameter_code = ?",
+  params = list("USGS-01302020", "00060")
+)
+```
+
+If you run several queries against the same files, create a view once and query it by name. `dbExecute` runs statements that don't return rows:
+
+```{r sqlView, eval=FALSE}
+DBI::dbExecute(
+  con_sql,
+  "CREATE OR REPLACE VIEW nyc_continuous AS
+   SELECT * FROM read_parquet('nyc/continuous/**/*.parquet')"
+)
+
+DBI::dbGetQuery(
+  con_sql,
+  "SELECT parameter_code, COUNT(*) AS n_obs
+   FROM nyc_continuous
+   GROUP BY parameter_code
+   ORDER BY n_obs DESC"
+)
+```
+
+Close the connection when you are done:
+
+```{r sqlClose, eval=FALSE}
+DBI::dbDisconnect(con_sql)
+```
+
+### Arrow
+
+The [arrow](https://arrow.apache.org/docs/r/) package can also open the partitioned folder. `arrow::open_dataset` reads the `monitoring_location_id=` folder names and adds `monitoring_location_id` as a column. Nothing is loaded into memory until you call `dplyr::collect()`. 
+
+
+```{r arrow, eval=FALSE}
+library(arrow)
+library(dplyr)
+
+# Point to the collection folder inside the download directory:
+nyc_ds <- open_dataset(
+  "nyc/continuous",
+  format = "parquet",
+  partitioning = hive_partition(monitoring_location_id = large_utf8())
+)
+
+nyc_ds
+```
+
+```
+FileSystemDataset with 187 Parquet files
+11 columns
+time_series_id: large_string
+monitoring_location_id: large_string
+parameter_code: large_string
+statistic_id: large_string
+time: timestamp[us, tz=UTC]
+value: large_string
+unit_of_measure: large_string
+approval_status: large_string
+qualifier: list<element: string>
+last_modified: timestamp[us, tz=UTC]
+method_category: large_string
+```
+
+The parquet files already store `monitoring_location_id` as a `large_string`. By default, arrow reads the same value from the folder name as a regular `string`, and the two types can't be merged. That produces the error `Field monitoring_location_id has incompatible types: large_string vs string`. Declaring the partition field as `large_utf8()` makes the two types match.
+
+Use `dplyr` verbs on the dataset to filter and summarize. The filter on `monitoring_location_id` is applied to the folder names, so only the matching files are read:
+
+```{r arrowQuery, eval=FALSE}
+nyc_summary <- nyc_ds |>
+  filter(
+    monitoring_location_id == "USGS-01302020",
+    parameter_code == "00060"
+  ) |>
+  mutate(value = as.numeric(value)) |>
+  summarise(
+    min_val = min(value, na.rm = TRUE),
+    mean_val = mean(value, na.rm = TRUE),
+    max_val = max(value, na.rm = TRUE),
+    count = n()
+  ) |>
+  collect()
+```
+
+To bring a subset into R as a data frame:
+
+```{r arrowCollect, eval=FALSE}
+df_site <- nyc_ds |>
+  filter(
+    monitoring_location_id == "USGS-01302020",
+    parameter_code == "00060"
+  ) |>
+  collect()
+```
 
 ## Further Considerations
 
@@ -199,6 +562,116 @@ data_tbl <- open_stac(features = features_county,
 
 ### Re-partition Examples
 
+The sweet spot of hive partitioning is 100MB-1GB per individual parquet file. Too big or too little of files cause different kinds of bottlenecks. The individual monitoring_location_id files that come from the STAC service are almost universially smaller than this. Here is an example of how to take the monitoring_location_id partitioning, and re-partition it to state_name:
+
+```{r repartition, eval=FALSE}
+library(duckdb)
+library(dplyr)
+library(dataRetrieval)
+
+con_1 <- initial_connection()
+
+sites <- read_waterdata_combined_meta(
+  state_name = c("Alaska", "Wisconsin"),
+  parameter_code = "00060",
+  statistic_id = "00003",
+  skipGeometry = TRUE
+)
+
+site_features <- search_stac(
+  monitoring_location_id = unique(sites$monitoring_location_id),
+  collections = "daily"
+)
+
+dir.create("pqts", showWarnings = FALSE)
+
+# Default is partitioned folder:
+dwnlwd <- download_stac(
+  site_features,
+  file_directory = here::here("pqts"),
+  overwrite = FALSE
+)
+
+con_1 <- initial_connection() 
+
+# By default, duckdb will go up to 80% of system RAM
+# If you want to change that, you can do it like this:
+# dbExecute(con_1, "SET memory_limit = '1GB';")
+# My regular laptop has 32GB installed RAM
+
+register_data <- open_stac(features = dwnlwd, 
+                      con = con_1) |> 
+  filter(time_series_id %in% sites$combined_meta_id) |> 
+  left_join(sites |> 
+              select(monitoring_location_id, state_name),
+            by = "monitoring_location_id",
+#copy = "inline" is OK if sites df is smallish, 
+# if it's bigger use copy = "temp-table":
+            copy = "inline") |>   
+  duckdb::duckdb_register(conn = con_1, name = "state_partitions")
+
+dir.create("state_discharge", showWarnings = FALSE)
+
+DBI::dbExecute(con_1, dplyr::sql("COPY (
+    SELECT *
+    FROM state_partitions
+  ) TO 'state_discharge' (FORMAT PARQUET, PARTITION_BY (state_name))
+")) 
+
+duckdb::duckdb_unregister(con_1, "state_partitions")
+DBI::dbDisconnect(con_1, shutdown = TRUE)
+
+```
+
 ### Target Workflow
 
+You can use these functions in a targets workflow. Here is an example of a _targets.R file that could be used. In this example, we first find all the daily mean discharge in Alaska. In the `download_stac` function, we can set the argument `output_returned = "targets"`, then the result of that function will be a vector for the full path for all of the downloaded files. This vector can then be used in a dynamic branch in the next step:
+
+```{r target, eval=FALSE}
+library(targets)
+library(tarchetypes)
+
+tar_option_set(
+  packages = c(
+    "tidyverse",
+    "dataRetrieval",
+    "here"
+  )
+)
+
+dir.create("pqts", showWarnings = FALSE)
+
+list(
+  tar_target(
+    name = sites,
+    command = read_waterdata_combined_meta(
+      state_name = "Alaska",
+      parameter_code = "00060",
+      statistic_id = "00003",
+      skipGeometry = TRUE
+    )
+  ),
+  tar_target(
+    name = site_features,
+    command = search_stac(
+      monitoring_location_id = unique(sites$monitoring_location_id),
+      collections = "daily"
+    )
+  ),
+  tar_target(
+    name = dwnlwd,
+    command = download_stac(
+      site_features,
+      file_directory = here("pqts"),
+      output_returned = "targets"
+    )
+  ),
+  tar_target(
+    cleaned_data,
+    clean_files(x = dwnlwd, sites = sites),
+    pattern = map(dwnlwd),
+    iteration = "vector"
+  )
+)
+```
 
